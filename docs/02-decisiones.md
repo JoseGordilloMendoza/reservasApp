@@ -76,6 +76,7 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D68 | Un correo que falla **nunca** impide ni deshace la reserva: se registra el fallo (NF-14) y la operación sigue. El envío es síncrono, con un tiempo máximo corto | Tomada | La reserva es lo importante; no hay tareas en segundo plano en el hosting gratuito. Si el envío estorba, se mueve a una cola sin cambiar quién lo pide |
 | D69 | Recuperar contraseña: un enlace por correo, de un solo uso y válido por una hora; la respuesta es la misma exista o no el correo; al cambiarla se cierran las sesiones abiertas | Tomada | Mismo criterio que el login (RN-21); un enlace robado no sirve dos veces ni mantiene sesiones viejas |
 | D70 | El correo de recuperar contraseña se envía en segundo plano, a diferencia de los de reservas, que van síncronos (D68) | Tomada | Si se enviara dentro de la petición, responder tardaría más cuando la cuenta existe y eso revelaría quién está registrado. Medido: 6 a 7 ms con o sin cuenta. Si el proceso se detiene antes de enviar, la persona pide otro enlace |
+| D71 | Proveedor de correo propuesto: **Resend** para empezar (SMTP, el más simple de configurar y bien valorado por desarrolladores), con **Brevo** como reemplazo cuando se supere el límite diario. Ambos exigen un dominio propio verificado | Propuesta | Se cambia de uno a otro solo con variables de entorno. Resend gratis permite 100 correos al día y 3000 al mes; Brevo, 300 al día. Se confirma al llegar a M10, cuando exista el dominio |
 
 ## Preguntas abiertas
 
@@ -83,7 +84,7 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 |---|---|---|
 | Q1 | Valores por defecto de cancelación y de bloqueo de pendientes | Dependen del rubro: propuestos como plantillas en [06-reglas-de-negocio.md](06-reglas-de-negocio.md); validar con negocios reales |
 | Q3 | Precio de la suscripción | Se conversará con los negocios |
-| Q4 | Nombre del producto y dominio | "ReservaloYa" descartado por poco atractivo. Pendiente de elegir; verificar disponibilidad de dominio y marca (INDECOPI) |
+| Q4 | Nombre del producto y dominio | "ReservaloYa" descartado por poco atractivo. Pendiente de elegir; verificar disponibilidad de dominio y marca (INDECOPI). **Bloquea el envío real de correos**: el proveedor necesita un dominio verificado para entregar a cualquier destinatario (D71) |
 | Q5 | Piloto: ¿qué negocio de canchas? | Aún sin definir |
 | Q6 | Cumplimiento de la Ley de Protección de Datos Personales de Perú | Revisar qué datos se guardan y cómo se informa al cliente |
 | Q7 | Proveedor concreto de hosting; confirmar que la base de datos permita la extensión `btree_gist` | Ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
