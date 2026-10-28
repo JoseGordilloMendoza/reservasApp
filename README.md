@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. Hitos M0 a M4 del [plan](docs/08-plan-de-construccion.md) completados y M5 casi: entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos). 471 pruebas, incluidas pruebas de concurrencia con conexiones reales.
+**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 573 pruebas, incluidas pruebas de concurrencia con conexiones reales. Falta el frontend (M6 y M7).
 
 ## Cómo ejecutar
 
@@ -28,10 +28,10 @@ docker compose run --rm backend pytest              # pruebas
 Por ahora lo hace la plataforma desde el admin (http://localhost:8000/admin/):
 
 1. Crear un superusuario: `docker compose run --rm backend python manage.py createsuperuser` (el identificador es el correo).
-2. En el admin, crear el **Negocio** (`business_type` elige la plantilla de valores iniciales), sus **Recursos**, **Servicios** y **Horarios de atención**.
+2. En el admin, crear el **Negocio** (`business_type` elige la plantilla de valores iniciales).
 3. Crear el **Usuario** del dueño y, en el mismo formulario, agregarle una **Pertenencia** al negocio con rol `owner`.
 
-El dueño inicia sesión con `POST /api/v1/auth/login/`. Si el usuario no tiene contraseña, solo podrá entrar con Google.
+Con eso basta: el dueño inicia sesión con `POST /api/v1/auth/login/` y **él mismo** configura su perfil, opciones, recursos, servicios y horarios con la API del panel (`/api/v1/panel/...`, documentada en `/api/docs/`). Si el usuario no tiene contraseña, solo podrá entrar con Google.
 
 ## Acceso con Google (opcional)
 
