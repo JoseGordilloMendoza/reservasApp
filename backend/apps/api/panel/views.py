@@ -5,20 +5,22 @@ from zoneinfo import ZoneInfo
 
 from django.db.models import Count, Max, Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import generics
+from rest_framework import generics, serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.api.errors import error_response
+from apps.availability.models import Block
 from apps.bookings import services
-from apps.bookings.models import Booking
-from apps.catalog.models import Service
+from apps.bookings.models import ACTIVE_STATUSES, Booking
+from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
 
 from . import serializers as s
-from .permissions import HasBusiness
+from .permissions import HasBusiness, IsOwner
 
 
 class PanelAPIView(APIView):
@@ -213,6 +215,93 @@ class CustomerDetailView(PanelAPIView):
         update.is_valid(raise_exception=True)
         update.save()
         return self.respond(self.customer(request, pk))
+
+
+class BlockListCreateView(generics.ListAPIView):
+    """Anyone in the business can see the blocks; only the owner changes them."""
+
+    pagination_class = BookingPagination
+    serializer_class = s.BlockSerializer
+
+    def get_permissions(self):
+        return [HasBusiness() if self.request.method == "GET" else IsOwner()]
+
+    @extend_schema(
+        summary="List blocks",
+        description="Upcoming ones by default. Filtering by resource also includes business-wide blocks.",
+        parameters=[
+            OpenApiParameter("resource", int),
+            OpenApiParameter("include_past", bool, description="Also blocks that already ended."),
+        ],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        blocks = Block.objects.filter(business=self.request.business).select_related("resource")
+
+        resource = self.request.query_params.get("resource")
+        if resource and resource.isdigit():
+            blocks = blocks.filter(Q(resource_id=int(resource)) | Q(resource__isnull=True))
+        if self.request.query_params.get("include_past") not in ("true", "1"):
+            blocks = blocks.filter(ends_at__gte=timezone.now())
+        return blocks.order_by("starts_at", "id")
+
+    @extend_schema(
+        summary="Block a period",
+        description=(
+            "Closes one resource, or the whole business when no resource is given. Existing "
+            "bookings are not cancelled; the ones in conflict are listed so the owner can decide."
+        ),
+        request=s.BlockCreateSerializer,
+        responses={201: s.BlockCreatedSerializer, 400: OpenApiResponse(description="Invalid data.")},
+    )
+    def post(self, request):
+        body = s.BlockCreateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+
+        resource = None
+        if data["resource"] is not None:
+            # A resource of another business is reported like a missing one.
+            resource = Resource.objects.filter(business=request.business, pk=data["resource"]).first()
+            if resource is None:
+                raise serializers.ValidationError({"resource": "No existe ese recurso."})
+
+        block = Block.objects.create(
+            business=request.business,
+            resource=resource,
+            starts_at=data["starts_at"],
+            ends_at=data["ends_at"],
+            reason=data["reason"],
+        )
+        block.conflicting_bookings = self._conflicts(block)
+        return Response(s.BlockCreatedSerializer(block).data, status=201)
+
+    @staticmethod
+    def _conflicts(block):
+        overlapping = Booking.objects.filter(
+            business=block.business,
+            status__in=ACTIVE_STATUSES,
+            starts_at__lt=block.ends_at,
+            ends_at__gt=block.starts_at,
+        ).select_related("resource", "customer")
+        if block.resource_id:
+            overlapping = overlapping.filter(resource_id=block.resource_id)
+        return list(overlapping.order_by("starts_at"))
+
+
+class BlockDetailView(APIView):
+    permission_classes = [IsOwner]
+
+    @extend_schema(
+        summary="Remove a block",
+        responses={204: None, 404: OpenApiResponse(description="No such block in this business.")},
+    )
+    def delete(self, request, pk):
+        block = get_object_or_404(Block, pk=pk, business=request.business)
+        block.delete()
+        return Response(status=204)
 
 
 class BookingActionView(PanelAPIView):

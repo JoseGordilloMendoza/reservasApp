@@ -7,6 +7,7 @@ from apps.api.public.serializers import (
     ResourceRefSerializer,
     ServiceRefSerializer,
 )
+from apps.availability.models import Block
 from apps.bookings.models import Booking, BookingEvent, BookingStatus
 from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
@@ -136,6 +137,47 @@ class CustomerUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ["name", "email", "is_blocked"]
+
+
+class BlockSerializer(serializers.ModelSerializer):
+    resource = ResourceRefSerializer(allow_null=True, read_only=True)
+
+    class Meta:
+        model = Block
+        fields = ["id", "resource", "starts_at", "ends_at", "reason"]
+
+
+class ConflictingBookingSerializer(serializers.ModelSerializer):
+    resource = ResourceRefSerializer()
+    customer_name = serializers.CharField(source="customer.name")
+
+    class Meta:
+        model = Booking
+        fields = ["id", "status", "starts_at", "ends_at", "resource", "customer_name"]
+
+
+class BlockCreatedSerializer(BlockSerializer):
+    conflicting_bookings = ConflictingBookingSerializer(many=True, read_only=True)
+
+    class Meta(BlockSerializer.Meta):
+        fields = BlockSerializer.Meta.fields + ["conflicting_bookings"]
+
+
+class BlockCreateSerializer(serializers.Serializer):
+    resource = serializers.IntegerField(
+        required=False,
+        allow_null=True,
+        default=None,
+        help_text="Resource id, or empty to close the whole business.",
+    )
+    starts_at = serializers.DateTimeField()
+    ends_at = serializers.DateTimeField()
+    reason = serializers.CharField(max_length=200, required=False, allow_blank=True, default="")
+
+    def validate(self, attrs):
+        if attrs["ends_at"] <= attrs["starts_at"]:
+            raise serializers.ValidationError({"ends_at": "Must be after starts_at."})
+        return attrs
 
 
 class BookingFilterSerializer(serializers.Serializer):
