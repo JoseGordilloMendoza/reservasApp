@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M5 completados: **el backend del MVP está completo** (573 pruebas). Un dueño ya puede configurar su negocio, recibir reservas y gestionarlas solo con la API. Siguiente: M6, el frontend público.
+**Avance:** M0 a M6 completados. El backend del MVP está completo (587 pruebas) y el **frontend público** también (99 pruebas): el cliente entra por el link de un negocio, reserva, ve su boleto, lo cancela y consulta "Mis reservas", todo instalable como aplicación. Siguiente: M7, el panel del negocio en pantalla.
 
 **Fuera del backend actual:** imágenes del negocio (D46), recuperar contraseña y correos (M8), y el panel de superadmin con suscripciones (M9, hoy basta el admin de Django).
 
@@ -34,6 +34,7 @@ El backend arranca limpio desde cero con `docker compose up` y sus endpoints res
 - Fijar versiones exactas de las dependencias.
 - Decidir si la documentación de la API (`API_DOCS_ENABLED`) se publica.
 - **Límite de solicitudes:** hoy usa la memoria de cada proceso. Con varios procesos o servidores cada uno cuenta por separado, así que en producción hace falta un caché compartido (Redis o base de datos). Detrás de un proxy también hay que configurar `NUM_PROXIES` para leer la dirección real del cliente; si no, todos parecen venir del proxy.
+- **Frontend:** `npm run build` genera la carpeta `dist/` (archivos estáticos) lista para un hosting estático. Antes de publicar: definir `VITE_API_URL` con la dirección de la API, poner el dominio del frontend en `CORS_ALLOWED_ORIGINS` del backend, y configurar el hosting para que cualquier ruta (por ejemplo `/canchas-los-andes`) sirva `index.html`. El paquete principal pesa unos 485 KB (152 KB comprimido); dividirlo por pantallas es una mejora posible.
 - **Acceso con Google:** crear un ID de cliente OAuth de tipo "Aplicación web" en Google Cloud Console, autorizar el dominio del frontend y entregarlo como `GOOGLE_CLIENT_ID`. Sin él, el endpoint responde 503.
 - **Tokens:** se firman con `SECRET_KEY`, que debe ser larga y secreta. Los refresh usados se acumulan en la base de datos; programar `python manage.py flushexpiredtokens` (por ejemplo a diario).
 - **Recuperar contraseña** (NG-01) queda para M8, junto con el envío de correos.
