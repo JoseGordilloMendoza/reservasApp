@@ -6,8 +6,12 @@ export interface SavedBooking {
   slug: string;
   token: string;
   businessName: string;
+  /** Timezone of the business, so the saved list can show local times. */
+  timeZone?: string;
   savedAt: string;
 }
+
+export const DEFAULT_TIME_ZONE = "America/Lima";
 
 function read(): SavedBooking[] {
   try {
