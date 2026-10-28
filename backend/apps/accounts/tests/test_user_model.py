@@ -59,6 +59,12 @@ def test_authenticate_uses_the_email():
     assert authenticate(username="ana@example.com", password="wrong") is None
 
 
+def test_authenticate_ignores_the_case_of_the_email():
+    User.objects.create_user("ana@example.com", "s3cret-pass")
+
+    assert authenticate(username="ANA@Example.com", password="s3cret-pass") is not None
+
+
 def test_google_account_can_only_belong_to_one_user():
     User.objects.create_user("ana@example.com", google_sub="g-1")
 

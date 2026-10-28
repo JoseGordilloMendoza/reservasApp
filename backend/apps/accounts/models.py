@@ -25,6 +25,10 @@ class UserManager(BaseUserManager):
             raise ValueError("A superuser must have is_staff and is_superuser set")
         return self._create(email, password, **extra)
 
+    def get_by_natural_key(self, email):
+        # Used by authenticate(), so sign-in ignores the case the address was typed in.
+        return self.get(email=self.normalize_email(email))
+
     @classmethod
     def normalize_email(cls, email):
         # Lowercase everything so two spellings of an address are one account.
