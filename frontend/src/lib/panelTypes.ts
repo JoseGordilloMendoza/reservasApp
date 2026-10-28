@@ -111,6 +111,42 @@ export interface PanelService {
   is_active: boolean;
 }
 
+export interface PanelResource {
+  id: number;
+  name: string;
+  is_active: boolean;
+  position: number;
+}
+
+export interface PanelBlock {
+  id: number;
+  /** Null when the whole business is closed. */
+  resource: { id: number; name: string } | null;
+  starts_at: string;
+  ends_at: string;
+  reason: string;
+}
+
+export interface ConflictingBooking {
+  id: number;
+  status: BookingStatus;
+  starts_at: string;
+  ends_at: string;
+  resource: { id: number; name: string };
+  customer_name: string;
+}
+
+export interface CreatedBlock extends PanelBlock {
+  conflicting_bookings: ConflictingBooking[];
+}
+
+export interface NewBlock {
+  resource: number | null;
+  starts_at: string;
+  ends_at: string;
+  reason: string;
+}
+
 export interface Page<T> {
   count: number;
   next: string | null;

@@ -5,6 +5,10 @@ import type {
   CustomerDetail,
   CustomerFilters,
   CustomerSummary,
+  CreatedBlock,
+  NewBlock,
+  PanelBlock,
+  PanelResource,
   NewPanelBooking,
   Page,
   PanelBooking,
@@ -103,6 +107,15 @@ export const panelApi = {
 
   updateCustomer: (id: number, changes: { name?: string; email?: string; is_blocked?: boolean }) =>
     authed<CustomerDetail>(`/panel/customers/${id}/`, { method: "PATCH", body: JSON.stringify(changes) }),
+
+  resources: () => authed<Page<PanelResource>>("/panel/resources/?page_size=200"),
+
+  blocks: () => authed<Page<PanelBlock>>("/panel/blocks/?page_size=200"),
+
+  createBlock: (block: NewBlock) =>
+    authed<CreatedBlock>("/panel/blocks/", { method: "POST", body: JSON.stringify(block) }),
+
+  deleteBlock: (id: number) => authed<null>(`/panel/blocks/${id}/`, { method: "DELETE" }),
 
   services: () => authed<Page<PanelService>>("/panel/services/?page_size=200"),
 };
