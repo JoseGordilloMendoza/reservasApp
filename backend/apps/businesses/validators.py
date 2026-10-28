@@ -11,8 +11,11 @@ RESERVED_SLUGS = frozenset(
         "login",
         "logout",
         "media",
+        "mis-reservas",
         "panel",
         "public",
+        "reserva",
+        "reservas",
         "static",
     }
 )
