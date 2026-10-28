@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.core.exceptions import ValidationError as DjangoValidationError
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -8,10 +9,12 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 
 from apps.accounts.google import GoogleNotConfigured, GoogleSignInError, verify_google_credential
+from apps.accounts.password_reset import InvalidResetLink, send_reset_email, set_new_password
 from apps.accounts.services import user_for_google_identity
+from apps.notifications.background import run_in_background
 
 from . import serializers as s
-from .throttles import LoginEmailThrottle
+from .throttles import LoginEmailThrottle, PasswordResetEmailThrottle
 from .tokens import start_session
 
 INVALID_CREDENTIALS = {
@@ -105,6 +108,71 @@ class RefreshView(TokenRefreshView):
 )
 class LogoutView(TokenBlacklistView):
     pass
+
+
+RESET_REQUESTED = {
+    "detail": "Si el correo está registrado, te enviamos un enlace para cambiar tu contraseña."
+}
+INVALID_RESET_LINK = {
+    "code": "invalid_reset_link",
+    "detail": "El enlace no es válido o ya venció. Pide uno nuevo.",
+}
+
+
+class PasswordResetView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle, PasswordResetEmailThrottle]
+    throttle_scope = "auth_reset"
+
+    @extend_schema(
+        summary="Ask for a password reset email",
+        description=(
+            "Always answers the same, and as fast, whether or not the email is registered, so it "
+            "cannot be used to find out who has an account. The email is sent in the background."
+        ),
+        request=s.PasswordResetSerializer,
+        responses={200: OpenApiResponse(description="Asked. An email follows if the account exists.")},
+        auth=[],
+    )
+    def post(self, request):
+        body = s.PasswordResetSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        run_in_background(send_reset_email, body.validated_data["email"])
+        return Response(RESET_REQUESTED)
+
+
+class PasswordResetConfirmView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "auth_reset_confirm"
+
+    @extend_schema(
+        summary="Choose a new password from an emailed link",
+        description=(
+            "The link works once and for an hour. Changing the password closes every session "
+            "that was open. A weak password is refused and the link stays usable."
+        ),
+        request=s.PasswordResetConfirmSerializer,
+        responses={
+            200: OpenApiResponse(description="Password changed."),
+            400: OpenApiResponse(description="Invalid or expired link, or a weak password."),
+        },
+        auth=[],
+    )
+    def post(self, request):
+        body = s.PasswordResetConfirmSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+
+        try:
+            set_new_password(data["uid"], data["token"], data["password"])
+        except InvalidResetLink:
+            return Response(INVALID_RESET_LINK, status=status.HTTP_400_BAD_REQUEST)
+        except DjangoValidationError as error:
+            return Response({"password": error.messages}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Listo. Ya puedes entrar con tu nueva contraseña."})
 
 
 class MeView(APIView):

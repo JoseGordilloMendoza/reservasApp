@@ -7,5 +7,11 @@ urlpatterns = [
     path("google/", views.GoogleLoginView.as_view(), name="auth-google"),
     path("refresh/", views.RefreshView.as_view(), name="auth-refresh"),
     path("logout/", views.LogoutView.as_view(), name="auth-logout"),
+    path("password-reset/", views.PasswordResetView.as_view(), name="auth-password-reset"),
+    path(
+        "password-reset/confirm/",
+        views.PasswordResetConfirmView.as_view(),
+        name="auth-password-reset-confirm",
+    ),
     path("me/", views.MeView.as_view(), name="auth-me"),
 ]

@@ -46,3 +46,13 @@ class SessionSerializer(serializers.Serializer):
     access = serializers.CharField(help_text="Short-lived token for the Authorization header.")
     refresh = serializers.CharField(help_text="Used to get a new access token.")
     user = UserSerializer()
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, trim_whitespace=False)
