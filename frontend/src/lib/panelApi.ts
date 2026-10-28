@@ -2,6 +2,7 @@ import { ApiError, request } from "./http";
 import type {
   BookingAction,
   BookingFilters,
+  BusinessChanges,
   CustomerDetail,
   CustomerFilters,
   CustomerSummary,
@@ -9,6 +10,8 @@ import type {
   NewBlock,
   PanelBlock,
   PanelResource,
+  ScheduleRule,
+  ServiceInput,
   NewPanelBooking,
   Page,
   PanelBooking,
@@ -107,6 +110,34 @@ export const panelApi = {
 
   updateCustomer: (id: number, changes: { name?: string; email?: string; is_blocked?: boolean }) =>
     authed<CustomerDetail>(`/panel/customers/${id}/`, { method: "PATCH", body: JSON.stringify(changes) }),
+
+  updateBusiness: (changes: BusinessChanges) =>
+    authed<PanelBusiness>("/panel/business/", { method: "PATCH", body: JSON.stringify(changes) }),
+
+  createResource: (name: string) =>
+    authed<PanelResource>("/panel/resources/", { method: "POST", body: JSON.stringify({ name }) }),
+
+  updateResource: (id: number, changes: { name?: string; is_active?: boolean }) =>
+    authed<PanelResource>(`/panel/resources/${id}/`, { method: "PATCH", body: JSON.stringify(changes) }),
+
+  deleteResource: (id: number) => authed<null>(`/panel/resources/${id}/`, { method: "DELETE" }),
+
+  schedule: (resourceId: number) =>
+    authed<{ rules: ScheduleRule[] }>(`/panel/resources/${resourceId}/schedule/`),
+
+  saveSchedule: (resourceId: number, rules: ScheduleRule[]) =>
+    authed<{ rules: ScheduleRule[] }>(`/panel/resources/${resourceId}/schedule/`, {
+      method: "PUT",
+      body: JSON.stringify({ rules }),
+    }),
+
+  createService: (service: ServiceInput) =>
+    authed<PanelService>("/panel/services/", { method: "POST", body: JSON.stringify(service) }),
+
+  updateService: (id: number, changes: ServiceInput) =>
+    authed<PanelService>(`/panel/services/${id}/`, { method: "PATCH", body: JSON.stringify(changes) }),
+
+  deleteService: (id: number) => authed<null>(`/panel/services/${id}/`, { method: "DELETE" }),
 
   resources: () => authed<Page<PanelResource>>("/panel/resources/?page_size=200"),
 

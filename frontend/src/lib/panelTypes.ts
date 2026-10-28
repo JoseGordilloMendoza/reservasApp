@@ -147,6 +147,34 @@ export interface NewBlock {
   reason: string;
 }
 
+export interface BusinessChanges {
+  name?: string;
+  description?: string;
+  address?: string;
+  phone?: string;
+  whatsapp?: string;
+  accent?: Accent;
+  /** Only the options to change; the server keeps the rest. */
+  settings?: Record<string, number | string>;
+}
+
+export interface ScheduleRule {
+  /** 0 = Monday ... 6 = Sunday. */
+  weekday: number;
+  /** "HH:MM" or "HH:MM:SS", local time of the business. "00:00" as an end means midnight. */
+  start_time: string;
+  end_time: string;
+}
+
+export interface ServiceInput {
+  /** Needed to create; a service cannot move to another resource. */
+  resource_id?: number;
+  name?: string;
+  duration_minutes?: number;
+  reference_price?: string | null;
+  is_active?: boolean;
+}
+
 export interface Page<T> {
   count: number;
   next: string | null;
