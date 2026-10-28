@@ -167,3 +167,6 @@ FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173").rstrip("/
 
 # A password reset link works once and for one hour.
 PASSWORD_RESET_TIMEOUT = 60 * 60
+
+# Send some emails without making the request wait (see notifications.background). Tests turn it off.
+EMAIL_IN_BACKGROUND = os.environ.get("EMAIL_IN_BACKGROUND", "1") == "1"
