@@ -79,5 +79,21 @@ export function weekErrors(week: Week): Record<number, string> {
 
 /** The week with `from`'s windows copied onto every day. */
 export function copyDayToAll(week: Week, from: number): Week {
-  return week.map((_, weekday) => week[from]!.map((window) => ({ ...window })));
+  return week.map(() => week[from]!.map((window) => ({ ...window })));
+}
+
+/**
+ * The window to offer when a day gets another one: from where the last one ends, for two hours
+ * at most. When the day has no room left, blank hours are offered and the owner is asked to fill them.
+ */
+export function nextWindow(windows: Window[]): Window {
+  const last = windows[windows.length - 1];
+  if (!last) return { ...DEFAULT_WINDOW };
+
+  const from = minutesOf(last.end, true);
+  if (from >= 23 * 60) return { start: "", end: "" };
+
+  const pad = (value: number) => String(value).padStart(2, "0");
+  const to = Math.min(from + 120, 23 * 60 + 59);
+  return { start: last.end, end: `${pad(Math.floor(to / 60))}:${pad(to % 60)}` };
 }

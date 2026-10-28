@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { copyDayToAll, emptyWeek, rulesFromWeek, weekErrors, weekFromRules } from "./schedule";
+import { copyDayToAll, emptyWeek, nextWindow, rulesFromWeek, weekErrors, weekFromRules } from "./schedule";
 import type { Week } from "./schedule";
 
 const week = (days: Record<number, [string, string][]>): Week => {
@@ -99,5 +99,24 @@ describe("copying a day", () => {
 
   it("closes every day when the source is closed", () => {
     expect(copyDayToAll(week({ 3: [["08:00", "12:00"]] }), 0)).toEqual(emptyWeek());
+  });
+});
+
+describe("offering another window", () => {
+  it("opens a day with the usual hours", () => {
+    expect(nextWindow([])).toEqual({ start: "08:00", end: "22:00" });
+  });
+
+  it("continues from where the last window ends", () => {
+    expect(nextWindow([{ start: "08:00", end: "12:00" }])).toEqual({ start: "12:00", end: "14:00" });
+  });
+
+  it("never runs past the end of the day", () => {
+    expect(nextWindow([{ start: "08:00", end: "22:30" }])).toEqual({ start: "22:30", end: "23:59" });
+  });
+
+  it("offers blank hours when the day has no room left", () => {
+    expect(nextWindow([{ start: "08:00", end: "23:00" }])).toEqual({ start: "", end: "" });
+    expect(nextWindow([{ start: "08:00", end: "00:00" }])).toEqual({ start: "", end: "" });
   });
 });
