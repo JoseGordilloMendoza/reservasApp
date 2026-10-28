@@ -23,6 +23,12 @@ services:
       # "backend" is the name the frontend dev server uses to reach this container.
       ALLOWED_HOSTS: localhost,127.0.0.1,backend
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      EMAIL_HOST: ${EMAIL_HOST:-}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Separa <no-responder@localhost>}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
       DATABASE_URL: postgres://reservas:reservas@db:5432/reservas
     volumes:
       - ./backend:/app
