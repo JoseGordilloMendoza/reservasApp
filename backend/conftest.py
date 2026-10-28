@@ -12,6 +12,12 @@ BASE_START = datetime(2030, 1, 1, 18, 0, tzinfo=timezone.utc)
 
 
 @pytest.fixture(autouse=True)
+def emails_in_the_foreground(settings):
+    # Background threads would make assertions about the outbox race with the test.
+    settings.EMAIL_IN_BACKGROUND = False
+
+
+@pytest.fixture(autouse=True)
 def clear_cache():
     # Throttle counters live in the cache; start every test with a clean slate.
     cache.clear()
