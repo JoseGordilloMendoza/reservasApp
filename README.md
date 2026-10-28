@@ -36,9 +36,10 @@ El dueño inicia sesión con `POST /api/v1/auth/login/`. Si el usuario no tiene 
 ## Acceso con Google (opcional)
 
 1. En Google Cloud Console, crear un ID de cliente OAuth de tipo "Aplicación web" y autorizar el dominio del frontend.
-2. Arrancar con la variable: `GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com docker compose up`.
+2. Copiar `.env.example` a `.env` (Git lo ignora) y poner ahí el valor de `GOOGLE_CLIENT_ID`. `docker compose` lo lee solo.
+3. En Google Cloud Console, en "Orígenes de JavaScript autorizados", agregar el de cada frontend (por ejemplo `http://localhost:5173` en desarrollo y el dominio real en producción).
 
-Mientras no esté configurado, `POST /api/v1/auth/google/` responde 503. Google solo permite entrar a usuarios que ya existen.
+Mientras no esté configurado, `POST /api/v1/auth/google/` responde 503. Google solo permite entrar a usuarios que ya existen. Solo se usa el ID de cliente, que es público; el secreto de cliente no hace falta y no debe compartirse.
 
 ## Documentación
 
