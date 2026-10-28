@@ -17,6 +17,7 @@ import { MorePage } from "./pages/panel/MorePage";
 import { NewBookingPage } from "./pages/panel/NewBookingPage";
 import { PanelHome } from "./pages/panel/PanelHome";
 import { PanelLayout } from "./pages/panel/PanelLayout";
+import { RulesSettingsPage } from "./pages/panel/RulesSettingsPage";
 import { SettingsPage } from "./pages/panel/SettingsPage";
 import { TicketPage } from "./pages/TicketPage";
 
@@ -49,6 +50,7 @@ export function App() {
         <Route path="bloqueos" element={<BlocksPage />} />
         <Route path="ajustes" element={<SettingsPage />} />
         <Route path="ajustes/negocio" element={<BusinessSettingsPage />} />
+        <Route path="ajustes/reglas" element={<RulesSettingsPage />} />
         <Route path="mas" element={<MorePage />} />
       </Route>
     </Routes>
