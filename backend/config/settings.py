@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "rest_framework",
     "drf_spectacular",
+    "apps.accounts",
     "apps.businesses",
     "apps.catalog",
     "apps.customers",
@@ -68,6 +69,8 @@ DATABASES = {
         conn_max_age=60,
     )
 }
+
+AUTH_USER_MODEL = "accounts.User"
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
