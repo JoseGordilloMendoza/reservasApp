@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 573 pruebas, incluidas pruebas de concurrencia con conexiones reales. Falta el frontend (M6 y M7).
+**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. Falta el panel del negocio en pantalla (M7).
 
 ## Cómo ejecutar
 
@@ -15,8 +15,19 @@ docker compose run --rm backend python manage.py createsuperuser
 docker compose run --rm backend pytest              # pruebas
 ```
 
+`docker compose up` levanta la base de datos, el backend y el frontend. Para ver la aplicación con datos:
+
+```bash
+docker compose run --rm backend python manage.py seed_demo
+```
+
+Crea una cancha y un consultorio de ejemplo, cada uno con su dueño (`canchas@demo.pe` y `consultorio@demo.pe`, contraseña `demo12345`). Solo funciona en desarrollo.
+
 | URL | Qué es |
 |---|---|
+| http://localhost:5173/canchas-los-andes | Página de reserva de la cancha de ejemplo (frontend) |
+| http://localhost:5173/consultorio-lucia | La del consultorio, con otro color |
+| http://localhost:5173/mis-reservas | Boletos guardados en este dispositivo |
 | http://localhost:8000/api/docs/ | Lista interactiva de endpoints (Swagger) |
 | http://localhost:8000/api/health/ | Estado de la API y la base de datos |
 | http://localhost:8000/admin/ | Admin de Django (superadmin) |
@@ -53,6 +64,7 @@ Mientras no esté configurado, `POST /api/v1/auth/google/` responde 503. Google 
 | [06 - Reglas de negocio](docs/06-reglas-de-negocio.md) | Reglas de disponibilidad, reserva, cancelación y suscripción |
 | [07 - Arquitectura](docs/07-arquitectura.md) | Stack, multi-tenancy, modelo de datos y API (propuesta) |
 | [08 - Plan de construcción](docs/08-plan-de-construccion.md) | Hitos M0 a M10, dependencias y riesgos |
+| [09 - Diseño del frontend](docs/09-diseno-frontend.md) | Dirección visual, sistema, pantallas y reglas de contenido |
 
 ## Principios
 
