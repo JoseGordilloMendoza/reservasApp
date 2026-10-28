@@ -60,6 +60,11 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D52 | Frontend instalable (PWA); solo se guarda en caché la propia aplicación, nunca la API | Tomada | Las reservas y la disponibilidad deben venir siempre del servidor |
 | D53 | En desarrollo el frontend reenvía `/api` al backend; en producción se usa CORS con una lista de orígenes | Tomada | Sin configuración extra al desarrollar, y seguro al publicar |
 | D54 | El tema (claro u oscuro) sigue al sistema y se puede forzar con `data-theme` | Tomada | Modo oscuro obligatorio sin añadir un botón por ahora |
+| D55 | El panel se diseña primero para el celular del dueño (pestañas abajo), con barra lateral en pantallas grandes | Propuesta | El dueño atiende de pie; supuesto a confirmar con negocios reales |
+| D56 | Al entrar, el dueño ve primero lo urgente: reservas por confirmar y las de hoy | Propuesta | Es lo que requiere acción; un calendario completo puede agregarse después |
+| D57 | El token de acceso vive solo en memoria y el de renovación en el dispositivo; la renovación se comparte entre peticiones simultáneas | Tomada | Un token de renovación en `localStorage` es accesible si hubiera una falla XSS; se acepta en el MVP porque dura poco, rota en cada uso y React escapa lo que muestra. Pasarlo a una cookie `HttpOnly` requeriría cambiar el backend |
+| D58 | Las acciones que no se pueden deshacer (rechazar, cancelar) piden confirmación | Tomada | Evita errores con el dedo en un celular |
+| D59 | El panel se entrega por tramos: reservas primero; clientes, bloqueos y ajustes después | Tomada | La parte más usada llega antes |
 
 ## Preguntas abiertas
 
