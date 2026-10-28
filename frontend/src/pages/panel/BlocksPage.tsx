@@ -188,7 +188,7 @@ export function BlocksPage() {
   const [last, setLast] = useState<CreatedBlock | null>(null);
 
   return (
-    <div className="grid max-w-[34rem] gap-6">
+    <div className="grid max-w-[34rem] grid-cols-1 gap-6">
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Bloqueos</h1>
       <p className="text-muted">Cierra un horario cuando no atiendes: mantenimiento, feriados o vacaciones. Nadie podrá reservar ahí.</p>
 

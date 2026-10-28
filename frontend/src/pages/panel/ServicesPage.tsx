@@ -256,7 +256,7 @@ export function ServicesPage() {
   const services = useServices();
 
   return (
-    <div className="grid max-w-[34rem] gap-6">
+    <div className="grid max-w-[34rem] grid-cols-1 gap-6">
       <Link to="/panel/ajustes" className="inline-flex w-fit items-center gap-2 font-display font-bold underline decoration-[3px] underline-offset-4">
         <ArrowLeft aria-hidden="true" />
         Ajustes
