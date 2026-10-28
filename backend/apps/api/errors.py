@@ -6,6 +6,8 @@ from apps.bookings import services
 # How each booking rule violation is reported over HTTP.
 ERROR_STATUS = {
     services.SlotUnavailable: status.HTTP_409_CONFLICT,
+    services.SlotBlocked: status.HTTP_409_CONFLICT,
+    services.SlotInPast: status.HTTP_400_BAD_REQUEST,
     services.TooManyActiveBookings: status.HTTP_409_CONFLICT,
     services.NotCancellable: status.HTTP_409_CONFLICT,
     services.InvalidTransition: status.HTTP_409_CONFLICT,

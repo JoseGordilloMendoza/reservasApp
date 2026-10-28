@@ -4,8 +4,10 @@ from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.utils import timezone
 
+from apps.availability.models import Block
 from apps.availability.slots import get_available_slots
 from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
@@ -34,6 +36,16 @@ class BookingError(Exception):
 class SlotUnavailable(BookingError):
     code = "slot_unavailable"
     message = "Ese horario ya no está disponible. Elige otro."
+
+
+class SlotBlocked(BookingError):
+    code = "slot_blocked"
+    message = "Ese horario está bloqueado. Quita el bloqueo para poder reservarlo."
+
+
+class SlotInPast(BookingError):
+    code = "slot_in_past"
+    message = "Ese horario ya pasó."
 
 
 class BookingNotAllowed(BookingError):
@@ -153,29 +165,106 @@ def create_booking(
             hold = timedelta(minutes=config["pending_hold_minutes"])
             status, expires_at = BookingStatus.PENDING, pending_expiry(now, starts_at, hold)
 
-        try:
-            with transaction.atomic():
-                booking = Booking.objects.create(
-                    business=business,
-                    resource=resource,
-                    service=service,
-                    customer=customer,
-                    starts_at=starts_at,
-                    ends_at=ends_at,
-                    status=status,
-                    expires_at=expires_at,
-                    price_snapshot=service.reference_price,
-                    duration_snapshot=service.duration_minutes,
-                    source=Booking.Source.CUSTOMER,
-                    manage_token_hash=hash_token(token),
-                )
-        except IntegrityError:
-            raise SlotUnavailable()
-
-        record_event(booking, "", booking.status, BookingEvent.Actor.CUSTOMER)
+        booking = _insert_booking(
+            business=business,
+            resource=resource,
+            service=service,
+            customer=customer,
+            starts_at=starts_at,
+            ends_at=ends_at,
+            status=status,
+            expires_at=expires_at,
+            source=Booking.Source.CUSTOMER,
+            token=token,
+            actor=BookingEvent.Actor.CUSTOMER,
+        )
 
     booking.manage_token = token
     return booking, token
+
+
+def create_booking_by_business(
+    *, business, service, starts_at, customer_name, customer_phone, customer_email="", now=None
+):
+    """Record a booking the business took itself (phone, WhatsApp). Returns (booking, token).
+
+    It is confirmed straight away. Unlike a customer's booking it may fall outside opening
+    hours and notice limits, ignores the buffer, and is allowed for a blocked customer or one
+    over the cap: the owner decides. It still cannot overlap another booking or a block.
+    """
+    if service.business_id != business.id:
+        raise ValueError("The service does not belong to the business")
+
+    now = now or timezone.now()
+    phone = normalize_phone(customer_phone)
+    token = secrets.token_urlsafe(32)
+    ends_at = starts_at + timedelta(minutes=service.duration_minutes)
+
+    if business.status != Business.Status.ACTIVE or not service.is_active:
+        raise SlotUnavailable()
+    if ends_at <= now:
+        raise SlotInPast()
+
+    with transaction.atomic():
+        resource = Resource.objects.select_for_update().get(pk=service.resource_id)
+        if not resource.is_active:
+            raise SlotUnavailable()
+
+        customer = _lock_customer(business, phone, customer_name, customer_email)
+        _expire_stale_overlapping(resource, starts_at, ends_at, now)
+
+        closed = Block.objects.filter(
+            Q(resource=resource) | Q(resource__isnull=True),
+            business=business,
+            starts_at__lt=ends_at,
+            ends_at__gt=starts_at,
+        ).exists()
+        if closed:
+            raise SlotBlocked()
+
+        booking = _insert_booking(
+            business=business,
+            resource=resource,
+            service=service,
+            customer=customer,
+            starts_at=starts_at,
+            ends_at=ends_at,
+            status=BookingStatus.CONFIRMED,
+            expires_at=None,
+            source=Booking.Source.BUSINESS,
+            token=token,
+            actor=BookingEvent.Actor.BUSINESS,
+        )
+
+    booking.manage_token = token
+    return booking, token
+
+
+def _insert_booking(
+    *, business, resource, service, customer, starts_at, ends_at, status, expires_at, source, token, actor
+):
+    try:
+        with transaction.atomic():
+            booking = Booking.objects.create(
+                business=business,
+                resource=resource,
+                service=service,
+                customer=customer,
+                starts_at=starts_at,
+                ends_at=ends_at,
+                status=status,
+                expires_at=expires_at,
+                price_snapshot=service.reference_price,
+                duration_snapshot=service.duration_minutes,
+                source=source,
+                manage_token_hash=hash_token(token),
+            )
+    except IntegrityError:
+        # The exclusion constraint caught an overlap the checks above missed.
+        raise SlotUnavailable()
+
+    record_event(booking, "", booking.status, actor)
+    return booking
 
 
 def cancel_booking_by_customer(booking, now=None):

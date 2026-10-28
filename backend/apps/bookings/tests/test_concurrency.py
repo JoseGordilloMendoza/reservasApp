@@ -59,6 +59,27 @@ def test_simultaneous_requests_for_one_slot_produce_exactly_one_booking(business
     assert Booking.objects.count() == 1
 
 
+def test_owner_and_customer_racing_for_one_slot_produce_exactly_one_booking(
+    business, resource, service
+):
+    open_mondays(business, resource)
+    by_owner = lambda: services.create_booking_by_business(  # noqa: E731
+        business=business,
+        service=service,
+        starts_at=at(MON, 19),
+        customer_name="Cliente del dueño",
+        customer_phone="912345678",
+        now=NOW,
+    )
+    jobs = [by_owner, booking_job(business, service, at(MON, 19), "987654321")] * 3
+
+    results = run_together(jobs)
+
+    assert sum(isinstance(r, tuple) for r in results) == 1
+    assert sum(isinstance(r, services.SlotUnavailable) for r in results) == 5
+    assert Booking.objects.count() == 1
+
+
 def test_simultaneous_requests_for_different_slots_all_succeed(business, resource, service):
     open_mondays(business, resource)
     jobs = [
