@@ -6,9 +6,9 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M4 completados. M5 casi completo (471 pruebas): falta la gestión de la configuración del negocio. Siguiente: terminar M5 y seguir con M6.
+**Avance:** M0 a M5 completados: **el backend del MVP está completo** (573 pruebas). Un dueño ya puede configurar su negocio, recibir reservas y gestionarlas solo con la API. Siguiente: M6, el frontend público.
 
-**Pendiente de M5:** API para gestionar recursos, servicios, horarios semanales, perfil público y opciones del negocio (NG-02 a NG-05, CF-01 a CF-06). La lógica de disponibilidad ya los usa; falta exponerlos al dueño. El perfil público necesita campos nuevos en el negocio (descripción, dirección, teléfono, WhatsApp).
+**Fuera del backend actual:** imágenes del negocio (D46), recuperar contraseña y correos (M8), y el panel de superadmin con suscripciones (M9, hoy basta el admin de Django).
 
 | Hito | Objetivo | Entregables | Listo cuando |
 |---|---|---|---|
