@@ -6,12 +6,15 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M6 completados. El backend del MVP está completo (587 pruebas) y el **frontend público** también (99 pruebas): el cliente entra por el link de un negocio, reserva, ve su boleto, lo cancela y consulta "Mis reservas", todo instalable como aplicación. **M7, el panel del negocio en pantalla, está a medias** (ver abajo).
+**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. Siguen M8 (correos y recuperar contraseña), M9 (superadmin) y M10 (despliegue).
 
-**Estado de M7 (panel en pantalla, 186 pruebas del frontend en total):**
+**M7 (panel en pantalla), completado:**
 
-- Hecho: entrar con correo o Google, inicio con "Por confirmar" y "Hoy" (confirmar y rechazar en un toque), lista de reservas con filtros y búsqueda, página de cada reserva con su historial y acciones, y anotar reservas por teléfono con enlace listo para enviar al cliente.
-- Falta: clientes (ficha y bloqueo), bloqueos de horario y ajustes (perfil, color, opciones, recursos, servicios y horarios semanales). La API de todo eso ya existe; falta la pantalla.
+- Reservas: entrar con correo o Google, inicio con "Por confirmar" y "Hoy" (confirmar y rechazar en un toque), lista con filtros y búsqueda, página de cada reserva con su historial y acciones, y anotar reservas por teléfono con enlace listo para enviar al cliente.
+- Clientes: lista con búsqueda y filtro de bloqueados, ficha con historial y bloqueo o desbloqueo.
+- Bloqueos: cerrar un espacio o todo el negocio por horas o por días, con aviso de las reservas que ya estaban en ese horario (no se cancelan solas).
+- Ajustes: enlace público para copiar, "Mi página" (contacto y color), reglas de reserva, espacios (alta, nombre, activar, eliminar) con su horario semanal, y servicios.
+- Pendiente de menor prioridad: opciones propias por servicio (la API las admite; la pantalla usa las del negocio), calendario de día completo y botón manual de modo oscuro.
 
 **Fuera del backend actual:** imágenes del negocio (D46), recuperar contraseña y correos (M8), y el panel de superadmin con suscripciones (M9, hoy basta el admin de Django).
 
@@ -24,7 +27,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 | **M4. API pública de reserva** | El cliente puede reservar | Consultar disponibilidad, crear reserva, expiración, link de gestión, cancelación por el cliente, límite de solicitudes | Se puede reservar y cancelar de principio a fin con la API; dos solicitudes simultáneas no duplican el horario |
 | **M5. API del panel** | El negocio gestiona sus reservas | Inicio de sesión, aislamiento entre negocios, confirmar, rechazar, cancelar, reservas manuales, bloqueos, clientes | Un negocio opera todo su flujo y nunca ve datos de otro (pruebas de aislamiento) |
 | **M6. Frontend público (PWA)** | Pantalla de reserva para el cliente | Página del negocio, selección de horario, formulario, resultado, gestión por link | Una reserva completa desde un celular |
-| **M7. Frontend del panel** | Pantalla de gestión | Calendario, lista, acciones sobre reservas, configuración | El dueño gestiona su negocio sin usar el admin |
+| **M7. Frontend del panel** | Pantalla de gestión | Lista, acciones sobre reservas, clientes, bloqueos, configuración (el calendario queda para después) | El dueño gestiona su negocio sin usar el admin |
 | **M8. Notificaciones** | Avisos sin costo | Correo al negocio y al cliente, botones de WhatsApp con mensaje prellenado | Los avisos salen en los eventos clave |
 | **M9. Superadmin y suscripciones** | Operar como SaaS | Alta de negocios, suscripción y vigencia, suspensión y reactivación | Se da de alta un negocio y se suspende sin perder datos |
 | **M10. Despliegue y piloto** | Salir a producción | Imagen de producción, hosting elegido, respaldos, dominio | Un negocio real recibe reservas |
@@ -40,7 +43,7 @@ El backend arranca limpio desde cero con `docker compose up` y sus endpoints res
 - Decidir si la documentación de la API (`API_DOCS_ENABLED`) se publica.
 - **Límite de solicitudes:** hoy usa la memoria de cada proceso. Con varios procesos o servidores cada uno cuenta por separado, así que en producción hace falta un caché compartido (Redis o base de datos). Detrás de un proxy también hay que configurar `NUM_PROXIES` para leer la dirección real del cliente; si no, todos parecen venir del proxy.
 - **Frontend:** `npm run build` genera la carpeta `dist/` (archivos estáticos) lista para un hosting estático. Antes de publicar: definir `VITE_API_URL` con la dirección de la API, poner el dominio del frontend en `CORS_ALLOWED_ORIGINS` del backend, y configurar el hosting para que cualquier ruta (por ejemplo `/canchas-los-andes`) sirva `index.html`. El paquete principal pesa unos 485 KB (152 KB comprimido); dividirlo por pantallas es una mejora posible.
-- **Acceso con Google en el panel:** el botón ya se muestra, pero Google rechaza el origen hasta autorizarlo. En Google Cloud Console, agregar `http://localhost:5173` (desarrollo) y el dominio real a los "Orígenes de JavaScript autorizados". El frontend recibe el ID como `VITE_GOOGLE_CLIENT_ID` al compilar.
+- **Acceso con Google en el panel:** el botón ya se muestra, pero Google solo lo habilita para orígenes autorizados. En Google Cloud Console, agregar a los "Orígenes de JavaScript autorizados" `http://localhost:5173` y también `http://localhost` (Google pide ambos para probar en local), y el dominio real al publicar. Los cambios pueden tardar minutos en aplicarse. El frontend recibe el ID como `VITE_GOOGLE_CLIENT_ID` al compilar.
 - **Acceso con Google:** crear un ID de cliente OAuth de tipo "Aplicación web" en Google Cloud Console, autorizar el dominio del frontend y entregarlo como `GOOGLE_CLIENT_ID`. Sin él, el endpoint responde 503.
 - **Tokens:** se firman con `SECRET_KEY`, que debe ser larga y secreta. Los refresh usados se acumulan en la base de datos; programar `python manage.py flushexpiredtokens` (por ejemplo a diario).
 - **Recuperar contraseña** (NG-01) queda para M8, junto con el envío de correos.
