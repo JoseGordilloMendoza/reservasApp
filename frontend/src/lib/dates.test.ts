@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   addDays,
+  clockLabel,
   dateKey,
   dayNumber,
   formatLongDate,
@@ -9,6 +10,7 @@ import {
   formatTime,
   groupSlotsByDay,
   monthShort,
+  relativeDay,
   todayKey,
   upcomingDays,
   weekdayShort,
@@ -85,5 +87,40 @@ describe("grouping slots by day", () => {
 
   it("returns nothing for no slots", () => {
     expect(groupSlotsByDay([], LIMA).size).toBe(0);
+  });
+});
+
+describe("relativeDay", () => {
+  const now = new Date("2030-01-08T15:00:00Z"); // Tuesday 8 January, 10:00 in Lima
+
+  it("says today and tomorrow by the business calendar", () => {
+    expect(relativeDay("2030-01-08T23:00:00Z", LIMA, now)).toBe("Hoy");
+    expect(relativeDay("2030-01-09T23:00:00Z", LIMA, now)).toBe("Mañana");
+  });
+
+  it("uses the business day even when UTC is already on the next one", () => {
+    // 02:00 UTC on the 9th is still the evening of the 8th in Lima.
+    expect(relativeDay("2030-01-09T02:00:00Z", LIMA, now)).toBe("Hoy");
+  });
+
+  it("writes any other day out", () => {
+    expect(relativeDay("2030-01-12T23:00:00Z", LIMA, now)).toMatch(/sáb.*12 ene/);
+    expect(relativeDay("2030-01-05T23:00:00Z", LIMA, now)).toMatch(/sáb.*5 ene/);
+  });
+});
+
+describe("clockLabel", () => {
+  const now = new Date("2030-01-08T15:00:00Z"); // Tuesday 8 January, 10:00 in Lima
+
+  it("is just the time when it is still today", () => {
+    expect(clockLabel("2030-01-09T02:00:00Z", LIMA, now)).toBe("las 21:00");
+  });
+
+  it("says tomorrow when just past midnight", () => {
+    expect(clockLabel("2030-01-09T05:45:00Z", LIMA, now)).toBe("las 00:45 de mañana");
+  });
+
+  it("names the day when it is further away", () => {
+    expect(clockLabel("2030-01-12T14:00:00Z", LIMA, now)).toMatch(/^las 09:00 del sáb.*12 ene$/);
   });
 });

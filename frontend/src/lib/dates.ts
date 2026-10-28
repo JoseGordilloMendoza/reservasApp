@@ -83,3 +83,24 @@ export function upcomingDays(timeZone: string, count: number, now: Date = new Da
   const first = todayKey(timeZone, now);
   return Array.from({ length: count }, (_, index) => addDays(first, index));
 }
+
+/** "Hoy", "Mañana" or "mié 9 ene", judged by the business's calendar. */
+export function relativeDay(iso: string, timeZone: string, now: Date = new Date()): string {
+  const day = dateKey(iso, timeZone);
+  const today = todayKey(timeZone, now);
+  if (day === today) return "Hoy";
+  if (day === addDays(today, 1)) return "Mañana";
+  return formatShortDate(iso, timeZone);
+}
+
+/**
+ * A clock time for a deadline, with the day when it is not today: "las 21:05",
+ * "las 00:45 de mañana", "las 09:00 del vie 3 ene". Without the day, a time just past
+ * midnight would read as if it had already gone by.
+ */
+export function clockLabel(iso: string, timeZone: string, now: Date = new Date()): string {
+  const time = `las ${formatTime(iso, timeZone)}`;
+  const day = relativeDay(iso, timeZone, now);
+  if (day === "Hoy") return time;
+  return day === "Mañana" ? `${time} de mañana` : `${time} del ${day}`;
+}
