@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.api.public.serializers import (
@@ -88,6 +89,53 @@ class PanelBookingCreatedSerializer(PanelBookingDetailSerializer):
 
     class Meta(PanelBookingDetailSerializer.Meta):
         fields = PanelBookingDetailSerializer.Meta.fields + ["manage_token"]
+
+
+class CustomerListSerializer(serializers.ModelSerializer):
+    bookings_count = serializers.IntegerField(read_only=True)
+    last_booking_at = serializers.DateTimeField(read_only=True, allow_null=True)
+
+    class Meta:
+        model = Customer
+        fields = [
+            "id",
+            "name",
+            "phone",
+            "email",
+            "is_blocked",
+            "created_at",
+            "bookings_count",
+            "last_booking_at",
+        ]
+
+
+class CustomerBookingSerializer(serializers.ModelSerializer):
+    resource = ResourceRefSerializer()
+    service = ServiceRefSerializer()
+
+    class Meta:
+        model = Booking
+        fields = ["id", "status", "starts_at", "ends_at", "resource", "service"]
+
+
+class CustomerDetailSerializer(CustomerListSerializer):
+    bookings = serializers.SerializerMethodField()
+
+    class Meta(CustomerListSerializer.Meta):
+        fields = CustomerListSerializer.Meta.fields + ["bookings"]
+
+    @extend_schema_field(CustomerBookingSerializer(many=True))
+    def get_bookings(self, customer):
+        history = customer.bookings.select_related("resource", "service").order_by("-starts_at")
+        return CustomerBookingSerializer(history, many=True).data
+
+
+class CustomerUpdateSerializer(serializers.ModelSerializer):
+    """The phone identifies the customer and cannot be changed."""
+
+    class Meta:
+        model = Customer
+        fields = ["name", "email", "is_blocked"]
 
 
 class BookingFilterSerializer(serializers.Serializer):

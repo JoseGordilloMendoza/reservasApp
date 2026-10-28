@@ -3,9 +3,9 @@ from datetime import datetime, time, timedelta
 from datetime import timezone as dt_timezone
 from zoneinfo import ZoneInfo
 
-from django.db.models import Q
+from django.db.models import Count, Max, Q
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import OpenApiResponse, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -15,6 +15,7 @@ from apps.api.errors import error_response
 from apps.bookings import services
 from apps.bookings.models import Booking
 from apps.catalog.models import Service
+from apps.customers.models import Customer
 
 from . import serializers as s
 from .permissions import HasBusiness
@@ -146,6 +147,72 @@ class BookingDetailView(PanelAPIView):
         booking = get_object_or_404(bookings_of(request.business), pk=pk)
         services.refresh_if_stale(booking)
         return Response(s.PanelBookingDetailSerializer(booking).data)
+
+
+def customers_of(business):
+    return Customer.objects.filter(business=business).annotate(
+        bookings_count=Count("bookings"), last_booking_at=Max("bookings__starts_at")
+    )
+
+
+class CustomerListView(generics.ListAPIView):
+    permission_classes = [HasBusiness]
+    pagination_class = BookingPagination
+    serializer_class = s.CustomerListSerializer
+
+    @extend_schema(
+        summary="List customers",
+        parameters=[
+            OpenApiParameter("q", str, description="Name or phone."),
+            OpenApiParameter("blocked", bool, description="Only blocked (true) or only allowed (false)."),
+        ],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        customers = customers_of(self.request.business)
+
+        text = self.request.query_params.get("q", "").strip()
+        if text:
+            match = Q(name__icontains=text)
+            digits = re.sub(r"\D", "", text)
+            if digits:
+                match |= Q(phone__contains=digits)
+            customers = customers.filter(match)
+
+        blocked = self.request.query_params.get("blocked")
+        if blocked in ("true", "1"):
+            customers = customers.filter(is_blocked=True)
+        elif blocked in ("false", "0"):
+            customers = customers.filter(is_blocked=False)
+        return customers.order_by("name", "id")
+
+
+class CustomerDetailView(PanelAPIView):
+    def customer(self, request, pk):
+        return get_object_or_404(customers_of(request.business), pk=pk)
+
+    @staticmethod
+    def respond(customer):
+        return Response(s.CustomerDetailSerializer(customer).data)
+
+    @extend_schema(summary="A customer and their bookings", responses=s.CustomerDetailSerializer)
+    def get(self, request, pk):
+        return self.respond(self.customer(request, pk))
+
+    @extend_schema(
+        summary="Update or block a customer",
+        description="Name, email and is_blocked. A blocked customer cannot book online.",
+        request=s.CustomerUpdateSerializer,
+        responses=s.CustomerDetailSerializer,
+    )
+    def patch(self, request, pk):
+        customer = self.customer(request, pk)
+        update = s.CustomerUpdateSerializer(customer, data=request.data, partial=True)
+        update.is_valid(raise_exception=True)
+        update.save()
+        return self.respond(self.customer(request, pk))
 
 
 class BookingActionView(PanelAPIView):
