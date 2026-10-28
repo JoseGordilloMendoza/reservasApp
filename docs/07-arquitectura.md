@@ -188,7 +188,10 @@ Cada petición actúa sobre **un** negocio del usuario: automático si tiene uno
 
 | Ruta | Qué hace | Quién |
 |---|---|---|
-| `GET /panel/business/` | El negocio y el valor efectivo de cada opción | Miembros |
+| `GET` y `PATCH /panel/business/` | Ver y editar el negocio: nombre, descripción, dirección, teléfono, WhatsApp y opciones (se fusionan: solo cambian las enviadas) | Miembros |
+| `GET` y `POST /panel/resources/`, `GET`, `PATCH` y `DELETE /panel/resources/{id}/` | Canchas o profesionales. Se desactivan con `is_active`; solo se borran sin reservas | Miembros |
+| `GET` y `PUT /panel/resources/{id}/schedule/` | Horario semanal completo del recurso, reemplazado de una vez | Miembros |
+| `GET` y `POST /panel/services/`, `GET`, `PATCH` y `DELETE /panel/services/{id}/` | Qué reserva el cliente, su duración, precio de referencia y opciones propias | Miembros |
 | `GET /panel/bookings/` | Reservas con filtros (estado, recurso, fechas locales, texto) y paginación | Miembros |
 | `POST /panel/bookings/` | Registra una reserva tomada por teléfono o WhatsApp | Miembros |
 | `GET /panel/bookings/{id}/` | Detalle con historial de estados | Miembros |
@@ -200,7 +203,15 @@ Cada petición actúa sobre **un** negocio del usuario: automático si tiene uno
 
 Los errores de reglas siguen el formato `{"code", "detail"}`: `invalid_transition`, `booking_expired`, `not_started_yet`, `slot_unavailable`, `slot_blocked`, `slot_in_past`.
 
-Pendiente de esta parte: gestión de recursos, servicios, horarios semanales, perfil público y opciones (ver el plan).
+Detalles de la configuración:
+
+- **Horario semanal:** varias ventanas por día, sin solaparse (pueden tocarse). Un fin de `00:00` significa medianoche y `00:00`-`00:00` abierto todo el día; las horas pasada la medianoche van en una segunda ventana del día siguiente. El reemplazo es atómico: un horario inválido deja el actual intacto.
+- **Borrar:** un recurso o servicio con reservas devuelve 409 `has_bookings` y hay que desactivarlo. Sin reservas se borra, y con un recurso se van sus servicios y su horario.
+- **Un servicio no cambia de recurso**, y editar su precio o duración no altera las reservas ya hechas, que conservan los suyos.
+- **Duración por defecto** de un servicio nuevo: la que sugiere el tipo de negocio (60 min canchas, 50 min psicólogos), también visible en `GET /panel/business/`.
+- Un recurso o servicio de otro negocio se rechaza igual que uno que no existe.
+
+Aún no hay: imágenes del negocio (necesitan almacenamiento de archivos) ni cambio de contraseña.
 
 ### Documentación interactiva y salud
 
