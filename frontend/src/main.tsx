@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { registerSW } from "virtual:pwa-register";
 
 import { App } from "./App";
+import { AuthProvider } from "./lib/auth";
 import { retryUnlessClientError } from "./lib/queries";
 import "./styles/index.css";
 
@@ -22,7 +23,9 @@ createRoot(document.getElementById("root")!).render(
       {/* Honors prefers-reduced-motion for every animation in the app. */}
       <MotionConfig reducedMotion="user">
         <BrowserRouter>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </BrowserRouter>
       </MotionConfig>
     </QueryClientProvider>
