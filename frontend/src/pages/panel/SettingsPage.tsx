@@ -33,12 +33,13 @@ function PublicLink({ slug }: { slug: string }) {
         Tu enlace para reservar
       </h2>
       <p className="text-muted">Compártelo en WhatsApp o Instagram. Tus clientes reservan desde ahí.</p>
-      <input
+      <textarea
         readOnly
+        rows={2}
         value={link}
         aria-label="Enlace de tu página"
         onFocus={(event) => event.currentTarget.select()}
-        className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-paper px-4 font-mono text-sm text-text"
+        className="w-full resize-none break-all rounded-box border-[3px] border-line bg-paper px-4 py-3 font-mono text-sm text-text"
       />
       <Button variant="plain" onClick={() => void copy()}>
         {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -52,7 +53,7 @@ export function SettingsPage() {
   const business = usePanelBusiness();
 
   return (
-    <div className="grid max-w-[34rem] gap-6">
+    <div className="grid max-w-[34rem] grid-cols-1 gap-6">
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Ajustes</h1>
       {business.data && <PublicLink slug={business.data.slug} />}
       <MenuList entries={SECTIONS} />
