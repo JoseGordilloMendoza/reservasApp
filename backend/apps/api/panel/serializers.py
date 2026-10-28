@@ -14,6 +14,7 @@ from apps.bookings.phone import InvalidPhone, normalize_phone
 from apps.businesses.models import Business
 from apps.businesses.presets import preset_for
 from apps.businesses.settings_schema import effective_settings, validate_settings
+from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
 
 
@@ -198,6 +199,78 @@ class CustomerUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ["name", "email", "is_blocked"]
+
+
+class ResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resource
+        fields = ["id", "name", "is_active", "position"]
+
+    def validate_name(self, value):
+        business = self.context["request"].business
+        taken = Resource.objects.filter(business=business, name=value)
+        if self.instance:
+            taken = taken.exclude(pk=self.instance.pk)
+        if taken.exists():
+            raise serializers.ValidationError("Ya tienes un recurso con ese nombre.")
+        return value
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    resource = ResourceRefSerializer(read_only=True)
+    resource_id = serializers.IntegerField(
+        write_only=True, required=False, help_text="Required when creating; cannot be changed."
+    )
+    duration_minutes = serializers.IntegerField(
+        min_value=5,
+        max_value=1440,
+        required=False,
+        help_text="Defaults to the duration the business type suggests.",
+    )
+    reference_price = serializers.DecimalField(
+        max_digits=8, decimal_places=2, min_value=0, required=False, allow_null=True
+    )
+
+    class Meta:
+        model = Service
+        fields = [
+            "id",
+            "resource",
+            "resource_id",
+            "name",
+            "duration_minutes",
+            "reference_price",
+            "settings",
+            "is_active",
+        ]
+
+    def validate_settings(self, value):
+        try:
+            validate_settings(value)
+        except DjangoValidationError as error:
+            raise serializers.ValidationError(error.messages)
+        return value
+
+    def validate(self, attrs):
+        business = self.context["request"].business
+        resource_id = attrs.pop("resource_id", None)
+
+        if self.instance is None:
+            if resource_id is None:
+                raise serializers.ValidationError({"resource_id": "Este campo es obligatorio."})
+            # A resource of another business is reported like a missing one.
+            resource = Resource.objects.filter(business=business, pk=resource_id).first()
+            if resource is None:
+                raise serializers.ValidationError({"resource_id": "No existe ese recurso."})
+            attrs["resource"] = resource
+            attrs.setdefault(
+                "duration_minutes", preset_for(business.business_type).service_duration_minutes
+            )
+        elif resource_id is not None and resource_id != self.instance.resource_id:
+            raise serializers.ValidationError(
+                {"resource_id": "Un servicio no se puede mover a otro recurso."}
+            )
+        return attrs
 
 
 class BlockSerializer(serializers.ModelSerializer):

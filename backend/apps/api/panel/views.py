@@ -3,11 +3,11 @@ from datetime import datetime, time, timedelta
 from datetime import timezone as dt_timezone
 from zoneinfo import ZoneInfo
 
-from django.db.models import Count, Max, Q
+from django.db.models import Count, Max, Q, RestrictedError
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import generics, serializers
+from rest_framework import generics, serializers, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -234,6 +234,59 @@ class CustomerDetailView(PanelAPIView):
         update.is_valid(raise_exception=True)
         update.save()
         return self.respond(self.customer(request, pk))
+
+
+HAS_BOOKINGS = {
+    "code": "has_bookings",
+    "detail": "Tiene reservas, así que no se puede borrar. Desactívalo para que no reciba nuevas.",
+}
+
+
+class ResourceListCreateView(generics.ListCreateAPIView):
+    permission_classes = [HasBusiness]
+    pagination_class = BookingPagination
+    serializer_class = s.ResourceSerializer
+
+    def get_queryset(self):
+        return Resource.objects.filter(business=self.request.business).order_by("position", "id")
+
+    def perform_create(self, serializer):
+        business = self.request.business
+        last = Resource.objects.filter(business=business).aggregate(last=Max("position"))["last"]
+        serializer.save(
+            business=business,
+            position=serializer.validated_data.get("position", (last or 0) + 1),
+        )
+
+    @extend_schema(summary="List the resources (courts, professionals)")
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Create a resource",
+        description="Something customers book. Add its services and weekly schedule next.",
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class ResourceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [HasBusiness]
+    serializer_class = s.ResourceSerializer
+
+    def get_queryset(self):
+        return Resource.objects.filter(business=self.request.business)
+
+    @extend_schema(
+        summary="Delete a resource",
+        description="Only when it has no bookings; otherwise deactivate it with PATCH is_active=false.",
+        responses={204: None, 409: s.ErrorSerializer},
+    )
+    def delete(self, request, *args, **kwargs):
+        try:
+            return super().delete(request, *args, **kwargs)
+        except RestrictedError:
+            return Response(HAS_BOOKINGS, status=status.HTTP_409_CONFLICT)
 
 
 class BlockListCreateView(generics.ListAPIView):
