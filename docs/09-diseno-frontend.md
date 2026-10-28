@@ -102,7 +102,18 @@ Capturas en celular de 390 px y en escritorio, en claro y en oscuro, con datos r
 
 Estas reglas quedan para los próximos diseños: ninguna etiqueta flotante puede tapar texto, y todo título debe probarse con el nombre más largo posible.
 
-## 9. Pendiente de decidir
+## 9. El panel del negocio
+
+Misma identidad (bordes, sombras, tipografía, color del negocio), pero con otra prioridad: **rapidez de uso**, no primera impresión.
+
+- **Lo urgente primero.** El inicio abre con "Por confirmar" (con su cuenta) y "Hoy". Cada reserva pendiente trae lo necesario para responder sin abrirla: quién, cuándo, hasta cuándo se mantiene el horario y cómo contactar al cliente con un toque (llamar o WhatsApp).
+- **Navegación según el dispositivo.** Pestañas fijas abajo en el celular (Inicio, Anotar, Reservas), con "Anotar" como la más llamativa porque es la acción principal; barra lateral en pantallas grandes. El contenido se limita a unos 46 rem de ancho para que las tarjetas no se estiren.
+- **Confirmar es un toque; lo irreversible pregunta.** Rechazar y cancelar piden una segunda confirmación en el mismo lugar.
+- **El estado siempre es una palabra** (sello), nunca solo color.
+- **El panel toma el color del negocio**, igual que su página pública.
+- **Anotar una reserva** termina con el enlace del cliente y un mensaje de WhatsApp ya escrito, porque el cliente que llamó no tiene cómo recibir su boleto de otra forma.
+
+## 10. Pendiente de decidir
 
 - **Nombre del producto.** Se usa el nombre de trabajo **Separa** (en Perú "separar" una cancha es reservarla) hasta decidir (Q4). Cambiarlo es cuestión de un archivo de textos.
 - Logotipo definitivo. Los iconos actuales parten de la marca provisional (una S en un sello).
