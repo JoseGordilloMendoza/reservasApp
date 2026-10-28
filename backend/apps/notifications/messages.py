@@ -187,3 +187,23 @@ def business_cancelled_by_customer(booking):
         ]
     )
     return f"{customer.name} canceló su reserva: {when(booking.starts_at, business)}", body
+
+
+# --- account ----------------------------------------------------------------------------
+
+BRAND = "Separa"
+
+
+def password_reset(user, link):
+    """The link to choose a new password. It works once and expires in an hour."""
+    greeting = f"Hola {user.first_name}," if user.first_name else "Hola,"
+    body = "\n\n".join(
+        [
+            greeting,
+            f"Recibimos una solicitud para cambiar tu contraseña de {BRAND}.",
+            "Entra a este enlace para elegir una nueva. Vale una hora y sirve una sola vez:\n" + link,
+            "Si no fuiste tú, ignora este correo: tu contraseña no cambia.",
+            BRAND,
+        ]
+    )
+    return f"Cambia tu contraseña de {BRAND}", body
