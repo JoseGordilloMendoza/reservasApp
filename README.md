@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. Hitos M0 a M4 del [plan](docs/08-plan-de-construccion.md) completados: entorno con Docker, modelo de reservas con restricción anti-solapamiento, configuración por negocio con plantillas de rubro, cálculo de disponibilidad y API pública de reservas (consultar horarios, reservar, ver y cancelar). 229 pruebas, incluidas pruebas de concurrencia con conexiones reales.
+**Estado:** documentación base lista. Hitos M0 a M4 del [plan](docs/08-plan-de-construccion.md) completados y M5 casi: entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos). 471 pruebas, incluidas pruebas de concurrencia con conexiones reales.
 
 ## Cómo ejecutar
 
@@ -22,6 +22,23 @@ docker compose run --rm backend pytest              # pruebas
 | http://localhost:8000/admin/ | Admin de Django (superadmin) |
 
 `docker compose up` aplica las migraciones al arrancar.
+
+## Dar de alta un negocio y su dueño
+
+Por ahora lo hace la plataforma desde el admin (http://localhost:8000/admin/):
+
+1. Crear un superusuario: `docker compose run --rm backend python manage.py createsuperuser` (el identificador es el correo).
+2. En el admin, crear el **Negocio** (`business_type` elige la plantilla de valores iniciales), sus **Recursos**, **Servicios** y **Horarios de atención**.
+3. Crear el **Usuario** del dueño y, en el mismo formulario, agregarle una **Pertenencia** al negocio con rol `owner`.
+
+El dueño inicia sesión con `POST /api/v1/auth/login/`. Si el usuario no tiene contraseña, solo podrá entrar con Google.
+
+## Acceso con Google (opcional)
+
+1. En Google Cloud Console, crear un ID de cliente OAuth de tipo "Aplicación web" y autorizar el dominio del frontend.
+2. Arrancar con la variable: `GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com docker compose up`.
+
+Mientras no esté configurado, `POST /api/v1/auth/google/` responde 503. Google solo permite entrar a usuarios que ya existen.
 
 ## Documentación
 
