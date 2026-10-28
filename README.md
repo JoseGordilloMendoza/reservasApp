@@ -34,6 +34,8 @@ Crea una cancha y un consultorio de ejemplo, cada uno con su dueño (`canchas@de
 
 `docker compose up` aplica las migraciones al arrancar.
 
+Si cambian las dependencias del frontend (`package.json`), recrea su contenedor con `docker compose up -d --build -V frontend`; sin `-V` reutiliza las dependencias viejas y no arranca.
+
 ## Dar de alta un negocio y su dueño
 
 Por ahora lo hace la plataforma desde el admin (http://localhost:8000/admin/):
