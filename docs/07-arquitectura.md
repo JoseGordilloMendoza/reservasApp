@@ -194,8 +194,9 @@ Cada petición actúa sobre **un** negocio del usuario: automático si tiene uno
 | `GET /panel/bookings/{id}/` | Detalle con historial de estados | Miembros |
 | `POST /panel/bookings/{id}/confirm/ reject/ cancel/ complete/ no-show/` | Cambios de estado | Miembros |
 | `GET /panel/customers/`, `GET` y `PATCH /panel/customers/{id}/` | Fichas de clientes, nombre, correo y bloqueo | Miembros |
-| `GET /panel/blocks/` | Bloqueos de horario | Miembros |
-| `POST /panel/blocks/`, `DELETE /panel/blocks/{id}/` | Crear y quitar bloqueos | Solo el dueño |
+| `GET` y `POST /panel/blocks/`, `DELETE /panel/blocks/{id}/` | Ver, crear y quitar bloqueos de horario | Miembros |
+
+"Miembros" son todos los usuarios del negocio, dueño o personal: hoy tienen los mismos permisos. La clase `IsOwner` existe para lo que afecte a la cuenta (usuarios, suscripción) cuando se agregue.
 
 Los errores de reglas siguen el formato `{"code", "detail"}`: `invalid_transition`, `booking_expired`, `not_started_yet`, `slot_unavailable`, `slot_blocked`, `slot_in_past`.
 
