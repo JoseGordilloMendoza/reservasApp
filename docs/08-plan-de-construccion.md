@@ -6,6 +6,8 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
+**Avance:** M0, M1 y M2 completados.
+
 | Hito | Objetivo | Entregables | Listo cuando |
 |---|---|---|---|
 | **M0. Base del proyecto** | Entorno reproducible | Docker Compose con PostgreSQL y Django, ajustes por variables de entorno, pruebas ejecutables en contenedor | `docker compose up` levanta el backend y `pytest` corre |

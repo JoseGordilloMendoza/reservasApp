@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.businesses.settings_schema import validate_settings
+
 
 class Resource(models.Model):
     business = models.ForeignKey(
@@ -33,7 +35,7 @@ class Service(models.Model):
     reference_price = models.DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True
     )
-    settings = models.JSONField(default=dict, blank=True)
+    settings = models.JSONField(default=dict, blank=True, validators=[validate_settings])
     is_active = models.BooleanField(default=True)
 
     class Meta:

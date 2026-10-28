@@ -53,6 +53,8 @@ Cada rubro tiene necesidades distintas, así que al crear un negocio se elige un
 
 Los valores de la columna **Valores generales** son los de las reglas RN-02, RN-07 y RN-11.
 
+**Implementado** en `backend/apps/businesses/presets.py`. Al crear un negocio se copian todos los valores de su plantilla; el negocio queda con su propia copia. La duración del servicio no es una opción del negocio: es el valor sugerido al crear un servicio nuevo. En el código los tiempos se guardan en minutos (por ejemplo, 24 h = `1440`); ver [07-arquitectura.md](07-arquitectura.md).
+
 ## Pendiente de decidir
 
 - ¿Cuántas reservas activas puede tener un mismo celular a la vez? Limitarlo ayuda contra el abuso.

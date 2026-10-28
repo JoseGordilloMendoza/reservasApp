@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. Hitos M0 y M1 del [plan](docs/08-plan-de-construccion.md) completados: entorno con Docker y modelo de reservas con restricción anti-solapamiento, con pruebas.
+**Estado:** documentación base lista. Hitos M0 a M2 del [plan](docs/08-plan-de-construccion.md) completados: entorno con Docker, modelo de reservas con restricción anti-solapamiento, y configuración por negocio con plantillas de rubro, todo con pruebas.
 
 ## Cómo ejecutar
 

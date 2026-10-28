@@ -95,6 +95,20 @@ Si el cron falla, el sistema sigue siendo correcto.
 - Al leer un valor se busca en este orden: **servicio → negocio → valor por defecto de la plataforma**.
 - Al crear un negocio se elige una **plantilla de rubro** (cancha, psicólogo) que precarga sus valores. Después el negocio los ajusta como quiera.
 - Agregar una opción nueva implica definirla en el esquema con su valor por defecto; los negocios existentes no necesitan migración.
+- Al crear un negocio se guarda una **copia completa** de los valores de su plantilla. Así, un cambio posterior en los valores por defecto de la plataforma no altera el comportamiento de negocios ya creados.
+- Al guardar se rechazan claves desconocidas y valores fuera de rango. Al leer se ignoran las claves obsoletas.
+
+**Opciones implementadas** (`backend/apps/businesses/settings_schema.py`). Todos los tiempos van en minutos para evitar confusiones de unidades; la interfaz los mostrará en horas o días cuando convenga.
+
+| Clave | Valor por defecto | Rango o valores |
+|---|---|---|
+| `confirmation_mode` | `manual` | `manual`, `automatic` |
+| `pending_hold_minutes` | 120 | 5 a 10 080 |
+| `cancellation_notice_minutes` | 1 440 | 0 a 43 200 |
+| `min_booking_notice_minutes` | 60 | 0 a 43 200 |
+| `booking_horizon_days` | 30 | 1 a 365 |
+| `slot_interval_minutes` | 60 | 5 a 240 |
+| `buffer_minutes` | 0 | 0 a 240 |
 
 ### Disponibilidad
 
