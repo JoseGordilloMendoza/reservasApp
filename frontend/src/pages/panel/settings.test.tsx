@@ -109,3 +109,111 @@ describe("the business page settings", () => {
     await waitFor(() => expect(phone).toHaveValue("+51987654321"));
   });
 });
+
+describe("the booking rules", () => {
+  const PATH = "/panel/ajustes/reglas";
+  const SETTINGS = {
+    confirmation_mode: "manual",
+    pending_hold_minutes: 120,
+    cancellation_notice_minutes: 1440,
+    min_booking_notice_minutes: 60,
+    booking_horizon_days: 30,
+    slot_interval_minutes: 60,
+    buffer_minutes: 0,
+    max_active_bookings_per_customer: 3,
+  };
+  const business = (settings: Record<string, number | string> = {}) => ({
+    ...PANEL_BUSINESS,
+    settings: { ...SETTINGS, ...settings },
+  });
+
+  function open(settings: Record<string, number | string> = {}, extra: Parameters<typeof signedInRoutes>[0] = {}) {
+    return signedInRoutes({ "GET /panel/business/": { status: 200, body: business(settings) }, ...extra });
+  }
+
+  it("shows the current value of every option, with a readable echo", async () => {
+    open();
+    renderApp(PATH);
+
+    expect(await screen.findByLabelText("Tiempo para confirmar")).toHaveValue("120");
+    expect(screen.getByLabelText("Anticipación para cancelar")).toHaveValue("1440");
+    expect(screen.getByText(/^1 día\./)).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /Yo confirmo cada reserva/ })).toBeChecked();
+  });
+
+  it("does not ask how long to hold a booking when they confirm themselves", async () => {
+    open({ confirmation_mode: "automatic" });
+    renderApp(PATH);
+
+    await screen.findByLabelText("Anticipación para cancelar");
+    expect(screen.queryByLabelText("Tiempo para confirmar")).not.toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /Se confirman solas/ })).toBeChecked();
+  });
+
+  it("sends only the options that changed", async () => {
+    const api = open({}, { "PATCH /panel/business/": { status: 200, body: business({ buffer_minutes: 15 }) } });
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    const buffer = await screen.findByLabelText("Descanso entre reservas");
+    await user.clear(buffer);
+    await user.type(buffer, "15");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => {
+      expect(api.calls.find((call) => call.method === "PATCH")?.body).toEqual({ settings: { buffer_minutes: 15 } });
+    });
+    expect(await screen.findByRole("status")).toHaveTextContent("Cambios guardados");
+  });
+
+  it("switches to automatic confirmation", async () => {
+    const api = open({}, { "PATCH /panel/business/": { status: 200, body: business({ confirmation_mode: "automatic" }) } });
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    await user.click(await screen.findByRole("radio", { name: /Se confirman solas/ }));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => {
+      expect(api.calls.find((call) => call.method === "PATCH")?.body).toEqual({ settings: { confirmation_mode: "automatic" } });
+    });
+  });
+
+  it("does not call the server when nothing changed", async () => {
+    const api = open();
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    await user.click(await screen.findByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByRole("status")).toHaveTextContent("Cambios guardados");
+    expect(api.calls.some((call) => call.method === "PATCH")).toBe(false);
+  });
+
+  it("marks a value outside the limits without calling the server", async () => {
+    const api = open();
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    const horizon = await screen.findByLabelText("Días hacia adelante");
+    await user.clear(horizon);
+    await user.type(horizon, "400");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByText("Debe ser como máximo 365.")).toBeInTheDocument();
+    expect(api.calls.some((call) => call.method === "PATCH")).toBe(false);
+  });
+
+  it("shows the server's complaint when it refuses", async () => {
+    open({}, { "PATCH /panel/business/": { status: 400, body: { settings: ["buffer_minutes: must be at most 240"] } } });
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    const buffer = await screen.findByLabelText("Descanso entre reservas");
+    await user.clear(buffer);
+    await user.type(buffer, "15");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("buffer_minutes: must be at most 240");
+  });
+});
