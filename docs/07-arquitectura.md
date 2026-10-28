@@ -22,6 +22,7 @@
 | Tareas programadas | Comando de Django invocado por un cron externo, opcional | La corrección no depende de él (ver sección 4) |
 | Correo | Proveedor transaccional con capa gratuita | Costo mínimo |
 | Repositorio | Monorepo con `backend/`, `frontend/` y `docs/` | Documentación y código juntos |
+| Contenedores | Docker y Docker Compose para desarrollo (PostgreSQL y backend) | Entorno reproducible. El despliegue sigue pendiente |
 
 ## 3. Multi-tenancy
 
@@ -69,10 +70,12 @@ PostgreSQL permite una **restricción de exclusión** sobre rangos de tiempo. Dj
 
 ```
 no puede haber dos filas con el mismo recurso y rangos de tiempo
-que se solapen, cuando el estado es pending o confirmed
+que se solapen, salvo que el estado sea cancelled o expired
 ```
 
-Así, aunque dos solicitudes lleguen al mismo milisegundo, la base de datos rechaza la segunda.
+Solo `cancelled` y `expired` liberan el horario; `pending`, `confirmed`, `completed` y `no_show` lo ocupan. Así el historial tampoco tiene reservas solapadas. Los rangos son semiabiertos: una reserva que termina a las 19:00 no choca con otra que empieza a las 19:00.
+
+Así, aunque dos solicitudes lleguen al mismo milisegundo, la base de datos rechaza la segunda. **Implementado y probado en el hito M1** (`backend/apps/bookings`).
 
 > **Requisito del hosting:** el proveedor de PostgreSQL debe permitir la extensión `btree_gist`. Hay que confirmarlo antes de elegirlo.
 

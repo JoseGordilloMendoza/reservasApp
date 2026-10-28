@@ -2,7 +2,20 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** fase de documentación y definición de requisitos. Aún no hay código.
+**Estado:** documentación base lista. Hitos M0 y M1 del [plan](docs/08-plan-de-construccion.md) completados: entorno con Docker y modelo de reservas con restricción anti-solapamiento, con pruebas.
+
+## Cómo ejecutar
+
+Requiere Docker Desktop.
+
+```bash
+docker compose up                                   # backend en http://localhost:8000
+docker compose run --rm backend python manage.py migrate
+docker compose run --rm backend python manage.py createsuperuser
+docker compose run --rm backend pytest              # pruebas
+```
+
+El admin está en http://localhost:8000/admin/.
 
 ## Documentación
 
@@ -15,6 +28,7 @@ Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y neg
 | [05 - Requisitos](docs/05-requisitos.md) | Requisitos funcionales y no funcionales |
 | [06 - Reglas de negocio](docs/06-reglas-de-negocio.md) | Reglas de disponibilidad, reserva, cancelación y suscripción |
 | [07 - Arquitectura](docs/07-arquitectura.md) | Stack, multi-tenancy, modelo de datos y API (propuesta) |
+| [08 - Plan de construcción](docs/08-plan-de-construccion.md) | Hitos M0 a M10, dependencias y riesgos |
 
 ## Principios
 

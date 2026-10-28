@@ -30,6 +30,8 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D22 | Documentación en español; código, API y commits en inglés | Tomada | Convención habitual y facilita herramientas y colaboración |
 | D23 | **Plantillas de rubro** que precargan valores según el tipo de negocio (cancha, psicólogo), todos ajustables | Propuesta | Los valores adecuados dependen del negocio; ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
 | D24 | Priorizar herramientas gratuitas de hosting; presupuestar un backend que no se duerma al llegar al piloto | Propuesta | Costo bajo sin perjudicar la experiencia de reserva; ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
+| D25 | Docker y Docker Compose para el entorno de desarrollo; el despliegue sigue pendiente | Tomada | Entorno reproducible y rápido de levantar |
+| D26 | Solo `cancelled` y `expired` liberan el horario; los demás estados lo ocupan | Tomada | El historial tampoco tiene solapamientos; verificado con pruebas |
 
 ## Preguntas abiertas
 
