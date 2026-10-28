@@ -289,6 +289,59 @@ class ResourceDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Response(HAS_BOOKINGS, status=status.HTTP_409_CONFLICT)
 
 
+class ServiceListCreateView(generics.ListCreateAPIView):
+    permission_classes = [HasBusiness]
+    pagination_class = BookingPagination
+    serializer_class = s.ServiceSerializer
+
+    def get_queryset(self):
+        services_ = Service.objects.filter(business=self.request.business).select_related("resource")
+        resource = self.request.query_params.get("resource")
+        if resource and resource.isdigit():
+            services_ = services_.filter(resource_id=int(resource))
+        return services_.order_by("resource__position", "resource_id", "id")
+
+    def perform_create(self, serializer):
+        serializer.save(business=self.request.business)
+
+    @extend_schema(
+        summary="List the services",
+        parameters=[OpenApiParameter("resource", int, description="Only this resource's services.")],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Create a service",
+        description=(
+            "What a customer books on a resource, with its duration and reference price. "
+            "The duration defaults to what the business type suggests. `settings` may override "
+            "the business options for this service only."
+        ),
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class ServiceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [HasBusiness]
+    serializer_class = s.ServiceSerializer
+
+    def get_queryset(self):
+        return Service.objects.filter(business=self.request.business).select_related("resource")
+
+    @extend_schema(
+        summary="Delete a service",
+        description="Only when it has no bookings; otherwise deactivate it with PATCH is_active=false.",
+        responses={204: None, 409: s.ErrorSerializer},
+    )
+    def delete(self, request, *args, **kwargs):
+        try:
+            return super().delete(request, *args, **kwargs)
+        except RestrictedError:
+            return Response(HAS_BOOKINGS, status=status.HTTP_409_CONFLICT)
+
+
 class BlockListCreateView(generics.ListAPIView):
     permission_classes = [HasBusiness]
     pagination_class = BookingPagination
