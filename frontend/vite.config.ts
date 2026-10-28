@@ -11,6 +11,9 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    // Docker on Windows and macOS does not forward file events from mounted folders,
+    // so without polling the dev server keeps serving the files it first read.
+    watch: { usePolling: true, interval: 300 },
     proxy: { "/api": { target: apiTarget, changeOrigin: true } },
   },
   test: {
