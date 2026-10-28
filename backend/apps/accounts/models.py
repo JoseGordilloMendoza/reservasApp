@@ -50,3 +50,28 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class Membership(models.Model):
+    """Links a user to a business. One user can belong to several businesses."""
+
+    class Role(models.TextChoices):
+        OWNER = "owner", "Owner"
+        STAFF = "staff", "Staff"
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="memberships")
+    business = models.ForeignKey(
+        "businesses.Business", on_delete=models.CASCADE, related_name="memberships"
+    )
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.OWNER)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "business"], name="membership_unique_user_per_business"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user} - {self.business} ({self.role})"
