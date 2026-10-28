@@ -57,6 +57,21 @@ class CancellationWindowClosed(BookingError):
     message = "Ya no es posible cancelar en línea. Contacta directamente al negocio."
 
 
+class InvalidTransition(BookingError):
+    code = "invalid_transition"
+    message = "Esta reserva no puede pasar a ese estado."
+
+
+class BookingExpired(InvalidTransition):
+    code = "booking_expired"
+    message = "La reserva venció y su horario fue liberado. Crea una nueva."
+
+
+class NotStartedYet(BookingError):
+    code = "not_started_yet"
+    message = "La reserva aún no ha comenzado."
+
+
 def hash_token(token):
     return hashlib.sha256(token.encode()).hexdigest()
 
@@ -186,6 +201,63 @@ def cancel_booking_by_customer(booking, now=None):
         booking.status = BookingStatus.CANCELLED
         booking.save(update_fields=["status"])
         record_event(booking, previous, BookingStatus.CANCELLED, BookingEvent.Actor.CUSTOMER)
+
+    return booking
+
+
+def confirm_booking(booking, now=None):
+    return _change_status(
+        booking, BookingStatus.CONFIRMED, (BookingStatus.PENDING,), now, clear_hold=True
+    )
+
+
+def reject_booking(booking, now=None):
+    return _change_status(booking, BookingStatus.CANCELLED, (BookingStatus.PENDING,), now)
+
+
+def cancel_booking_by_business(booking, now=None):
+    """The business can cancel at any time; the customer's notice period does not apply."""
+    return _change_status(booking, BookingStatus.CANCELLED, ACTIVE_STATUSES, now)
+
+
+def complete_booking(booking, now=None):
+    return _change_status(
+        booking, BookingStatus.COMPLETED, (BookingStatus.CONFIRMED,), now, require_started=True
+    )
+
+
+def mark_no_show(booking, now=None):
+    return _change_status(
+        booking, BookingStatus.NO_SHOW, (BookingStatus.CONFIRMED,), now, require_started=True
+    )
+
+
+def _change_status(
+    booking, to_status, allowed_from, now, *, clear_hold=False, require_started=False
+):
+    now = now or timezone.now()
+
+    # Expire first and outside the transaction below, so refusing does not undo it.
+    refresh_if_stale(booking, now)
+
+    with transaction.atomic():
+        booking = Booking.objects.select_for_update(of=("self",)).get(pk=booking.pk)
+
+        if booking.status == BookingStatus.EXPIRED and BookingStatus.PENDING in allowed_from:
+            raise BookingExpired()
+        if booking.status not in allowed_from:
+            raise InvalidTransition()
+        if require_started and now < booking.starts_at:
+            raise NotStartedYet()
+
+        previous = booking.status
+        booking.status = to_status
+        fields = ["status"]
+        if clear_hold:
+            booking.expires_at = None
+            fields.append("expires_at")
+        booking.save(update_fields=fields)
+        record_event(booking, previous, to_status, BookingEvent.Actor.BUSINESS)
 
     return booking
 
