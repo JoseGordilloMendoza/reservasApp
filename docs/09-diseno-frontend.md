@@ -1,6 +1,6 @@
 # 09 - Diseño del frontend
 
-> Dirección elegida: **boleto neobrutalista**. Borrador v0.1, se ajusta al verla en pantalla.
+> Dirección elegida: **boleto neobrutalista**. v0.2: ya implementada para el cliente (M6) y ajustada al verla en pantalla.
 
 ## 1. Concepto
 
@@ -90,8 +90,22 @@ No hay marquesinas, parallax ni animaciones infinitas.
 
 React, Vite y TypeScript; Tailwind v4 con variables CSS para los tokens; Motion para el movimiento; React Router; TanStack Query para los datos; Phosphor para iconos; Vitest para las pruebas. PWA instalable. Las rutas y el diseño se prueban en móvil primero.
 
-## 8. Pendiente de decidir
+## 8. Qué se aprendió al verlo en pantalla
+
+Capturas en celular de 390 px y en escritorio, en claro y en oscuro, con datos reales. Esto corrigió:
+
+- **Etiqueta de precio sobre el título.** Pasó a la esquina inferior del cartel, con espacio reservado para que no tape los chips de contacto.
+- **Títulos largos partidos a mitad de palabra** ("CONSULT/ORIO"). El tamaño del título ahora depende de la palabra más larga del nombre.
+- **Sello de estado sobre el nombre del servicio.** Ahora va debajo del título, dentro del bloque de color.
+- **Fechas con mayúsculas incorrectas** ("28 De Octubre"). Solo se capitaliza la primera letra.
+- **Ancho de página mayor que la pantalla** por una columna de grilla sin límite. Las grillas de página fijan una sola columna en móvil.
+
+Estas reglas quedan para los próximos diseños: ninguna etiqueta flotante puede tapar texto, y todo título debe probarse con el nombre más largo posible.
+
+## 9. Pendiente de decidir
 
 - **Nombre del producto.** Se usa el nombre de trabajo **Separa** (en Perú "separar" una cancha es reservarla) hasta decidir (Q4). Cambiarlo es cuestión de un archivo de textos.
-- Logotipo definitivo e iconos de la aplicación instalable.
+- Logotipo definitivo. Los iconos actuales parten de la marca provisional (una S en un sello).
+- Si el modo oscuro necesita un botón manual además de seguir al sistema.
+- Dividir el paquete de JavaScript por pantallas (hoy unos 485 KB, 152 KB comprimido).
 - Si algún día hay fotos, el bloque de color puede llevar una imagen recortada dentro, sin cambiar el sistema.
