@@ -52,6 +52,14 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D44 | Las opciones del negocio se fusionan al editar (solo cambian las enviadas) | Tomada | Evita pisar opciones que la pantalla no mostró |
 | D45 | El link, tipo, zona horaria y estado del negocio no los edita el negocio | Tomada | El link es la dirección pública; el estado depende de la suscripción |
 | D46 | Las imágenes del negocio quedan fuera del MVP | Propuesta | Necesitan almacenamiento de archivos, que sumaría costo y complejidad |
+| D47 | Dirección visual del frontend: **boleto neobrutalista** (bordes gruesos, sombras duras, bloques de color; la reserva es un boleto) | Tomada | Elegida entre tres opciones; se sostiene sin fotos. Ver [09-diseno-frontend.md](09-diseno-frontend.md) |
+| D48 | Cada negocio elige su **color de acento** entre cinco (lime, tangerine, cobalt, rose, mint) | Tomada | Una estructura reconocible y una página distinta por negocio |
+| D49 | Nombre de trabajo **Separa**, centralizado en un solo archivo | Propuesta | Hasta decidir el nombre definitivo (Q4) |
+| D50 | El horario más cercano llega ya elegido; los datos del cliente se piden después de elegir horario | Tomada | Menos pasos, según la investigación de selectores de fecha y hora |
+| D51 | Los boletos del cliente se guardan en su dispositivo ("Mis reservas") | Tomada | No hay cuentas de cliente |
+| D52 | Frontend instalable (PWA); solo se guarda en caché la propia aplicación, nunca la API | Tomada | Las reservas y la disponibilidad deben venir siempre del servidor |
+| D53 | En desarrollo el frontend reenvía `/api` al backend; en producción se usa CORS con una lista de orígenes | Tomada | Sin configuración extra al desarrollar, y seguro al publicar |
+| D54 | El tema (claro u oscuro) sigue al sistema y se puede forzar con `data-theme` | Tomada | Modo oscuro obligatorio sin añadir un botón por ahora |
 
 ## Preguntas abiertas
 
