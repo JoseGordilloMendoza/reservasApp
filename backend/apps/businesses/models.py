@@ -17,6 +17,11 @@ class Business(models.Model):
 
     slug = models.SlugField(max_length=63, unique=True, validators=[validate_slug_not_reserved])
     name = models.CharField(max_length=120)
+    # Public page. Phone numbers are stored in international format (+51987654321).
+    description = models.TextField(blank=True)
+    address = models.CharField(max_length=200, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    whatsapp = models.CharField(max_length=20, blank=True)
     business_type = models.CharField(
         max_length=20, choices=BusinessType.choices, default=BusinessType.GENERIC
     )
