@@ -8,7 +8,10 @@ import { MyBookingsPage } from "./pages/MyBookingsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { BookingDetailPage } from "./pages/panel/BookingDetailPage";
 import { BookingsPage } from "./pages/panel/BookingsPage";
+import { CustomerDetailPage } from "./pages/panel/CustomerDetailPage";
+import { CustomersPage } from "./pages/panel/CustomersPage";
 import { LoginPage } from "./pages/panel/LoginPage";
+import { MorePage } from "./pages/panel/MorePage";
 import { NewBookingPage } from "./pages/panel/NewBookingPage";
 import { PanelHome } from "./pages/panel/PanelHome";
 import { PanelLayout } from "./pages/panel/PanelLayout";
@@ -38,6 +41,9 @@ export function App() {
         <Route path="reservas" element={<BookingsPage />} />
         <Route path="reservas/nueva" element={<NewBookingPage />} />
         <Route path="reservas/:id" element={<BookingDetailPage />} />
+        <Route path="clientes" element={<CustomersPage />} />
+        <Route path="clientes/:id" element={<CustomerDetailPage />} />
+        <Route path="mas" element={<MorePage />} />
       </Route>
     </Routes>
   );

@@ -1,6 +1,6 @@
-import { House, IconContext, ListChecks, Plus, SignOut, WarningCircle } from "@phosphor-icons/react";
+import { CalendarX, DotsThree, Gear, House, IconContext, ListChecks, Plus, SignOut, Users, WarningCircle } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { useAuth } from "../../lib/auth";
 import { BRAND } from "../../lib/brand";
@@ -14,13 +14,25 @@ interface Item {
   end?: boolean;
   /** The main action of the panel gets the loudest tab. */
   highlight?: boolean;
+  /** Where it shows up: the phone has room for four tabs, the sidebar for everything. */
+  only?: "phone" | "desktop";
+  /** Other sections that should light this tab up too. */
+  covers?: string[];
 }
+
+const MORE_SECTIONS = ["/panel/clientes", "/panel/bloqueos", "/panel/ajustes"];
 
 const ITEMS: Item[] = [
   { to: "/panel", label: "Inicio", icon: House, end: true },
   { to: "/panel/reservas/nueva", label: "Anotar", icon: Plus, highlight: true },
   { to: "/panel/reservas", label: "Reservas", icon: ListChecks, end: true },
+  { to: "/panel/clientes", label: "Clientes", icon: Users, only: "desktop" },
+  { to: "/panel/bloqueos", label: "Bloqueos", icon: CalendarX, only: "desktop" },
+  { to: "/panel/ajustes", label: "Ajustes", icon: Gear, only: "desktop" },
+  { to: "/panel/mas", label: "Más", icon: DotsThree, only: "phone", covers: MORE_SECTIONS },
 ];
+
+const VISIBLE = { phone: "md:hidden", desktop: "max-md:hidden" } as const;
 
 function tabClass({ isActive }: { isActive: boolean }, highlight?: boolean) {
   const base =
@@ -35,6 +47,7 @@ export function PanelLayout() {
   const business = usePanelBusiness();
   useAccent(business.data?.accent);
 
+  const path = useLocation().pathname;
   const memberships = auth.user?.memberships ?? [];
   const current = auth.membership;
 
@@ -73,9 +86,16 @@ export function PanelLayout() {
             )}
           </div>
 
-          <nav aria-label="Panel" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 gap-3 border-t-[3px] border-line bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:static md:mt-8 md:grid-cols-1 md:border-0 md:bg-transparent md:p-0">
-            {ITEMS.map(({ to, label, icon: Glyph, end, highlight }) => (
-              <NavLink key={to} to={to} end={end} className={(state) => tabClass(state, highlight)}>
+          <nav aria-label="Panel" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-3 border-t-[3px] border-line bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:static md:mt-8 md:grid-cols-1 md:border-0 md:bg-transparent md:p-0">
+            {ITEMS.map(({ to, label, icon: Glyph, end, highlight, only, covers }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={end}
+                className={({ isActive }) =>
+                  `${tabClass({ isActive: isActive || !!covers?.some((prefix) => path.startsWith(prefix)) }, highlight)} ${only ? VISIBLE[only] : ""}`
+                }
+              >
                 <Glyph aria-hidden="true" />
                 {label}
               </NavLink>
