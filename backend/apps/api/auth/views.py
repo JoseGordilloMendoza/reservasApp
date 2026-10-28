@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 
 from . import serializers as s
 from .tokens import start_session
@@ -38,6 +39,24 @@ class LoginView(APIView):
             # Same answer whether the email exists or not, so it cannot be probed.
             return Response(INVALID_CREDENTIALS, status=status.HTTP_401_UNAUTHORIZED)
         return Response(start_session(user))
+
+
+@extend_schema(
+    summary="Get a new access token",
+    description="Rotates the refresh token: the one sent stops working and a new one is returned.",
+    auth=[],
+)
+class RefreshView(TokenRefreshView):
+    pass
+
+
+@extend_schema(
+    summary="Sign out",
+    description="Invalidates the refresh token so the session cannot be renewed.",
+    auth=[],
+)
+class LogoutView(TokenBlacklistView):
+    pass
 
 
 class MeView(APIView):
