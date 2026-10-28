@@ -3,7 +3,14 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tansta
 import { useAuth } from "./auth";
 import { todayKey } from "./dates";
 import { panelApi } from "./panelApi";
-import type { BookingAction, BookingFilters, NewPanelBooking, PanelBookingDetail } from "./panelTypes";
+import type {
+  BookingAction,
+  BookingFilters,
+  CustomerDetail,
+  CustomerFilters,
+  NewPanelBooking,
+  PanelBookingDetail,
+} from "./panelTypes";
 
 /** Every panel query is keyed by the business, so switching business never shows another one's data. */
 function useScope() {
@@ -102,5 +109,43 @@ export function useCreateBooking() {
   return useMutation({
     mutationFn: (booking: NewPanelBooking) => panelApi.createBooking(booking),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "bookings"] }),
+  });
+}
+
+/** The customers of the business, page by page. */
+export function useCustomerList(filters: CustomerFilters) {
+  const scope = useScope();
+  return useInfiniteQuery({
+    queryKey: ["panel", scope, "customers", "list", filters],
+    queryFn: ({ pageParam }) => panelApi.customers(filters, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (last, pages) => (last.next ? pages.length + 1 : undefined),
+    enabled: scope !== "",
+  });
+}
+
+export function useCustomerDetail(id: number) {
+  const scope = useScope();
+  return useQuery({
+    queryKey: ["panel", scope, "customers", "detail", id],
+    queryFn: () => panelApi.customer(id),
+    enabled: scope !== "" && Number.isFinite(id),
+  });
+}
+
+/** Block or unblock a customer. Bookings show the customer too, so they are refreshed as well. */
+export function useUpdateCustomer() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...changes }: { id: number; name?: string; email?: string; is_blocked?: boolean }) =>
+      panelApi.updateCustomer(id, changes),
+    onSuccess: (updated: CustomerDetail) => {
+      queryClient.setQueryData(["panel", scope, "customers", "detail", updated.id], updated);
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["panel", scope, "customers", "list"] });
+      void queryClient.invalidateQueries({ queryKey: ["panel", scope, "bookings"] });
+    },
   });
 }
