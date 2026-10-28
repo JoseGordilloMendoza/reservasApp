@@ -38,6 +38,15 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D30 | Una reserva pendiente se puede cancelar siempre; el plazo de anticipación aplica solo a las confirmadas | Tomada | La pendiente no es compromiso del negocio y se libera sola. Ajusta RN-11 |
 | D31 | Rutas públicas bajo `/api/v1/public/businesses/{slug}/` y `/bookings/{token}/` | Tomada | El nombre de un negocio nunca choca con otras rutas; se reservan nombres como `admin` o `api` |
 | D32 | Borrar un recurso, servicio o cliente con reservas está prohibido; un negocio completo sí se puede borrar | Tomada | Protege el historial sin impedir eliminar un negocio |
+| D33 | Acceso al panel con **correo y contraseña** y con **Google** | Tomada | Pedido del fundador |
+| D34 | Sesiones con tokens JWT (acceso 15 min, renovación 7 días con rotación) | Tomada | El frontend irá en otro dominio que la API |
+| D35 | Modelo de usuario propio con el correo como identificador, sin distinguir mayúsculas | Tomada | Se decide ahora porque cambiarlo después es muy costoso |
+| D36 | Google solo permite entrar a usuarios existentes; nunca crea cuentas | Tomada | Los negocios los da de alta la plataforma; evita cuentas no autorizadas |
+| D37 | Roles `owner` y `staff` en una pertenencia usuario-negocio; el personal no cambia la configuración ni los bloqueos | Propuesta | Permite recepcionistas sin darles control total. El MVP solo usa dueños |
+| D38 | Un usuario con varios negocios indica cuál con la cabecera `X-Business` | Tomada | Simple y sin estado en el servidor |
+| D39 | Una reserva manual del dueño puede salirse del horario y del tope, pero no solaparse con reservas ni bloqueos | Tomada | El dueño decide, la integridad se mantiene |
+| D40 | Crear un bloqueo no cancela reservas; se avisan las que quedan en conflicto | Tomada | Ya estaba en RN-04 |
+| D41 | La recuperación de contraseña se hace en M8, junto con el correo | Tomada | Necesita el envío de correos |
 
 ## Preguntas abiertas
 
@@ -50,3 +59,5 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | Q6 | Cumplimiento de la Ley de Protección de Datos Personales de Perú | Revisar qué datos se guardan y cómo se informa al cliente |
 | Q7 | Proveedor concreto de hosting; confirmar que la base de datos permita la extensión `btree_gist` | Ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
 | Q9 | Qué pasa con las reservas confirmadas cuando un negocio se suspende por impago; reservar varios bloques seguidos en una operación | Ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
+| Q10 | Crear el ID de cliente de Google (Google Cloud Console) | Hace falta para activar el acceso con Google; ver README |
+| Q11 | ¿Los dueños se dan de alta solo desde el admin o hace falta una pantalla de registro? | Hoy se hace desde el admin de Django (SA-01) |
