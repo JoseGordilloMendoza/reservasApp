@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. Falta el panel del negocio en pantalla (M7).
+**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) ya permite entrar con correo o Google, ver lo urgente, gestionar reservas y anotar las que llegan por teléfono; faltan clientes, bloqueos y ajustes.
 
 ## Cómo ejecutar
 
@@ -28,6 +28,7 @@ Crea una cancha y un consultorio de ejemplo, cada uno con su dueño (`canchas@de
 | http://localhost:5173/canchas-los-andes | Página de reserva de la cancha de ejemplo (frontend) |
 | http://localhost:5173/consultorio-lucia | La del consultorio, con otro color |
 | http://localhost:5173/mis-reservas | Boletos guardados en este dispositivo |
+| http://localhost:5173/panel | Panel del negocio (entra con `canchas@demo.pe` / `demo12345`) |
 | http://localhost:8000/api/docs/ | Lista interactiva de endpoints (Swagger) |
 | http://localhost:8000/api/health/ | Estado de la API y la base de datos |
 | http://localhost:8000/admin/ | Admin de Django (superadmin) |
