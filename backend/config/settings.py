@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
@@ -12,7 +13,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
     if not DEBUG:
         raise ImproperlyConfigured("SECRET_KEY is required when DEBUG is off")
-    SECRET_KEY = "dev-only-insecure-key"
+    SECRET_KEY = "dev-only-insecure-key-never-use-this-outside-development"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
@@ -25,6 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
     "apps.accounts",
     "apps.businesses",
@@ -90,6 +92,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Endpoints are private unless a view opts out with AllowAny.
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     # Per client address. Mobile carriers share addresses between many people, so
@@ -99,6 +102,17 @@ REST_FRAMEWORK = {
         "public_booking": "30/hour",
         "public_manage": "60/min",
     },
+}
+
+# Short-lived access token; the refresh token is rotated on every use and the old one
+# is blacklisted, so a stolen refresh token stops working after the owner next refreshes.
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 SPECTACULAR_SETTINGS = {
