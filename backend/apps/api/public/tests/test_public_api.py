@@ -70,6 +70,27 @@ def test_profile_lists_only_active_resources_and_services(api, business, resourc
     assert [s["name"] for s in data["resources"][0]["services"]] == ["Alquiler 1 hora"]
 
 
+def test_profile_includes_the_contact_details(api, business):
+    business.description = "Canchas de grass sintético."
+    business.address = "Av. Ejército 123, Arequipa"
+    business.phone = "+51987654321"
+    business.whatsapp = "+51912345678"
+    business.save()
+
+    data = api.get(link("public-business", slug=business.slug)).json()
+
+    assert data["description"] == "Canchas de grass sintético."
+    assert data["address"] == "Av. Ejército 123, Arequipa"
+    assert data["phone"] == "+51987654321"
+    assert data["whatsapp"] == "+51912345678"
+
+
+def test_contact_details_are_empty_until_filled_in(api, business):
+    data = api.get(link("public-business", slug=business.slug)).json()
+
+    assert (data["description"], data["address"], data["phone"], data["whatsapp"]) == ("", "", "", "")
+
+
 def test_profile_does_not_expose_internal_settings(api, business):
     data = api.get(link("public-business", slug=business.slug)).json()
 

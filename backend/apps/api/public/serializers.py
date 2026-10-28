@@ -36,7 +36,17 @@ class BusinessPublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Business
-        fields = ["name", "slug", "business_type", "timezone", "resources"]
+        fields = [
+            "name",
+            "slug",
+            "description",
+            "address",
+            "phone",
+            "whatsapp",
+            "business_type",
+            "timezone",
+            "resources",
+        ]
 
 
 # --- availability -------------------------------------------------------------
