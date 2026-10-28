@@ -52,6 +52,15 @@
 - **RN-26.** Un dueño de un negocio suspendido sigue pudiendo entrar a consultar sus datos.
 - **RN-27.** El teléfono de un cliente identifica a la persona en ese negocio y no se puede cambiar; sí su nombre y correo, y se puede bloquear.
 
+## Configuración del negocio
+
+- **RN-28.** El negocio edita su nombre, descripción, dirección, teléfono, WhatsApp y opciones. Su link, tipo, zona horaria y estado los fija la plataforma.
+- **RN-29.** Las opciones se cambian de una en una: solo se modifican las que se envían, y si una es inválida no se cambia ninguna.
+- **RN-30.** Un recurso o servicio que ya tiene reservas no se borra: se desactiva, y deja de ofrecerse sin afectar las reservas hechas. Sin reservas sí se puede borrar.
+- **RN-31.** Cambiar el precio o la duración de un servicio, o el horario de un recurso, no altera las reservas ya hechas.
+- **RN-32.** El nombre de un recurso es único dentro del negocio. Un servicio pertenece a un solo recurso y no se mueve a otro.
+- **RN-33.** El horario semanal tiene varias ventanas por día que no se solapan; un horario sin ventanas deja el recurso cerrado.
+
 ## Plantillas de rubro
 
 Cada rubro tiene necesidades distintas, así que al crear un negocio se elige una plantilla que precarga los valores. Después el negocio los ajusta libremente (CF-09). Los valores de las columnas son **iniciales y deben validarse con negocios reales**.
