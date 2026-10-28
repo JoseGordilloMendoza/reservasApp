@@ -15,6 +15,15 @@ class Business(models.Model):
         ACTIVE = "active", "Active"
         SUSPENDED = "suspended", "Suspended"
 
+    class Accent(models.TextChoices):
+        """Color the business's public page is built around. The frontend defines the shades."""
+
+        LIME = "lime", "Lime"
+        TANGERINE = "tangerine", "Tangerine"
+        COBALT = "cobalt", "Cobalt"
+        ROSE = "rose", "Rose"
+        MINT = "mint", "Mint"
+
     slug = models.SlugField(max_length=63, unique=True, validators=[validate_slug_not_reserved])
     name = models.CharField(max_length=120)
     # Public page. Phone numbers are stored in international format (+51987654321).
@@ -22,6 +31,7 @@ class Business(models.Model):
     address = models.CharField(max_length=200, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     whatsapp = models.CharField(max_length=20, blank=True)
+    accent = models.CharField(max_length=20, choices=Accent.choices, default=Accent.LIME)
     business_type = models.CharField(
         max_length=20, choices=BusinessType.choices, default=BusinessType.GENERIC
     )
