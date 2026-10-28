@@ -1,7 +1,7 @@
 import { WarningCircle } from "@phosphor-icons/react";
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { Button } from "../../components/Button";
 import { Field } from "../../components/Field";
@@ -73,6 +73,9 @@ export function LoginPage() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
         />
+        <Link to="/panel/recuperar" className="-mt-2 w-fit font-semibold underline decoration-[3px] underline-offset-4">
+          ¿Olvidaste tu contraseña?
+        </Link>
 
         {error && (
           <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">

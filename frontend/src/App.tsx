@@ -14,9 +14,11 @@ import { CustomerDetailPage } from "./pages/panel/CustomerDetailPage";
 import { CustomersPage } from "./pages/panel/CustomersPage";
 import { LoginPage } from "./pages/panel/LoginPage";
 import { MorePage } from "./pages/panel/MorePage";
+import { NewPasswordPage } from "./pages/panel/NewPasswordPage";
 import { NewBookingPage } from "./pages/panel/NewBookingPage";
 import { PanelHome } from "./pages/panel/PanelHome";
 import { PanelLayout } from "./pages/panel/PanelLayout";
+import { RecoverPasswordPage } from "./pages/panel/RecoverPasswordPage";
 import { RulesSettingsPage } from "./pages/panel/RulesSettingsPage";
 import { SchedulePage } from "./pages/panel/SchedulePage";
 import { ServicesPage } from "./pages/panel/ServicesPage";
@@ -36,6 +38,8 @@ export function App() {
       </Route>
 
       <Route path="panel/entrar" element={<LoginPage />} />
+      <Route path="panel/recuperar" element={<RecoverPasswordPage />} />
+      <Route path="panel/nueva-contrasena" element={<NewPasswordPage />} />
       <Route
         path="panel"
         element={
