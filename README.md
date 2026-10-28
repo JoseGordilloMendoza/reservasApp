@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) está completo: entrar con correo o Google, ver lo urgente, gestionar reservas, anotar las que llegan por teléfono, ver y bloquear clientes, cerrar horarios y configurar su página, reglas, espacios, horarios y servicios (297 pruebas del frontend). Siguen los correos y la recuperación de contraseña (M8).
+**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) está completo: entrar con correo o Google, ver lo urgente, gestionar reservas, anotar las que llegan por teléfono, ver y bloquear clientes, cerrar horarios y configurar su página, reglas, espacios, horarios y servicios (297 pruebas del frontend). Los **correos de aviso** y la **recuperación de contraseña** (M8) también están listos (316 pruebas del frontend y 683 del backend).
 
 ## Cómo ejecutar
 
@@ -36,6 +36,21 @@ Crea una cancha y un consultorio de ejemplo, cada uno con su dueño (`canchas@de
 `docker compose up` aplica las migraciones al arrancar.
 
 Si cambian las dependencias del frontend (`package.json`), recrea su contenedor con `docker compose up -d --build -V frontend`; sin `-V` reutiliza las dependencias viejas y no arranca.
+
+## Correos
+
+El sistema avisa por correo cuando llega, se confirma, se rechaza, se cancela o vence una reserva, y permite recuperar la contraseña. En desarrollo no hace falta configurar nada: los correos se imprimen en la consola del backend (`docker compose logs -f backend`), con los enlaces incluidos.
+
+Para enviarlos de verdad, copia `.env.example` a `.env` y completa los datos SMTP de tu proveedor:
+
+| Variable | Para qué |
+|---|---|
+| `EMAIL_HOST`, `EMAIL_PORT` | Servidor SMTP del proveedor (con `EMAIL_HOST` vacío, solo consola) |
+| `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | Credenciales del proveedor |
+| `DEFAULT_FROM_EMAIL` | Remitente, por ejemplo `Separa <avisos@tudominio.pe>` |
+| `FRONTEND_URL` | Dirección de la aplicación, para los enlaces dentro de los correos |
+
+Un correo que falla no afecta a la reserva: queda registrado en el log del backend. El detalle de quién recibe qué está en [06 - Reglas de negocio](docs/06-reglas-de-negocio.md).
 
 ## Dar de alta un negocio y su dueño
 
