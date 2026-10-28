@@ -100,7 +100,7 @@ export function CustomerDetailPage() {
   const count = customer.bookings_count === 1 ? "1 reserva" : `${customer.bookings_count} reservas`;
 
   return (
-    <div className="grid max-w-[34rem] gap-6">
+    <div className="grid max-w-[34rem] grid-cols-1 gap-6">
       <Link to="/panel/clientes" className="inline-flex w-fit items-center gap-2 font-display font-bold underline decoration-[3px] underline-offset-4">
         <ArrowLeft aria-hidden="true" />
         Clientes
@@ -115,14 +115,14 @@ export function CustomerDetailPage() {
 
       <BlockControl customer={customer} />
 
-      <section aria-labelledby="historial" className="grid gap-3">
+      <section aria-labelledby="historial" className="grid grid-cols-1 gap-3">
         <h2 id="historial" className="font-display text-2xl font-extrabold">
           Historial
         </h2>
         {customer.bookings.length === 0 ? (
           <p className="rounded-box border-[3px] border-dashed border-line p-4 font-semibold">Todavía no tiene reservas.</p>
         ) : (
-          <ul className="grid gap-3">
+          <ul className="grid grid-cols-1 gap-3">
             {customer.bookings.map((booking) => (
               <HistoryRow key={booking.id} booking={booking} timeZone={timeZone} />
             ))}
