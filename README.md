@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) ya permite entrar con correo o Google, ver lo urgente, gestionar reservas y anotar las que llegan por teléfono; faltan clientes, bloqueos y ajustes.
+**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) está completo: entrar con correo o Google, ver lo urgente, gestionar reservas, anotar las que llegan por teléfono, ver y bloquear clientes, cerrar horarios y configurar su página, reglas, espacios, horarios y servicios (297 pruebas del frontend). Siguen los correos y la recuperación de contraseña (M8).
 
 ## Cómo ejecutar
 
@@ -51,7 +51,7 @@ Con eso basta: el dueño inicia sesión con `POST /api/v1/auth/login/` y **él m
 
 1. En Google Cloud Console, crear un ID de cliente OAuth de tipo "Aplicación web" y autorizar el dominio del frontend.
 2. Copiar `.env.example` a `.env` (Git lo ignora) y poner ahí el valor de `GOOGLE_CLIENT_ID`. `docker compose` lo lee solo.
-3. En Google Cloud Console, en "Orígenes de JavaScript autorizados", agregar el de cada frontend (por ejemplo `http://localhost:5173` en desarrollo y el dominio real en producción).
+3. En Google Cloud Console, en "Orígenes de JavaScript autorizados", agregar el de cada frontend (por ejemplo `http://localhost:5173` y `http://localhost` en desarrollo, y el dominio real en producción; Google puede tardar unos minutos en aplicar el cambio).
 
 Mientras no esté configurado, `POST /api/v1/auth/google/` responde 503. Google solo permite entrar a usuarios que ya existen. Solo se usa el ID de cliente, que es público; el secreto de cliente no hace falta y no debe compartirse.
 
