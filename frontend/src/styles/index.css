@@ -1,0 +1,148 @@
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/*
+ * Ticket neobrutalist system (docs/09-diseno-frontend.md).
+ * Shape rules: 3px borders, 10px corners, hard shadows with no blur.
+ * The accent is chosen per business through <html data-accent="...">.
+ */
+
+@theme inline {
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+
+  --radius-box: 10px;
+  --shadow-hard: 4px 4px 0 0 var(--shadow-color);
+  --shadow-hard-sm: 2px 2px 0 0 var(--shadow-color);
+}
+
+/* Accent palettes. Text on the block is dark, except on cobalt. */
+:root,
+[data-accent="lime"] {
+  --accent: #c8f23c;
+  --tint: #f2f9d0;
+  --accent-deep: #546f00;
+  --on-accent: #0e0f12;
+}
+[data-accent="tangerine"] {
+  --accent: #ff8a3d;
+  --tint: #ffe9d6;
+  --accent-deep: #a84300;
+  --on-accent: #0e0f12;
+}
+[data-accent="cobalt"] {
+  --accent: #2f55f5;
+  --tint: #e3e9ff;
+  --accent-deep: #1630a8;
+  --on-accent: #ffffff;
+}
+[data-accent="rose"] {
+  --accent: #ff5c93;
+  --tint: #ffe3ec;
+  --accent-deep: #a8103f;
+  --on-accent: #0e0f12;
+}
+[data-accent="mint"] {
+  --accent: #2ee6a6;
+  --tint: #d9f8ec;
+  --accent-deep: #0b6f4d;
+  --on-accent: #0e0f12;
+}
+
+/* Light: the page takes the tint of the business accent. */
+:root {
+  --paper: var(--tint);
+  --surface: #ffffff;
+  --text: #0e0f12;
+  --muted: #4a4d57;
+  --line: #0e0f12;
+  --shadow-color: #0e0f12;
+  --danger: #c0182f;
+  color-scheme: light dark;
+}
+
+/* Dark: near black, off-white lines, and the hard shadow takes the accent. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0f1013;
+    --surface: #181a1f;
+    --text: #eceef2;
+    --muted: #a3a7b3;
+    --line: #eceef2;
+    --shadow-color: var(--accent);
+    --danger: #ff7a8a;
+  }
+}
+
+html {
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+/* Keyboard focus is always visible and uses the same hard-edged language. */
+:focus-visible {
+  outline: 3px solid var(--line);
+  outline-offset: 3px;
+  border-radius: var(--radius-box);
+}
+
+/* Hatching for days without availability: it reads as "closed" without color alone. */
+.hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 6px,
+    color-mix(in srgb, var(--line) 22%, transparent) 6px 8px
+  );
+}
+
+/* Press: the element sinks into its own shadow. */
+.press {
+  transition:
+    transform 90ms ease-out,
+    box-shadow 90ms ease-out;
+}
+.press:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 var(--shadow-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
