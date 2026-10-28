@@ -143,3 +143,26 @@ GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 
 # Interactive API docs: on in development, opt in elsewhere.
 API_DOCS_ENABLED = os.environ.get("API_DOCS_ENABLED", "1" if DEBUG else "0") == "1"
+
+# Email. Development prints messages in the console; production sets EMAIL_HOST (and the
+# user and password) to any SMTP provider. Django's test runner always uses an in-memory box.
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend"
+    if EMAIL_HOST
+    else "django.core.mail.backends.console.EmailBackend",
+)
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "1") == "1"
+# A slow provider must not hold a booking request for long.
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "10"))
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Separa <no-responder@localhost>")
+
+# Where the frontend lives, for the links inside emails (ticket, panel, password reset).
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173").rstrip("/")
+
+# A password reset link works once and for one hour.
+PASSWORD_RESET_TIMEOUT = 60 * 60
