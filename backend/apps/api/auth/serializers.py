@@ -36,6 +36,12 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, trim_whitespace=False)
 
 
+class GoogleLoginSerializer(serializers.Serializer):
+    credential = serializers.CharField(
+        help_text="The ID token (JWT) Google gave the browser after the user signed in."
+    )
+
+
 class SessionSerializer(serializers.Serializer):
     access = serializers.CharField(help_text="Short-lived token for the Authorization header.")
     refresh = serializers.CharField(help_text="Used to get a new access token.")
