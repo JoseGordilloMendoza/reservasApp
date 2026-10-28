@@ -30,5 +30,18 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    build: ./frontend
+    environment:
+      API_PROXY_TARGET: http://backend:8000
+    volumes:
+      - ./frontend:/app
+      # Keep the dependencies installed in the image instead of the host folder.
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
 volumes:
   pgdata:
