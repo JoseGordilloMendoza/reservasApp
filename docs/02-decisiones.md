@@ -75,6 +75,7 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D67 | El correo se envía con el sistema estándar de Django, configurado por variables de entorno: en desarrollo se imprime en la consola y en producción se conecta cualquier proveedor SMTP | Tomada | La interfaz es reemplazable (arquitectura, principio 4) y no ata a un proveedor antes de decidir el hosting |
 | D68 | Un correo que falla **nunca** impide ni deshace la reserva: se registra el fallo (NF-14) y la operación sigue. El envío es síncrono, con un tiempo máximo corto | Tomada | La reserva es lo importante; no hay tareas en segundo plano en el hosting gratuito. Si el envío estorba, se mueve a una cola sin cambiar quién lo pide |
 | D69 | Recuperar contraseña: un enlace por correo, de un solo uso y válido por una hora; la respuesta es la misma exista o no el correo; al cambiarla se cierran las sesiones abiertas | Tomada | Mismo criterio que el login (RN-21); un enlace robado no sirve dos veces ni mantiene sesiones viejas |
+| D70 | El correo de recuperar contraseña se envía en segundo plano, a diferencia de los de reservas, que van síncronos (D68) | Tomada | Si se enviara dentro de la petición, responder tardaría más cuando la cuenta existe y eso revelaría quién está registrado. Medido: 6 a 7 ms con o sin cuenta. Si el proceso se detiene antes de enviar, la persona pide otro enlace |
 
 ## Preguntas abiertas
 
