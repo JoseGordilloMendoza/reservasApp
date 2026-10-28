@@ -89,6 +89,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    # Per client address. Mobile carriers share addresses between many people, so
+    # the booking limit is generous; the per-customer cap does the real work.
+    "DEFAULT_THROTTLE_RATES": {
+        "public_read": "120/min",
+        "public_booking": "30/hour",
+        "public_manage": "60/min",
+    },
 }
 
 SPECTACULAR_SETTINGS = {

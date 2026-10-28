@@ -22,15 +22,17 @@
 
 ## Cancelación
 
-- **RN-11.** El cliente puede cancelar con su link si falta al menos la anticipación configurada. *Por defecto: 24 horas.*
-- **RN-12.** Pasado ese plazo, el cliente no puede cancelar por su cuenta y debe contactar al negocio.
+- **RN-11.** El cliente puede cancelar con su link una reserva **confirmada** si falta al menos la anticipación configurada. *Por defecto: 24 horas (12 en canchas).* Una reserva **pendiente** puede cancelarse siempre mientras siga pendiente: todavía no es un compromiso del negocio y se libera sola al vencer su bloqueo.
+- **RN-12.** Pasado ese plazo, el cliente no puede cancelar por su cuenta una reserva confirmada y debe contactar al negocio. Una reserva ya vencida, cancelada o atendida no se puede cancelar.
 - **RN-13.** El negocio puede cancelar una reserva en cualquier momento.
 - **RN-14.** Cancelar una reserva libera el horario inmediatamente.
 
 ## Cliente
 
 - **RN-15.** El cliente se identifica por su **celular** dentro de cada negocio, normalizado al formato internacional (`+51...`). Un mismo celular en dos negocios son dos clientes distintos en cada uno.
-- **RN-16.** Un cliente bloqueado no puede crear reservas en ese negocio.
+- **RN-15b.** Los celulares peruanos se aceptan como `987654321`, `51987654321` o `+51 987 654 321` y se guardan como `+51987654321`. Los números de otros países deben empezar con `+` y llevar el código de país.
+- **RN-16.** Un cliente bloqueado no puede crear reservas en ese negocio. El mensaje que ve es genérico ("no es posible completar la reserva, contacta al negocio") y no revela que fue bloqueado.
+- **RN-16b.** Un cliente puede tener como máximo 3 reservas activas (pendientes o confirmadas, que aún no terminaron) por negocio. El límite es configurable por negocio (`max_active_bookings_per_customer`).
 - **RN-17.** El link de gestión da acceso solo a esa reserva.
 
 ## Suscripción
@@ -59,6 +61,5 @@ Los valores de la columna **Valores generales** son los de las reglas RN-02, RN-
 
 ## Pendiente de decidir
 
-- ¿Cuántas reservas activas puede tener un mismo celular a la vez? Limitarlo ayuda contra el abuso.
 - ¿Qué pasa con las reservas ya confirmadas cuando un negocio se suspende por impago?
 - ¿Se permite que el cliente reserve varios bloques seguidos en una sola operación?

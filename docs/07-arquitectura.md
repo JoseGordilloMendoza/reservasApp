@@ -109,6 +109,7 @@ Si el cron falla, el sistema sigue siendo correcto.
 | `booking_horizon_days` | 30 | 1 a 365 |
 | `slot_interval_minutes` | 60 | 5 a 240 |
 | `buffer_minutes` | 0 | 0 a 240 |
+| `max_active_bookings_per_customer` | 3 | 1 a 50 |
 
 ### Disponibilidad
 
@@ -129,10 +130,37 @@ API REST en `/api/v1/`, dividida por audiencia:
 
 | Zona | Ejemplo | Autenticación |
 |---|---|---|
-| Pública | `GET /api/v1/public/{slug}/availability`, `POST /api/v1/public/{slug}/bookings` | Ninguna, con límite de solicitudes |
-| Gestión del cliente | `GET` y `DELETE /api/v1/public/bookings/{token}` | Token del link |
+| Pública | Ver la tabla siguiente | Ninguna, con límite de solicitudes |
+| Gestión del cliente | `GET /api/v1/public/bookings/{token}/` y `POST .../cancel/` | Token del link |
 | Panel del negocio | `GET /api/v1/panel/bookings` | Sesión del usuario |
 | Superadmin | `/admin/` de Django en el MVP | Sesión de superusuario |
+
+### API pública implementada (M4)
+
+| Método y ruta | Qué hace | Errores propios |
+|---|---|---|
+| `GET /api/v1/public/businesses/{slug}/` | Página del negocio: recursos y servicios activos | 404 si no existe o está suspendido |
+| `GET /api/v1/public/businesses/{slug}/availability/?resource=&service=&date=[&to_date=]` | Horarios libres en UTC y zona horaria del negocio | 400 parámetros inválidos o rango mayor a 62 días |
+| `POST /api/v1/public/businesses/{slug}/bookings/` | Crea una reserva sin cuenta; devuelve `manage_token` una sola vez | 400 datos inválidos, 403 `booking_not_allowed`, 409 `slot_unavailable` o `too_many_active_bookings`, 429 demasiadas solicitudes |
+| `GET /api/v1/public/bookings/{token}/` | Estado de la reserva, `can_cancel` y `cancel_deadline` | 404 |
+| `POST /api/v1/public/bookings/{token}/cancel/` | Cancela la reserva | 403 `cancellation_window_closed`, 409 `not_cancellable` |
+
+Las rutas usan `businesses/{slug}` y `bookings/{token}` para que un negocio nunca pueda chocar con la ruta de reservas por su nombre. Los errores de reglas devuelven `{"code": "...", "detail": "..."}`; `code` es estable para el frontend y `detail` está en español.
+
+**Cómo se crea una reserva** (`backend/apps/bookings/services.py`), todo dentro de una transacción:
+
+1. Se bloquea la fila del recurso, de modo que las reservas de un mismo recurso se crean de una en una. Esto hace seguro el descanso entre reservas, que la base de datos no puede verificar por sí sola.
+2. Se busca o crea al cliente por celular y se bloquea su fila; se rechaza si está bloqueado o ya llegó al máximo de reservas activas.
+3. Se expiran las reservas pendientes vencidas que estorban en ese horario.
+4. Se verifica que el horario sea exactamente uno de los que ofrece la disponibilidad.
+5. Se inserta la reserva; la restricción de exclusión de PostgreSQL queda como respaldo final.
+6. Se guarda un `BookingEvent` y se devuelve el token. En la base de datos solo queda su hash SHA-256.
+
+Hay pruebas con hilos y conexiones reales: 8 solicitudes simultáneas al mismo horario producen una sola reserva, y el tope por cliente y el descanso entre reservas se respetan aunque las solicitudes lleguen a la vez.
+
+**Límite de solicitudes** (por dirección del cliente): lectura 120 por minuto, creación de reservas 30 por hora, gestión por link 60 por minuto. En Perú varias personas comparten la misma dirección en redes móviles, por eso el límite de creación es holgado y el control real es el tope de reservas activas por celular.
+
+**Borrado:** un recurso, servicio o cliente con reservas no se puede borrar (`RESTRICT`); un negocio completo sí, y arrastra todo lo suyo. Lo normal es suspender, no borrar.
 
 ### Documentación interactiva y salud
 
@@ -158,6 +186,7 @@ reservasApp/
       businesses/      negocio, suscripción, configuración y plantillas
       catalog/         recursos, servicios
       core/            endpoint de salud y utilidades compartidas
+      api/public/      API pública de reservas (serializadores, vistas, rutas)
       availability/    reglas, bloqueos, cálculo de horarios libres
       bookings/        reserva, estados, expiración
       customers/       clientes y bloqueos

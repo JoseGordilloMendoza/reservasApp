@@ -35,6 +35,7 @@ SETTINGS_SCHEMA = {
     "booking_horizon_days": Setting(30, min=1, max=365),
     "slot_interval_minutes": Setting(60, min=5, max=240),
     "buffer_minutes": Setting(0, min=0, max=240),
+    "max_active_bookings_per_customer": Setting(3, min=1, max=50),
 }
 
 

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 import pytest
+from django.core.cache import cache
 
 from apps.bookings.models import Booking, BookingStatus
 from apps.businesses.models import Business
@@ -8,6 +9,12 @@ from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
 
 BASE_START = datetime(2030, 1, 1, 18, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture(autouse=True)
+def clear_cache():
+    # Throttle counters live in the cache; start every test with a clean slate.
+    cache.clear()
 
 
 @pytest.fixture

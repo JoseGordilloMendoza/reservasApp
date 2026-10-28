@@ -1,0 +1,266 @@
+import hashlib
+import secrets
+from datetime import timedelta
+from zoneinfo import ZoneInfo
+
+from django.db import IntegrityError, transaction
+from django.utils import timezone
+
+from apps.availability.slots import get_available_slots
+from apps.businesses.models import Business
+from apps.businesses.settings_schema import effective_settings
+from apps.catalog.models import Resource
+from apps.customers.models import Customer
+
+from .models import ACTIVE_STATUSES, Booking, BookingEvent, BookingStatus
+from .phone import normalize_phone
+
+# A pending booking should not hold the slot into the last half hour before it starts.
+PENDING_EXPIRY_CUTOFF = timedelta(minutes=30)
+MIN_PENDING_HOLD = timedelta(minutes=5)
+
+
+class BookingError(Exception):
+    """A rule of the booking flow was not met. `code` is stable for API clients."""
+
+    code = "booking_error"
+    message = "No se pudo completar la operación."
+
+    def __init__(self, message=None):
+        self.message = message or self.message
+        super().__init__(self.message)
+
+
+class SlotUnavailable(BookingError):
+    code = "slot_unavailable"
+    message = "Ese horario ya no está disponible. Elige otro."
+
+
+class BookingNotAllowed(BookingError):
+    # Deliberately vague: it must not reveal that the customer was blocked.
+    code = "booking_not_allowed"
+    message = "No es posible completar la reserva. Contacta directamente al negocio."
+
+
+class TooManyActiveBookings(BookingError):
+    code = "too_many_active_bookings"
+    message = "Ya tienes el máximo de reservas activas en este negocio."
+
+
+class NotCancellable(BookingError):
+    code = "not_cancellable"
+    message = "Esta reserva ya no se puede cancelar."
+
+
+class CancellationWindowClosed(BookingError):
+    code = "cancellation_window_closed"
+    message = "Ya no es posible cancelar en línea. Contacta directamente al negocio."
+
+
+def hash_token(token):
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def find_booking_by_token(token):
+    return (
+        Booking.objects.select_related("business", "resource", "service", "customer")
+        .filter(manage_token_hash=hash_token(token))
+        .first()
+    )
+
+
+def pending_expiry(now, starts_at, hold):
+    """When a pending booking stops holding its slot."""
+    expiry = now + hold
+    cutoff = starts_at - PENDING_EXPIRY_CUTOFF
+    expiry = min(expiry, cutoff if cutoff > now else starts_at)
+    return max(expiry, now + MIN_PENDING_HOLD)
+
+
+def cancellation_deadline(booking):
+    minutes = effective_settings(booking.business, booking.service)["cancellation_notice_minutes"]
+    return booking.starts_at - timedelta(minutes=minutes)
+
+
+def record_event(booking, from_status, to_status, actor):
+    BookingEvent.objects.create(
+        booking=booking, from_status=from_status, to_status=to_status, actor=actor
+    )
+
+
+def create_booking(
+    *, business, service, starts_at, customer_name, customer_phone, customer_email="", now=None
+):
+    """Create a booking for a slot that is currently offered. Returns (booking, token).
+
+    The raw token is only available here; the database keeps its hash.
+    """
+    if service.business_id != business.id:
+        raise ValueError("The service does not belong to the business")
+
+    now = now or timezone.now()
+    phone = normalize_phone(customer_phone)
+    token = secrets.token_urlsafe(32)
+
+    if business.status != Business.Status.ACTIVE or not service.is_active:
+        raise SlotUnavailable()
+
+    with transaction.atomic():
+        # Bookings for one resource are created one at a time. That makes the buffer
+        # between bookings safe to check; the exclusion constraint stays as a backstop.
+        resource = Resource.objects.select_for_update().get(pk=service.resource_id)
+        resource.business = business
+        if not resource.is_active:
+            raise SlotUnavailable()
+
+        config = effective_settings(business, service)
+        customer = _lock_customer(business, phone, customer_name, customer_email)
+
+        if customer.is_blocked:
+            raise BookingNotAllowed()
+        active = Booking.objects.filter(
+            customer=customer, status__in=ACTIVE_STATUSES, ends_at__gt=now
+        ).count()
+        if active >= config["max_active_bookings_per_customer"]:
+            raise TooManyActiveBookings()
+
+        ends_at = starts_at + timedelta(minutes=service.duration_minutes)
+        _expire_stale_overlapping(resource, starts_at, ends_at, now)
+
+        local_date = starts_at.astimezone(ZoneInfo(business.timezone)).date()
+        offered = {slot.starts_at for slot in get_available_slots(resource, service, local_date, now=now)}
+        if starts_at not in offered:
+            raise SlotUnavailable()
+
+        if config["confirmation_mode"] == "automatic":
+            status, expires_at = BookingStatus.CONFIRMED, None
+        else:
+            hold = timedelta(minutes=config["pending_hold_minutes"])
+            status, expires_at = BookingStatus.PENDING, pending_expiry(now, starts_at, hold)
+
+        try:
+            with transaction.atomic():
+                booking = Booking.objects.create(
+                    business=business,
+                    resource=resource,
+                    service=service,
+                    customer=customer,
+                    starts_at=starts_at,
+                    ends_at=ends_at,
+                    status=status,
+                    expires_at=expires_at,
+                    price_snapshot=service.reference_price,
+                    duration_snapshot=service.duration_minutes,
+                    source=Booking.Source.CUSTOMER,
+                    manage_token_hash=hash_token(token),
+                )
+        except IntegrityError:
+            raise SlotUnavailable()
+
+        record_event(booking, "", booking.status, BookingEvent.Actor.CUSTOMER)
+
+    booking.manage_token = token
+    return booking, token
+
+
+def cancel_booking_by_customer(booking, now=None):
+    now = now or timezone.now()
+
+    # Expire first and outside the transaction below, so refusing does not undo it.
+    refresh_if_stale(booking, now)
+
+    with transaction.atomic():
+        booking = Booking.objects.select_for_update(of=("self",)).select_related(
+            "business", "service"
+        ).get(pk=booking.pk)
+
+        if booking.status not in ACTIVE_STATUSES:
+            raise NotCancellable()
+
+        # The notice period protects the business from late cancellations of confirmed
+        # bookings. A pending one is not a commitment yet and frees itself soon anyway.
+        if booking.status == BookingStatus.CONFIRMED and now > cancellation_deadline(booking):
+            raise CancellationWindowClosed()
+
+        previous = booking.status
+        booking.status = BookingStatus.CANCELLED
+        booking.save(update_fields=["status"])
+        record_event(booking, previous, BookingStatus.CANCELLED, BookingEvent.Actor.CUSTOMER)
+
+    return booking
+
+
+def refresh_if_stale(booking, now=None):
+    """Expire a pending booking whose hold ran out, so readers never see it as pending."""
+    now = now or timezone.now()
+    if _is_stale_pending(booking, now) and _mark_expired(booking.pk, now):
+        booking.status = BookingStatus.EXPIRED
+    return booking
+
+
+def expire_stale_bookings(now=None):
+    """Expire every pending booking whose hold ran out. Returns how many were expired."""
+    now = now or timezone.now()
+    ids = list(
+        Booking.objects.filter(
+            status=BookingStatus.PENDING, expires_at__lte=now
+        ).values_list("pk", flat=True)
+    )
+    return sum(_mark_expired(pk, now) for pk in ids)
+
+
+def _is_stale_pending(booking, now):
+    return (
+        booking.status == BookingStatus.PENDING
+        and booking.expires_at is not None
+        and booking.expires_at <= now
+    )
+
+
+def _mark_expired(booking_id, now):
+    # The hold is re-checked in the database, not taken from a possibly outdated
+    # object, so two processes cannot both expire it or expire one that was extended.
+    with transaction.atomic():
+        updated = Booking.objects.filter(
+            pk=booking_id, status=BookingStatus.PENDING, expires_at__lte=now
+        ).update(status=BookingStatus.EXPIRED)
+        if updated:
+            BookingEvent.objects.create(
+                booking_id=booking_id,
+                from_status=BookingStatus.PENDING,
+                to_status=BookingStatus.EXPIRED,
+                actor=BookingEvent.Actor.SYSTEM,
+            )
+    return updated
+
+
+def _expire_stale_overlapping(resource, starts_at, ends_at, now):
+    # An overdue pending booking still occupies its slot in the database until it is
+    # marked, so release the ones in the way before inserting.
+    ids = Booking.objects.filter(
+        resource=resource,
+        status=BookingStatus.PENDING,
+        expires_at__lte=now,
+        starts_at__lt=ends_at,
+        ends_at__gt=starts_at,
+    ).values_list("pk", flat=True)
+    for pk in list(ids):
+        _mark_expired(pk, now)
+
+
+def _lock_customer(business, phone, name, email):
+    customer, created = Customer.objects.get_or_create(
+        business=business, phone=phone, defaults={"name": name, "email": email}
+    )
+    customer = Customer.objects.select_for_update().get(pk=customer.pk)
+    if not created:
+        changed = []
+        if name and customer.name != name:
+            customer.name = name
+            changed.append("name")
+        if email and customer.email != email:
+            customer.email = email
+            changed.append("email")
+        if changed:
+            customer.save(update_fields=changed)
+    return customer

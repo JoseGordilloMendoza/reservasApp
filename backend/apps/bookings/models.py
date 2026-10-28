@@ -17,6 +17,10 @@ class BookingStatus(models.TextChoices):
 SLOT_RELEASING_STATUSES = (BookingStatus.CANCELLED, BookingStatus.EXPIRED)
 
 
+# Statuses of a booking the customer still intends to attend.
+ACTIVE_STATUSES = (BookingStatus.PENDING, BookingStatus.CONFIRMED)
+
+
 class TsTzRange(Func):
     function = "TSTZRANGE"
     output_field = DateTimeRangeField()
@@ -31,13 +35,13 @@ class Booking(models.Model):
         "businesses.Business", on_delete=models.CASCADE, related_name="bookings"
     )
     resource = models.ForeignKey(
-        "catalog.Resource", on_delete=models.PROTECT, related_name="bookings"
+        "catalog.Resource", on_delete=models.RESTRICT, related_name="bookings"
     )
     service = models.ForeignKey(
-        "catalog.Service", on_delete=models.PROTECT, related_name="bookings"
+        "catalog.Service", on_delete=models.RESTRICT, related_name="bookings"
     )
     customer = models.ForeignKey(
-        "customers.Customer", on_delete=models.PROTECT, related_name="bookings"
+        "customers.Customer", on_delete=models.RESTRICT, related_name="bookings"
     )
     starts_at = models.DateTimeField()
     ends_at = models.DateTimeField()
@@ -78,3 +82,24 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.resource} {self.starts_at:%Y-%m-%d %H:%M} ({self.status})"
+
+
+class BookingEvent(models.Model):
+    """One row per status change, so a booking's history can be reconstructed."""
+
+    class Actor(models.TextChoices):
+        CUSTOMER = "customer", "Customer"
+        BUSINESS = "business", "Business"
+        SYSTEM = "system", "System"
+
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name="events")
+    from_status = models.CharField(max_length=20, blank=True)
+    to_status = models.CharField(max_length=20, choices=BookingStatus.choices)
+    actor = models.CharField(max_length=20, choices=Actor.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+
+    def __str__(self):
+        return f"{self.booking_id}: {self.from_status or '-'} -> {self.to_status} ({self.actor})"

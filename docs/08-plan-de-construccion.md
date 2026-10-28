@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M3 completados (98 pruebas). Siguiente: M4.
+**Avance:** M0 a M4 completados (229 pruebas). Siguiente: M5.
 
 | Hito | Objetivo | Entregables | Listo cuando |
 |---|---|---|---|
@@ -31,6 +31,8 @@ El backend arranca limpio desde cero con `docker compose up` y sus endpoints res
 - `SECRET_KEY` larga y aleatoria como variable de entorno (el sistema ya se niega a arrancar sin ella cuando `DEBUG` está apagado).
 - Fijar versiones exactas de las dependencias.
 - Decidir si la documentación de la API (`API_DOCS_ENABLED`) se publica.
+- **Límite de solicitudes:** hoy usa la memoria de cada proceso. Con varios procesos o servidores cada uno cuenta por separado, así que en producción hace falta un caché compartido (Redis o base de datos). Detrás de un proxy también hay que configurar `NUM_PROXIES` para leer la dirección real del cliente; si no, todos parecen venir del proxy.
+- **Expiración programada:** el comando `python manage.py expire_pending_bookings` ordena los datos y conviene ejecutarlo cada pocos minutos. Si no corre, el sistema sigue siendo correcto (la expiración también ocurre al consultar y al reservar).
 
 ## Orden y dependencias
 

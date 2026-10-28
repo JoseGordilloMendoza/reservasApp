@@ -2,6 +2,7 @@ from django.db import models
 
 from .presets import preset_settings
 from .settings_schema import validate_settings
+from .validators import validate_slug_not_reserved
 
 
 class Business(models.Model):
@@ -14,7 +15,7 @@ class Business(models.Model):
         ACTIVE = "active", "Active"
         SUSPENDED = "suspended", "Suspended"
 
-    slug = models.SlugField(max_length=63, unique=True)
+    slug = models.SlugField(max_length=63, unique=True, validators=[validate_slug_not_reserved])
     name = models.CharField(max_length=120)
     business_type = models.CharField(
         max_length=20, choices=BusinessType.choices, default=BusinessType.GENERIC

@@ -32,6 +32,12 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D24 | Priorizar herramientas gratuitas de hosting; presupuestar un backend que no se duerma al llegar al piloto | Propuesta | Costo bajo sin perjudicar la experiencia de reserva; ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
 | D25 | Docker y Docker Compose para el entorno de desarrollo; el despliegue sigue pendiente | Tomada | Entorno reproducible y rápido de levantar |
 | D26 | Solo `cancelled` y `expired` liberan el horario; los demás estados lo ocupan | Tomada | El historial tampoco tiene solapamientos; verificado con pruebas |
+| D27 | Celulares peruanos de 9 dígitos se normalizan a `+51...`; otros países con `+` | Tomada | Entrada flexible, dato uniforme |
+| D28 | Máximo 3 reservas activas por celular y negocio, configurable | Tomada | Freno al abuso sin cuentas |
+| D29 | Un cliente bloqueado recibe un mensaje genérico que no revela el bloqueo | Tomada | Evita conflictos y que se esquive cambiando de número |
+| D30 | Una reserva pendiente se puede cancelar siempre; el plazo de anticipación aplica solo a las confirmadas | Tomada | La pendiente no es compromiso del negocio y se libera sola. Ajusta RN-11 |
+| D31 | Rutas públicas bajo `/api/v1/public/businesses/{slug}/` y `/bookings/{token}/` | Tomada | El nombre de un negocio nunca choca con otras rutas; se reservan nombres como `admin` o `api` |
+| D32 | Borrar un recurso, servicio o cliente con reservas está prohibido; un negocio completo sí se puede borrar | Tomada | Protege el historial sin impedir eliminar un negocio |
 
 ## Preguntas abiertas
 
@@ -43,4 +49,4 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | Q5 | Piloto: ¿qué negocio de canchas? | Aún sin definir |
 | Q6 | Cumplimiento de la Ley de Protección de Datos Personales de Perú | Revisar qué datos se guardan y cómo se informa al cliente |
 | Q7 | Proveedor concreto de hosting; confirmar que la base de datos permita la extensión `btree_gist` | Ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
-| Q9 | Preguntas de reglas pendientes (reservas simultáneas por celular, suspensión por impago) | Ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
+| Q9 | Qué pasa con las reservas confirmadas cuando un negocio se suspende por impago; reservar varios bloques seguidos en una operación | Ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
