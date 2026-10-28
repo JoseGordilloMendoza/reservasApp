@@ -123,6 +123,13 @@ Segundo tramo del panel (clientes, bloqueos y ajustes):
 - **Lo irreversible pide confirmación**, y si el servidor lo rechaza (un espacio con reservas) el mensaje propone desactivar.
 - **Se midió el ancho en el celular.** Dos pantallas se salían de la pantalla por una columna de grilla sin límite (la ficha del cliente y el editor de horario); ahora toda grilla de página usa una sola columna que no crece.
 
+Recuperar la contraseña (dos pantallas con la misma cabecera de color de la entrada):
+
+- **Pedir el enlace** no confirma si la cuenta existe: dice "si tiene una cuenta, te enviamos un enlace" para cualquier correo, y ofrece mirar en spam.
+- **Elegir la contraseña** valida lo básico antes de enviar (8 caracteres, no solo números, repetirla) y deja que el servidor juzgue el resto, mostrando su mensaje bajo el campo.
+- **Un enlace vencido, usado o incompleto** no muestra un formulario inútil: lo dice y ofrece pedir otro.
+- Los títulos largos ("CONTRASEÑA") se reducen en celular para no desbordar; la misma regla de la sección 8.
+
 ## 10. Pendiente de decidir
 
 - **Nombre del producto.** Se usa el nombre de trabajo **Separa** (en Perú "separar" una cancha es reservarla) hasta decidir (Q4). Cambiarlo es cuestión de un archivo de textos.
