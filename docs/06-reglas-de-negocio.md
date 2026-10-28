@@ -17,7 +17,8 @@
 - **RN-06.** Con confirmación **automática**, la reserva nace confirmada. Con confirmación **manual**, nace pendiente.
 - **RN-07.** Una reserva pendiente bloquea el horario hasta su fecha de expiración. *Por defecto: 2 horas, o hasta 30 minutos antes del inicio si eso ocurre antes.*
 - **RN-08.** Una reserva pendiente que vence pasa a **expirada** y libera el horario. Una reserva expirada no se puede confirmar; el negocio puede crear una nueva.
-- **RN-09.** El negocio puede crear reservas manuales, que nacen confirmadas.
+- **RN-09.** El negocio puede crear reservas manuales (las que le piden por teléfono o WhatsApp), que nacen confirmadas. Pueden quedar fuera del horario de atención y de los límites de anticipación, no respetan el descanso entre reservas, y se permiten para un cliente bloqueado o que llegó al tope: decide el dueño. Aun así no pueden solaparse con otra reserva ni con un bloqueo, ni estar enteramente en el pasado.
+- **RN-09b.** El negocio puede confirmar, rechazar o cancelar una reserva en cualquier momento (sin el plazo de anticipación del cliente), y marcarla como atendida o como "no asistió" una vez que empezó. Una reserva pendiente vencida no se puede confirmar ni rechazar.
 - **RN-10.** El precio mostrado es **referencial**: la plataforma no cobra. Cada reserva conserva el precio vigente al crearla (RS-05).
 
 ## Cancelación
@@ -39,6 +40,17 @@
 
 - **RN-18.** Un negocio con suscripción vencida o suspendido no muestra su página pública ni recibe reservas nuevas. Sus reservas ya confirmadas se conservan y su dueño puede entrar al panel para consultarlas.
 - **RN-19.** Suspender un negocio no borra ningún dato.
+
+## Acceso
+
+- **RN-20.** Los usuarios del panel son dados de alta por la plataforma junto con su negocio. Entran con correo y contraseña o con su cuenta de Google; Google nunca crea cuentas nuevas.
+- **RN-21.** El correo no distingue mayúsculas. Un correo o una contraseña incorrectos dan la misma respuesta, para no revelar qué correos existen.
+- **RN-22.** Los intentos de acceso están limitados por dirección y por correo. Superado el límite, ni la contraseña correcta entra hasta que pase el minuto.
+- **RN-23.** La sesión dura mientras se renueve: el acceso vence a los 15 minutos y la renovación a los 7 días. Cada renovación invalida la anterior, y cerrar sesión la invalida del todo.
+- **RN-24.** Un usuario actúa sobre un solo negocio por petición. Si pertenece a varios, indica cuál. Nunca ve ni modifica datos de otro negocio.
+- **RN-25.** El **dueño** puede todo; el **personal** gestiona reservas y clientes y ve los bloqueos, pero no crea ni quita bloqueos ni cambia la configuración.
+- **RN-26.** Un dueño de un negocio suspendido sigue pudiendo entrar a consultar sus datos.
+- **RN-27.** El teléfono de un cliente identifica a la persona en ese negocio y no se puede cambiar; sí su nombre y correo, y se puede bloquear.
 
 ## Plantillas de rubro
 
