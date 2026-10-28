@@ -6,11 +6,14 @@ import { panelApi } from "./panelApi";
 import type {
   BookingAction,
   BookingFilters,
+  BusinessChanges,
   CustomerDetail,
   CustomerFilters,
   NewBlock,
   NewPanelBooking,
   PanelBookingDetail,
+  ScheduleRule,
+  ServiceInput,
 } from "./panelTypes";
 
 /** Every panel query is keyed by the business, so switching business never shows another one's data. */
@@ -186,5 +189,88 @@ export function useDeleteBlock() {
   return useMutation({
     mutationFn: (id: number) => panelApi.deleteBlock(id),
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "blocks"] }),
+  });
+}
+
+/** Edit the page, contact data, color or options of the business. */
+export function useUpdateBusiness() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (changes: BusinessChanges) => panelApi.updateBusiness(changes),
+    onSuccess: (updated) => queryClient.setQueryData(["panel", scope, "business"], updated),
+  });
+}
+
+/** Resources show up inside services and bookings, so those are refreshed with them. */
+function useRefreshAfterResourceChange() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return () =>
+    Promise.all(
+      ["resources", "services", "bookings"].map((key) => queryClient.invalidateQueries({ queryKey: ["panel", scope, key] })),
+    );
+}
+
+export function useCreateResource() {
+  const refresh = useRefreshAfterResourceChange();
+  return useMutation({ mutationFn: (name: string) => panelApi.createResource(name), onSuccess: refresh });
+}
+
+export function useUpdateResource() {
+  const refresh = useRefreshAfterResourceChange();
+  return useMutation({
+    mutationFn: ({ id, ...changes }: { id: number; name?: string; is_active?: boolean }) => panelApi.updateResource(id, changes),
+    onSuccess: refresh,
+  });
+}
+
+export function useDeleteResource() {
+  const refresh = useRefreshAfterResourceChange();
+  return useMutation({ mutationFn: (id: number) => panelApi.deleteResource(id), onSuccess: refresh });
+}
+
+export function useSchedule(resourceId: number) {
+  const scope = useScope();
+  return useQuery({
+    queryKey: ["panel", scope, "schedule", resourceId],
+    queryFn: () => panelApi.schedule(resourceId),
+    enabled: scope !== "" && Number.isFinite(resourceId),
+  });
+}
+
+export function useSaveSchedule(resourceId: number) {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (rules: ScheduleRule[]) => panelApi.saveSchedule(resourceId, rules),
+    onSuccess: (saved) => queryClient.setQueryData(["panel", scope, "schedule", resourceId], saved),
+  });
+}
+
+export function useCreateService() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (service: ServiceInput) => panelApi.createService(service),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "services"] }),
+  });
+}
+
+export function useUpdateService() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, ...changes }: ServiceInput & { id: number }) => panelApi.updateService(id, changes),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "services"] }),
+  });
+}
+
+export function useDeleteService() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => panelApi.deleteService(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "services"] }),
   });
 }
