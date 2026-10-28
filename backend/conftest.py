@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from django.core.cache import cache
+from django.test import override_settings
 
 from apps.bookings.models import Booking, BookingStatus
 from apps.businesses.models import Business
@@ -12,9 +13,11 @@ BASE_START = datetime(2030, 1, 1, 18, 0, tzinfo=timezone.utc)
 
 
 @pytest.fixture(autouse=True)
-def emails_in_the_foreground(settings):
+def emails_in_the_foreground():
     # Background threads would make assertions about the outbox race with the test.
-    settings.EMAIL_IN_BACKGROUND = False
+    # override_settings, not the settings fixture: some tests use "settings" as a parameter name.
+    with override_settings(EMAIL_IN_BACKGROUND=False):
+        yield
 
 
 @pytest.fixture(autouse=True)
