@@ -78,6 +78,17 @@ export function groupSlotsByDay(slots: Slot[], timeZone: string): Map<string, Sl
   return days;
 }
 
+/** The next whole hour on the business clock: a sensible guess for something that starts "now". */
+export function nextWholeHour(timeZone: string, now: Date = new Date()): { date: string; time: string } {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", { timeZone, hour: "2-digit", hourCycle: "h23" }).format(now),
+  );
+  const today = todayKey(timeZone, now);
+  return hour >= 23
+    ? { date: addDays(today, 1), time: "00:00" }
+    : { date: today, time: `${String(hour + 1).padStart(2, "0")}:00` };
+}
+
 /** The `count` days starting today, as date keys. */
 export function upcomingDays(timeZone: string, count: number, now: Date = new Date()): string[] {
   const first = todayKey(timeZone, now);

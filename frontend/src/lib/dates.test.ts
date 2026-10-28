@@ -10,6 +10,7 @@ import {
   formatTime,
   groupSlotsByDay,
   monthShort,
+  nextWholeHour,
   relativeDay,
   todayKey,
   upcomingDays,
@@ -122,5 +123,17 @@ describe("clockLabel", () => {
 
   it("names the day when it is further away", () => {
     expect(clockLabel("2030-01-12T14:00:00Z", LIMA, now)).toMatch(/^las 09:00 del sáb.*12 ene$/);
+  });
+});
+
+describe("the next whole hour", () => {
+  it("rounds up on the business clock", () => {
+    // 19:00 in Lima is 00:00 UTC of the next day; 19:20 -> 20:00 the same Lima day.
+    expect(nextWholeHour(LIMA, new Date("2030-01-08T00:20:00Z"))).toEqual({ date: "2030-01-07", time: "20:00" });
+  });
+
+  it("rolls over to the next day after 23:00", () => {
+    // 23:30 in Lima.
+    expect(nextWholeHour(LIMA, new Date("2030-01-08T04:30:00Z"))).toEqual({ date: "2030-01-08", time: "00:00" });
   });
 });

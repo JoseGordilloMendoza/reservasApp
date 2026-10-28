@@ -8,24 +8,13 @@ import { Field } from "../../components/Field";
 import { Skeleton } from "../../components/Skeleton";
 import { validateCustomer } from "../../lib/customer";
 import type { CustomerErrors } from "../../lib/customer";
-import { addDays, formatLongDate, formatTime, todayKey } from "../../lib/dates";
+import { formatLongDate, formatTime, nextWholeHour } from "../../lib/dates";
 import { formatDuration, formatPrice } from "../../lib/format";
 import { ApiError } from "../../lib/http";
 import type { PanelCreatedBooking, PanelService } from "../../lib/panelTypes";
 import { useCreateBooking, usePanelBusiness, useServices } from "../../lib/panelQueries";
 import { zonedToUtc } from "../../lib/time";
 import { whatsappLink } from "../../lib/whatsapp";
-
-/** The next whole hour on the business clock: a sensible guess for a booking made right now. */
-function nextHour(timeZone: string, now = new Date()): { date: string; time: string } {
-  const hour = Number(
-    new Intl.DateTimeFormat("en-US", { timeZone, hour: "2-digit", hourCycle: "h23" }).format(now),
-  );
-  const today = todayKey(timeZone, now);
-  return hour >= 23
-    ? { date: addDays(today, 1), time: "00:00" }
-    : { date: today, time: `${String(hour + 1).padStart(2, "0")}:00` };
-}
 
 const SERVER_FIELDS: Record<string, "name" | "phone" | "email"> = {
   "customer.name": "name",
@@ -195,7 +184,7 @@ export function NewBookingPage() {
   }
 
   const chosenService = serviceId ?? active[0]?.id ?? null;
-  const moment = when ?? nextHour(timeZone);
+  const moment = when ?? nextWholeHour(timeZone);
 
   function submit(event: FormEvent) {
     event.preventDefault();
