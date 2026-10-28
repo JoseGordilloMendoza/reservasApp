@@ -110,6 +110,9 @@ REST_FRAMEWORK = {
         "auth_login_email": "5/min",
         "auth_refresh": "60/min",
         "auth_google": "20/min",
+        "auth_reset": "10/hour",
+        "auth_reset_email": "3/hour",
+        "auth_reset_confirm": "20/hour",
     },
 }
 

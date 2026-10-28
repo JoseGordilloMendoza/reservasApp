@@ -19,3 +19,9 @@ class LoginEmailThrottle(SimpleRateThrottle):
             return None
         digest = hashlib.sha256(email.encode()).hexdigest()
         return self.cache_format % {"scope": self.scope, "ident": digest}
+
+
+class PasswordResetEmailThrottle(LoginEmailThrottle):
+    """Keeps one inbox from being flooded with reset emails, whatever address asks."""
+
+    scope = "auth_reset_email"
