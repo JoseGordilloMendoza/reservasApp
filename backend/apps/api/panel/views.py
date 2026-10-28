@@ -20,7 +20,7 @@ from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
 
 from . import serializers as s
-from .permissions import HasBusiness, IsOwner
+from .permissions import HasBusiness
 
 
 class PanelAPIView(APIView):
@@ -218,13 +218,9 @@ class CustomerDetailView(PanelAPIView):
 
 
 class BlockListCreateView(generics.ListAPIView):
-    """Anyone in the business can see the blocks; only the owner changes them."""
-
+    permission_classes = [HasBusiness]
     pagination_class = BookingPagination
     serializer_class = s.BlockSerializer
-
-    def get_permissions(self):
-        return [HasBusiness() if self.request.method == "GET" else IsOwner()]
 
     @extend_schema(
         summary="List blocks",
@@ -291,8 +287,7 @@ class BlockListCreateView(generics.ListAPIView):
         return list(overlapping.order_by("starts_at"))
 
 
-class BlockDetailView(APIView):
-    permission_classes = [IsOwner]
+class BlockDetailView(PanelAPIView):
 
     @extend_schema(
         summary="Remove a block",

@@ -203,6 +203,17 @@ def remove(client, block):
     return client.delete(reverse("panel-block", kwargs={"pk": block.pk}))
 
 
+def test_a_user_without_a_business_cannot_manage_blocks(db):
+    from django.contrib.auth import get_user_model
+
+    stranger = get_user_model().objects.create_user("otro@example.com", "s3cret-pass-123")
+    client = APIClient()
+    client.force_authenticate(stranger)
+
+    assert client.get(reverse("panel-blocks")).status_code == 403
+    assert create(client).status_code == 403
+
+
 def test_owner_removes_a_block(panel, business):
     block = Block.objects.create(business=business, starts_at=START, ends_at=START + timedelta(hours=1))
 
@@ -222,19 +233,16 @@ def test_a_block_of_another_business_cannot_be_removed(panel, other_business):
 # --- permissions -------------------------------------------------------------------
 
 
-def test_staff_cannot_create_blocks(staff_panel):
-    response = create(staff_panel)
-
-    assert response.status_code == 403
-    assert "dueño" in response.json()["detail"]
-    assert not Block.objects.exists()
+def test_staff_can_create_blocks(staff_panel):
+    assert create(staff_panel).status_code == 201
+    assert Block.objects.count() == 1
 
 
-def test_staff_cannot_remove_blocks(staff_panel, business):
+def test_staff_can_remove_blocks(staff_panel, business):
     block = Block.objects.create(business=business, starts_at=START, ends_at=START + timedelta(hours=1))
 
-    assert remove(staff_panel, block).status_code == 403
-    assert Block.objects.exists()
+    assert remove(staff_panel, block).status_code == 204
+    assert not Block.objects.exists()
 
 
 def test_blocks_require_a_signed_in_user(db):
