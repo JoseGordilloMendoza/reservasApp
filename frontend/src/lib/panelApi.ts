@@ -85,6 +85,16 @@ export const panelApi = {
   loginWithGoogle: (credential: string) =>
     request<Session>("/auth/google/", { method: "POST", body: JSON.stringify({ credential }) }),
 
+  // Recovering a password happens before signing in, so neither call needs a token.
+  requestPasswordReset: (email: string) =>
+    request<{ detail: string }>("/auth/password-reset/", { method: "POST", body: JSON.stringify({ email }) }),
+
+  resetPassword: (uid: string, token: string, password: string) =>
+    request<{ detail: string }>("/auth/password-reset/confirm/", {
+      method: "POST",
+      body: JSON.stringify({ uid, token, password }),
+    }),
+
   me: () => authed<SessionUser>("/auth/me/"),
 
   logout: (refresh: string) =>
