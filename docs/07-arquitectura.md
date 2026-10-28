@@ -176,6 +176,8 @@ Hay pruebas con hilos y conexiones reales: 8 solicitudes simultáneas al mismo h
 | `POST /api/v1/auth/refresh/` | Renueva el acceso y **rota** el refresh: el anterior queda invalidado |
 | `POST /api/v1/auth/logout/` | Invalida el refresh |
 | `GET /api/v1/auth/me/` | Usuario actual y sus negocios |
+| `POST /api/v1/auth/password-reset/` | Pide el enlace para cambiar la contraseña; responde igual exista o no el correo |
+| `POST /api/v1/auth/password-reset/confirm/` | Con `uid`, `token` y la contraseña nueva: la cambia y cierra las sesiones |
 
 - Correo o contraseña incorrectos dan siempre la misma respuesta (`invalid_credentials`), exista o no el correo.
 - **Google** verifica firma, vencimiento, emisor y que el token se emitió para nuestro `GOOGLE_CLIENT_ID`. **Nunca crea cuentas**: los negocios los da de alta la plataforma, así que el dueño ya existe. Exige correo verificado por Google; la primera vez enlaza el id de Google al usuario y desde entonces se identifica por ese id. Otra cuenta de Google no puede apropiarse de un usuario ya enlazado.
@@ -211,7 +213,17 @@ Detalles de la configuración:
 - **Duración por defecto** de un servicio nuevo: la que sugiere el tipo de negocio (60 min canchas, 50 min psicólogos), también visible en `GET /panel/business/`.
 - Un recurso o servicio de otro negocio se rechaza igual que uno que no existe.
 
-Aún no hay: imágenes del negocio (necesitan almacenamiento de archivos) ni cambio de contraseña.
+Aún no hay: imágenes del negocio (necesitan almacenamiento de archivos) ni cambio de contraseña estando dentro del panel (solo recuperarla por correo).
+
+### Correos y recuperación de contraseña (M8)
+
+- **Envío:** el sistema estándar de correo de Django, configurado por variables de entorno (`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL`). Sin `EMAIL_HOST` los correos se imprimen en la consola del backend. `FRONTEND_URL` da la base de los enlaces dentro de los correos.
+- **`notifications/mail.py`:** un correo por destinatario, sin repetidos, que nunca lanza excepciones: un fallo se registra (sin guardar la dirección) y el resto sigue.
+- **`notifications/messages.py`:** el texto de cada correo, sin enviar nada. **`events.py`:** quién recibe qué en cada cambio. Las reglas están en RN-34 a RN-38.
+- **Después de guardar:** los servicios de reservas programan el aviso con `transaction.on_commit(..., robust=True)`. Si la operación se deshace no sale nada, y un error dentro del aviso se registra sin afectar la reserva. Debe ser una función normal y no un `functools.partial`, porque Django usa el nombre de la función al registrar el fallo.
+- **Envío síncrono** en las reservas (con `EMAIL_TIMEOUT` de 10 s) y **en segundo plano** (`background.py`, un hilo) en recuperar contraseña, para que el tiempo de respuesta no delate si el correo existe. Con `EMAIL_IN_BACKGROUND=0` todo corre en el momento, que es lo que usan las pruebas.
+- **Enlace de recuperación:** el generador de tokens de Django (`default_token_generator`), atado a la contraseña y al último ingreso, de ahí que sirva una sola vez. Dura una hora (`PASSWORD_RESET_TIMEOUT`). Cambiar la contraseña pone en la lista negra los refresh tokens del usuario.
+- **Límites:** pedir enlace 10/hora por dirección y 3/hora por correo; confirmar 20/hora por dirección.
 
 ### Documentación interactiva y salud
 
