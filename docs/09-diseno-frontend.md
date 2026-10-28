@@ -113,10 +113,21 @@ Misma identidad (bordes, sombras, tipografía, color del negocio), pero con otra
 - **El panel toma el color del negocio**, igual que su página pública.
 - **Anotar una reserva** termina con el enlace del cliente y un mensaje de WhatsApp ya escrito, porque el cliente que llamó no tiene cómo recibir su boleto de otra forma.
 
+Segundo tramo del panel (clientes, bloqueos y ajustes):
+
+- **Cuatro pestañas en el celular.** Clientes, bloqueos y ajustes viven en "Más"; en escritorio, en la barra lateral junto a lo demás.
+- **Avisar sin cancelar.** Al bloquear un horario, las reservas que ya estaban ahí se muestran en un aviso con enlace a cada una; el sistema no las cancela por el dueño.
+- **Formularios con eco legible.** Las reglas muestran lo escrito en lenguaje natural ("120" se lee "2 h", "1440" se lee "1 día") y se validan con los mismos límites que el servidor antes de enviar.
+- **Horario semanal por día.** Cada día se abre o se cierra, admite varios tramos, se puede copiar a todos los días y avisa de solapes; 00:00 al cierre es medianoche.
+- **Color con muestra propia.** Cada muestra lleva su acento, y al guardar todo el panel se repinta.
+- **Lo irreversible pide confirmación**, y si el servidor lo rechaza (un espacio con reservas) el mensaje propone desactivar.
+- **Se midió el ancho en el celular.** Dos pantallas se salían de la pantalla por una columna de grilla sin límite (la ficha del cliente y el editor de horario); ahora toda grilla de página usa una sola columna que no crece.
+
 ## 10. Pendiente de decidir
 
 - **Nombre del producto.** Se usa el nombre de trabajo **Separa** (en Perú "separar" una cancha es reservarla) hasta decidir (Q4). Cambiarlo es cuestión de un archivo de textos.
 - Logotipo definitivo. Los iconos actuales parten de la marca provisional (una S en un sello).
 - Si el modo oscuro necesita un botón manual además de seguir al sistema.
+- Los selectores de hora del navegador siguen su idioma (algunos muestran AM/PM); si molesta, se puede reemplazar por un selector propio de 24 horas.
 - Dividir el paquete de JavaScript por pantallas (hoy unos 485 KB, 152 KB comprimido).
 - Si algún día hay fotos, el bloque de color puede llevar una imagen recortada dentro, sin cambiar el sistema.
