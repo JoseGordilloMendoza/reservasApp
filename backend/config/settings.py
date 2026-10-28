@@ -104,6 +104,7 @@ REST_FRAMEWORK = {
         "auth_login": "20/min",
         "auth_login_email": "5/min",
         "auth_refresh": "60/min",
+        "auth_google": "20/min",
     },
 }
 
@@ -124,6 +125,9 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+# OAuth client id of the web app, from Google Cloud Console. Empty disables Google sign-in.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 
 # Interactive API docs: on in development, opt in elsewhere.
 API_DOCS_ENABLED = os.environ.get("API_DOCS_ENABLED", "1" if DEBUG else "0") == "1"
