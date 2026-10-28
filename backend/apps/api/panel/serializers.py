@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -9,18 +10,34 @@ from apps.api.public.serializers import (
 )
 from apps.availability.models import Block
 from apps.bookings.models import Booking, BookingEvent, BookingStatus
+from apps.bookings.phone import InvalidPhone, normalize_phone
 from apps.businesses.models import Business
-from apps.businesses.settings_schema import effective_settings
+from apps.businesses.presets import preset_for
+from apps.businesses.settings_schema import effective_settings, validate_settings
 from apps.customers.models import Customer
 
 
 class PanelBusinessSerializer(serializers.ModelSerializer):
     settings = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
+    suggested_service_duration_minutes = serializers.SerializerMethodField()
 
     class Meta:
         model = Business
-        fields = ["name", "slug", "business_type", "timezone", "status", "settings", "role"]
+        fields = [
+            "name",
+            "slug",
+            "description",
+            "address",
+            "phone",
+            "whatsapp",
+            "business_type",
+            "timezone",
+            "status",
+            "settings",
+            "suggested_service_duration_minutes",
+            "role",
+        ]
 
     def get_settings(self, business) -> dict:
         """Every option with its effective value (defaults filled in)."""
@@ -28,6 +45,50 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
 
     def get_role(self, business) -> str:
         return self.context["membership"].role
+
+    def get_suggested_service_duration_minutes(self, business) -> int:
+        """Starting duration for a new service, from the business type's preset."""
+        return preset_for(business.business_type).service_duration_minutes
+
+
+def _optional_phone(value):
+    if not value:
+        return ""
+    try:
+        return normalize_phone(value)
+    except InvalidPhone:
+        raise serializers.ValidationError("El número de teléfono no es válido.")
+
+
+class BusinessUpdateSerializer(serializers.ModelSerializer):
+    """What the owner may change. The link, type, timezone and status are not editable."""
+
+    settings = serializers.DictField(
+        required=False,
+        help_text="Only the options to change; the others keep their value.",
+    )
+
+    class Meta:
+        model = Business
+        fields = ["name", "description", "address", "phone", "whatsapp", "settings"]
+
+    def validate_phone(self, value):
+        return _optional_phone(value)
+
+    def validate_whatsapp(self, value):
+        return _optional_phone(value)
+
+    def validate_settings(self, value):
+        try:
+            validate_settings(value)
+        except DjangoValidationError as error:
+            raise serializers.ValidationError(error.messages)
+        return value
+
+    def update(self, business, validated):
+        if "settings" in validated:
+            validated["settings"] = {**business.settings, **validated["settings"]}
+        return super().update(business, validated)
 
 
 class PanelCustomerSerializer(serializers.ModelSerializer):

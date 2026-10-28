@@ -36,6 +36,25 @@ class BusinessView(PanelAPIView):
         responses=s.PanelBusinessSerializer,
     )
     def get(self, request):
+        return self.respond(request)
+
+    @extend_schema(
+        summary="Edit the business page and options",
+        description=(
+            "Name, description, address, phone, WhatsApp and settings. Settings are merged: "
+            "send only the ones to change. The link, type and timezone cannot be changed."
+        ),
+        request=s.BusinessUpdateSerializer,
+        responses={200: s.PanelBusinessSerializer, 400: OpenApiResponse(description="Invalid data.")},
+    )
+    def patch(self, request):
+        update = s.BusinessUpdateSerializer(request.business, data=request.data, partial=True)
+        update.is_valid(raise_exception=True)
+        update.save()
+        return self.respond(request)
+
+    @staticmethod
+    def respond(request):
         serializer = s.PanelBusinessSerializer(
             request.business, context={"membership": request.membership}
         )
