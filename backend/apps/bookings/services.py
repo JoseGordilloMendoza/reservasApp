@@ -13,9 +13,23 @@ from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
 from apps.catalog.models import Resource
 from apps.customers.models import Customer
+from apps.notifications import events
 
 from .models import ACTIVE_STATUSES, Booking, BookingEvent, BookingStatus
 from .phone import normalize_phone
+
+def _notify_after_commit(notify, *args):
+    """Run a notice once the surrounding change is committed, so a rollback sends nothing.
+
+    robust=True logs a failing notice instead of raising it: the change has already happened.
+    It must be a real function, not a partial: Django names the callback when it logs a failure.
+    """
+
+    def send_notice():
+        notify(*args)
+
+    transaction.on_commit(send_notice, robust=True)
+
 
 # A pending booking should not hold the slot into the last half hour before it starts.
 PENDING_EXPIRY_CUTOFF = timedelta(minutes=30)
@@ -180,6 +194,7 @@ def create_booking(
         )
 
     booking.manage_token = token
+    _notify_after_commit(events.booking_created_online, booking, token)
     return booking, token
 
 
@@ -237,6 +252,7 @@ def create_booking_by_business(
         )
 
     booking.manage_token = token
+    _notify_after_commit(events.booking_created_by_business, booking, token)
     return booking, token
 
 
@@ -291,22 +307,40 @@ def cancel_booking_by_customer(booking, now=None):
         booking.save(update_fields=["status"])
         record_event(booking, previous, BookingStatus.CANCELLED, BookingEvent.Actor.CUSTOMER)
 
+    _notify_after_commit(events.booking_cancelled_by_customer, booking)
     return booking
 
 
 def confirm_booking(booking, now=None):
     return _change_status(
-        booking, BookingStatus.CONFIRMED, (BookingStatus.PENDING,), now, clear_hold=True
+        booking,
+        BookingStatus.CONFIRMED,
+        (BookingStatus.PENDING,),
+        now,
+        clear_hold=True,
+        notify=events.booking_confirmed,
     )
 
 
 def reject_booking(booking, now=None):
-    return _change_status(booking, BookingStatus.CANCELLED, (BookingStatus.PENDING,), now)
+    return _change_status(
+        booking,
+        BookingStatus.CANCELLED,
+        (BookingStatus.PENDING,),
+        now,
+        notify=events.booking_rejected,
+    )
 
 
 def cancel_booking_by_business(booking, now=None):
     """The business can cancel at any time; the customer's notice period does not apply."""
-    return _change_status(booking, BookingStatus.CANCELLED, ACTIVE_STATUSES, now)
+    return _change_status(
+        booking,
+        BookingStatus.CANCELLED,
+        ACTIVE_STATUSES,
+        now,
+        notify=events.booking_cancelled_by_business,
+    )
 
 
 def complete_booking(booking, now=None):
@@ -322,8 +356,9 @@ def mark_no_show(booking, now=None):
 
 
 def _change_status(
-    booking, to_status, allowed_from, now, *, clear_hold=False, require_started=False
+    booking, to_status, allowed_from, now, *, clear_hold=False, require_started=False, notify=None
 ):
+    """Move a booking to a new status; `notify`, when given, tells whoever needs to know."""
     now = now or timezone.now()
 
     # Expire first and outside the transaction below, so refusing does not undo it.
@@ -348,6 +383,8 @@ def _change_status(
         booking.save(update_fields=fields)
         record_event(booking, previous, to_status, BookingEvent.Actor.BUSINESS)
 
+    if notify is not None:
+        _notify_after_commit(notify, booking)
     return booking
 
 
@@ -393,6 +430,7 @@ def _mark_expired(booking_id, now):
                 to_status=BookingStatus.EXPIRED,
                 actor=BookingEvent.Actor.SYSTEM,
             )
+            _notify_after_commit(events.booking_expired, booking_id)
     return updated
 
 
