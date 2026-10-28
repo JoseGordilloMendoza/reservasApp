@@ -67,6 +67,27 @@ def test_a_number_can_be_cleared(panel, business):
     assert patch(panel, phone="").json()["phone"] == ""
 
 
+def test_the_accent_color_can_be_chosen_from_the_available_ones(panel, business):
+    assert panel.get(reverse("panel-business")).json()["accent"] == "lime"
+
+    response = patch(panel, accent="rose")
+
+    assert response.status_code == 200
+    assert response.json()["accent"] == "rose"
+    business.refresh_from_db()
+    assert business.accent == "rose"
+
+
+@pytest.mark.parametrize("accent", ["purple", "", "#ff00ff"])
+def test_an_unknown_accent_is_rejected(panel, business, accent):
+    response = patch(panel, accent=accent)
+
+    assert response.status_code == 400
+    assert "accent" in response.json()
+    business.refresh_from_db()
+    assert business.accent == "lime"
+
+
 def test_the_name_cannot_be_empty(panel):
     assert patch(panel, name="").status_code == 400
 
