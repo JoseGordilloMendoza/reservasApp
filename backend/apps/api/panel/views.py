@@ -5,12 +5,13 @@ from zoneinfo import ZoneInfo
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.api.errors import error_response
 from apps.bookings import services
 from apps.bookings.models import Booking
 
@@ -106,3 +107,59 @@ class BookingDetailView(PanelAPIView):
         booking = get_object_or_404(bookings_of(request.business), pk=pk)
         services.refresh_if_stale(booking)
         return Response(s.PanelBookingDetailSerializer(booking).data)
+
+
+class BookingActionView(PanelAPIView):
+    """Applies one status change to a booking of the acting business."""
+
+    perform = None  # set by each subclass to a function from apps.bookings.services
+
+    def post(self, request, pk):
+        booking = get_object_or_404(bookings_of(request.business), pk=pk)
+        try:
+            type(self).perform(booking)
+        except services.BookingError as error:
+            return error_response(error)
+        booking = get_object_or_404(bookings_of(request.business), pk=pk)
+        return Response(s.PanelBookingDetailSerializer(booking).data)
+
+
+def action_docs(summary, description):
+    return extend_schema(
+        summary=summary,
+        description=description,
+        request=None,
+        responses={
+            200: s.PanelBookingDetailSerializer,
+            404: OpenApiResponse(description="No such booking in this business."),
+            409: s.ErrorSerializer,
+        },
+    )
+
+
+@action_docs("Confirm a booking", "Only pending bookings; an overdue one answers booking_expired.")
+class ConfirmBookingView(BookingActionView):
+    perform = staticmethod(services.confirm_booking)
+
+
+@action_docs("Reject a booking", "Only pending bookings. The slot becomes free.")
+class RejectBookingView(BookingActionView):
+    perform = staticmethod(services.reject_booking)
+
+
+@action_docs(
+    "Cancel a booking",
+    "Pending or confirmed bookings, at any time (the customer's notice period does not apply).",
+)
+class CancelBookingView(BookingActionView):
+    perform = staticmethod(services.cancel_booking_by_business)
+
+
+@action_docs("Mark a booking as attended", "Only confirmed bookings that have already started.")
+class CompleteBookingView(BookingActionView):
+    perform = staticmethod(services.complete_booking)
+
+
+@action_docs("Mark a no-show", "Only confirmed bookings that have already started.")
+class NoShowBookingView(BookingActionView):
+    perform = staticmethod(services.mark_no_show)

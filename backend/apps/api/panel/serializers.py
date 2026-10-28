@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.api.public.serializers import ResourceRefSerializer, ServiceRefSerializer
+from apps.api.public.serializers import ErrorSerializer, ResourceRefSerializer, ServiceRefSerializer
 from apps.bookings.models import Booking, BookingEvent, BookingStatus
 from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
