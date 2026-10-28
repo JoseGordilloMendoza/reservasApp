@@ -9,7 +9,7 @@ import { Button, ButtonLink, buttonClass } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
 import { Ticket } from "../components/Ticket";
 import { ApiError, api } from "../lib/api";
-import { formatLongDate, formatTime } from "../lib/dates";
+import { clockLabel, formatLongDate, formatTime } from "../lib/dates";
 import { useAccent, useBooking, useBusiness } from "../lib/queries";
 import { DEFAULT_TIME_ZONE, saveBooking } from "../lib/storage";
 import { STATUS_HEADLINE, shortCode } from "../lib/status";
@@ -21,7 +21,7 @@ function statusNote(booking: BookingDetails, timeZone: string): string {
   switch (booking.status) {
     case "pending":
       return booking.expires_at
-        ? `El negocio tiene que confirmarla. Si no lo hace antes de las ${formatTime(booking.expires_at, timeZone)}, el horario se libera.`
+        ? `El negocio tiene que confirmarla. Si no lo hace antes de ${clockLabel(booking.expires_at, timeZone)}, el horario se libera.`
         : "El negocio tiene que confirmarla.";
     case "confirmed":
       return "Todo en orden. Muestra este boleto si te lo piden.";
