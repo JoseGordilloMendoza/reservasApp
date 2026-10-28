@@ -9,6 +9,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { BlocksPage } from "./pages/panel/BlocksPage";
 import { BookingDetailPage } from "./pages/panel/BookingDetailPage";
 import { BookingsPage } from "./pages/panel/BookingsPage";
+import { BusinessSettingsPage } from "./pages/panel/BusinessSettingsPage";
 import { CustomerDetailPage } from "./pages/panel/CustomerDetailPage";
 import { CustomersPage } from "./pages/panel/CustomersPage";
 import { LoginPage } from "./pages/panel/LoginPage";
@@ -16,6 +17,7 @@ import { MorePage } from "./pages/panel/MorePage";
 import { NewBookingPage } from "./pages/panel/NewBookingPage";
 import { PanelHome } from "./pages/panel/PanelHome";
 import { PanelLayout } from "./pages/panel/PanelLayout";
+import { SettingsPage } from "./pages/panel/SettingsPage";
 import { TicketPage } from "./pages/TicketPage";
 
 export function App() {
@@ -45,6 +47,8 @@ export function App() {
         <Route path="clientes" element={<CustomersPage />} />
         <Route path="clientes/:id" element={<CustomerDetailPage />} />
         <Route path="bloqueos" element={<BlocksPage />} />
+        <Route path="ajustes" element={<SettingsPage />} />
+        <Route path="ajustes/negocio" element={<BusinessSettingsPage />} />
         <Route path="mas" element={<MorePage />} />
       </Route>
     </Routes>
