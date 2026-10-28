@@ -132,7 +132,8 @@ API REST en `/api/v1/`, dividida por audiencia:
 |---|---|---|
 | Pública | Ver la tabla siguiente | Ninguna, con límite de solicitudes |
 | Gestión del cliente | `GET /api/v1/public/bookings/{token}/` y `POST .../cancel/` | Token del link |
-| Panel del negocio | `GET /api/v1/panel/bookings` | Sesión del usuario |
+| Autenticación | `/api/v1/auth/login/`, `google/`, `refresh/`, `logout/`, `me/` | Ninguna (salvo `me/`), con límite de intentos |
+| Panel del negocio | `/api/v1/panel/...` (ver más abajo) | Token JWT del usuario |
 | Superadmin | `/admin/` de Django en el MVP | Sesión de superusuario |
 
 ### API pública implementada (M4)
@@ -161,6 +162,44 @@ Hay pruebas con hilos y conexiones reales: 8 solicitudes simultáneas al mismo h
 **Límite de solicitudes** (por dirección del cliente): lectura 120 por minuto, creación de reservas 30 por hora, gestión por link 60 por minuto. En Perú varias personas comparten la misma dirección en redes móviles, por eso el límite de creación es holgado y el control real es el tope de reservas activas por celular.
 
 **Borrado:** un recurso, servicio o cliente con reservas no se puede borrar (`RESTRICT`); un negocio completo sí, y arrastra todo lo suyo. Lo normal es suspender, no borrar.
+
+### Autenticación (M5)
+
+**Usuario:** modelo propio (`accounts.User`) donde el email es el identificador, guardado en minúsculas y único. Un `Membership` une a un usuario con un negocio y su rol (`owner` o `staff`); los superusuarios son el equipo de la plataforma y no tienen negocio.
+
+**Sesión:** tokens JWT, porque el frontend se servirá desde otro dominio que la API.
+
+| Ruta | Qué hace |
+|---|---|
+| `POST /api/v1/auth/login/` | Email y contraseña → `access` (15 min), `refresh` (7 días) y el usuario con sus negocios |
+| `POST /api/v1/auth/google/` | Token de identidad de Google → la misma sesión |
+| `POST /api/v1/auth/refresh/` | Renueva el acceso y **rota** el refresh: el anterior queda invalidado |
+| `POST /api/v1/auth/logout/` | Invalida el refresh |
+| `GET /api/v1/auth/me/` | Usuario actual y sus negocios |
+
+- Correo o contraseña incorrectos dan siempre la misma respuesta (`invalid_credentials`), exista o no el correo.
+- **Google** verifica firma, vencimiento, emisor y que el token se emitió para nuestro `GOOGLE_CLIENT_ID`. **Nunca crea cuentas**: los negocios los da de alta la plataforma, así que el dueño ya existe. Exige correo verificado por Google; la primera vez enlaza el id de Google al usuario y desde entonces se identifica por ese id. Otra cuenta de Google no puede apropiarse de un usuario ya enlazado.
+- Límites de intentos: login 20/min por dirección y 5/min por correo (así no se reparten las pruebas de contraseña de una cuenta entre muchas direcciones), Google 20/min, refresh 60/min.
+- El correo se compara sin distinguir mayúsculas, incluido el login del admin.
+
+### API del panel del negocio (M5)
+
+Cada petición actúa sobre **un** negocio del usuario: automático si tiene uno, o el indicado en la cabecera `X-Business` (su slug) si tiene varios. Todas las consultas filtran por ese negocio; un negocio ajeno responde igual que uno inexistente. Un negocio suspendido sigue accesible para su dueño.
+
+| Ruta | Qué hace | Quién |
+|---|---|---|
+| `GET /panel/business/` | El negocio y el valor efectivo de cada opción | Miembros |
+| `GET /panel/bookings/` | Reservas con filtros (estado, recurso, fechas locales, texto) y paginación | Miembros |
+| `POST /panel/bookings/` | Registra una reserva tomada por teléfono o WhatsApp | Miembros |
+| `GET /panel/bookings/{id}/` | Detalle con historial de estados | Miembros |
+| `POST /panel/bookings/{id}/confirm/ reject/ cancel/ complete/ no-show/` | Cambios de estado | Miembros |
+| `GET /panel/customers/`, `GET` y `PATCH /panel/customers/{id}/` | Fichas de clientes, nombre, correo y bloqueo | Miembros |
+| `GET /panel/blocks/` | Bloqueos de horario | Miembros |
+| `POST /panel/blocks/`, `DELETE /panel/blocks/{id}/` | Crear y quitar bloqueos | Solo el dueño |
+
+Los errores de reglas siguen el formato `{"code", "detail"}`: `invalid_transition`, `booking_expired`, `not_started_yet`, `slot_unavailable`, `slot_blocked`, `slot_in_past`.
+
+Pendiente de esta parte: gestión de recursos, servicios, horarios semanales, perfil público y opciones (ver el plan).
 
 ### Documentación interactiva y salud
 
