@@ -51,6 +51,15 @@
 - **RN-25.** Quien pertenece a un negocio, sea dueño o personal, puede operar todo el panel: reservas, clientes y bloqueos (y, cuando exista, la configuración). Los negocios son pequeños y quien atiende lo hace todo. La diferencia entre dueño y personal se reserva para lo que afecte a la cuenta, como gestionar usuarios o la suscripción.
 - **RN-26.** Un dueño de un negocio suspendido sigue pudiendo entrar a consultar sus datos.
 - **RN-27.** El teléfono de un cliente identifica a la persona en ese negocio y no se puede cambiar; sí su nombre y correo, y se puede bloquear.
+- **RN-39.** Quien olvidó su contraseña pide un enlace por correo. La respuesta es la misma y llega igual de rápido exista o no la cuenta, para no revelar quién está registrado. El enlace sirve una sola vez y vale una hora; al usarlo se cierran las sesiones abiertas. Una cuenta que solo entra con Google también puede fijar una contraseña así. Los pedidos están limitados por dirección y por correo.
+
+## Avisos por correo
+
+- **RN-34.** Cuando un cliente reserva en línea, todos los usuarios activos del negocio reciben un correo con los datos de la reserva y, si está pendiente, hasta cuándo se mantiene el horario. Cuando el cliente cancela, también se les avisa.
+- **RN-35.** Si el cliente dejó su correo, recibe un correo al reservar (pendiente o confirmada), cuando el negocio confirma, rechaza o cancela, y cuando el horario vence sin respuesta. Sin correo no se le escribe; el botón de WhatsApp sigue disponible.
+- **RN-36.** Solo el primer correo al cliente trae el enlace a su boleto, porque ese enlace se genera una vez y no se puede reconstruir. Los siguientes traen los datos de la reserva y cómo contactar al negocio.
+- **RN-37.** Un correo que falla no impide, no deshace ni retrasa la reserva ni su cambio de estado. El fallo se registra. Los avisos salen una vez que el cambio quedó guardado, nunca antes.
+- **RN-38.** Las reservas que anota el propio negocio solo avisan al cliente (si dejó su correo); el negocio ya lo sabe.
 
 ## Configuración del negocio
 
