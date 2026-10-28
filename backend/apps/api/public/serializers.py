@@ -43,6 +43,7 @@ class BusinessPublicSerializer(serializers.ModelSerializer):
             "address",
             "phone",
             "whatsapp",
+            "accent",
             "business_type",
             "timezone",
             "resources",

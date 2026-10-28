@@ -91,6 +91,15 @@ def test_contact_details_are_empty_until_filled_in(api, business):
     assert (data["description"], data["address"], data["phone"], data["whatsapp"]) == ("", "", "", "")
 
 
+def test_profile_tells_which_accent_color_to_use(api, business):
+    assert api.get(link("public-business", slug=business.slug)).json()["accent"] == "lime"
+
+    business.accent = "cobalt"
+    business.save()
+
+    assert api.get(link("public-business", slug=business.slug)).json()["accent"] == "cobalt"
+
+
 def test_profile_does_not_expose_internal_settings(api, business):
     data = api.get(link("public-business", slug=business.slug)).json()
 
