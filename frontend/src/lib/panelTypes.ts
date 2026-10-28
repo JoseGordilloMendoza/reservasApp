@@ -46,6 +46,32 @@ export interface PanelCustomer {
   is_blocked: boolean;
 }
 
+/** A customer as the customer list shows it. */
+export interface CustomerSummary extends PanelCustomer {
+  created_at: string;
+  bookings_count: number;
+  last_booking_at: string | null;
+}
+
+export interface CustomerBooking {
+  id: number;
+  status: BookingStatus;
+  starts_at: string;
+  ends_at: string;
+  resource: { id: number; name: string };
+  service: { id: number; name: string };
+}
+
+export interface CustomerDetail extends CustomerSummary {
+  bookings: CustomerBooking[];
+}
+
+export interface CustomerFilters {
+  q?: string;
+  /** Only blocked (true) or only allowed (false) customers. */
+  blocked?: boolean;
+}
+
 export interface PanelBooking {
   id: number;
   status: BookingStatus;

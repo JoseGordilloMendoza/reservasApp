@@ -2,6 +2,9 @@ import { ApiError, request } from "./http";
 import type {
   BookingAction,
   BookingFilters,
+  CustomerDetail,
+  CustomerFilters,
+  CustomerSummary,
   NewPanelBooking,
   Page,
   PanelBooking,
@@ -58,6 +61,15 @@ function bookingQuery(filters: BookingFilters, page: number): string {
   return query ? `?${query}` : "";
 }
 
+function customerQuery(filters: CustomerFilters, page: number): string {
+  const params = new URLSearchParams();
+  if (filters.q?.trim()) params.set("q", filters.q.trim());
+  if (filters.blocked !== undefined) params.set("blocked", String(filters.blocked));
+  if (page > 1) params.set("page", String(page));
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
+
 export const panelApi = {
   // Signing in does not need a token yet.
   login: (email: string, password: string) =>
@@ -83,6 +95,14 @@ export const panelApi = {
 
   createBooking: (booking: NewPanelBooking) =>
     authed<PanelCreatedBooking>("/panel/bookings/", { method: "POST", body: JSON.stringify(booking) }),
+
+  customers: (filters: CustomerFilters = {}, page = 1) =>
+    authed<Page<CustomerSummary>>(`/panel/customers/${customerQuery(filters, page)}`),
+
+  customer: (id: number) => authed<CustomerDetail>(`/panel/customers/${id}/`),
+
+  updateCustomer: (id: number, changes: { name?: string; email?: string; is_blocked?: boolean }) =>
+    authed<CustomerDetail>(`/panel/customers/${id}/`, { method: "PATCH", body: JSON.stringify(changes) }),
 
   services: () => authed<Page<PanelService>>("/panel/services/?page_size=200"),
 };
