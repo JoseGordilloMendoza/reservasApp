@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. M8 (correos y recuperar contraseña) está en construcción; siguen M9 (superadmin) y M10 (despliegue).
+**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. M8 (correos y recuperar contraseña) también está hecho; siguen M9 (superadmin) y M10 (despliegue).
 
 **M7 (panel en pantalla), completado:**
 
@@ -28,7 +28,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 | **M5. API del panel** | El negocio gestiona sus reservas | Inicio de sesión, aislamiento entre negocios, confirmar, rechazar, cancelar, reservas manuales, bloqueos, clientes | Un negocio opera todo su flujo y nunca ve datos de otro (pruebas de aislamiento) |
 | **M6. Frontend público (PWA)** | Pantalla de reserva para el cliente | Página del negocio, selección de horario, formulario, resultado, gestión por link | Una reserva completa desde un celular |
 | **M7. Frontend del panel** | Pantalla de gestión | Lista, acciones sobre reservas, clientes, bloqueos, configuración (el calendario queda para después) | El dueño gestiona su negocio sin usar el admin |
-| **M8. Notificaciones** | Avisos sin costo | Correo al negocio y al cliente, botones de WhatsApp con mensaje prellenado | Los avisos salen en los eventos clave |
+| **M8. Notificaciones** | Avisos sin costo | Correo al negocio y al cliente, recuperar contraseña, botones de WhatsApp con mensaje prellenado | Los avisos salen en los eventos clave |
 | **M9. Superadmin y suscripciones** | Operar como SaaS | Alta de negocios, suscripción y vigencia, suspensión y reactivación | Se da de alta un negocio y se suspende sin perder datos |
 | **M10. Despliegue y piloto** | Salir a producción | Imagen de producción, hosting elegido, respaldos, dominio | Un negocio real recibe reservas |
 
@@ -46,7 +46,8 @@ El backend arranca limpio desde cero con `docker compose up` y sus endpoints res
 - **Acceso con Google en el panel:** el botón ya se muestra, pero Google solo lo habilita para orígenes autorizados. En Google Cloud Console, agregar a los "Orígenes de JavaScript autorizados" `http://localhost:5173` y también `http://localhost` (Google pide ambos para probar en local), y el dominio real al publicar. Los cambios pueden tardar minutos en aplicarse. El frontend recibe el ID como `VITE_GOOGLE_CLIENT_ID` al compilar.
 - **Acceso con Google:** crear un ID de cliente OAuth de tipo "Aplicación web" en Google Cloud Console, autorizar el dominio del frontend y entregarlo como `GOOGLE_CLIENT_ID`. Sin él, el endpoint responde 503.
 - **Tokens:** se firman con `SECRET_KEY`, que debe ser larga y secreta. Los refresh usados se acumulan en la base de datos; programar `python manage.py flushexpiredtokens` (por ejemplo a diario).
-- **Recuperar contraseña** (NG-01) queda para M8, junto con el envío de correos.
+- **Correo:** elegir un proveedor SMTP con capa gratuita (por ejemplo Brevo o Resend), verificar el dominio remitente (SPF y DKIM, o los correos caen en spam) y definir `EMAIL_HOST`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` y `FRONTEND_URL`. Revisar el límite diario del proveedor frente al volumen esperado. El envío en segundo plano de recuperar contraseña usa un hilo del propio proceso; si el hosting duerme el proceso, el correo puede perderse y la persona debe pedirlo otra vez.
+- **Recordatorios** antes de la reserva (NT-05) siguen para después: necesitan una tarea programada.
 - **Expiración programada:** el comando `python manage.py expire_pending_bookings` ordena los datos y conviene ejecutarlo cada pocos minutos. Si no corre, el sistema sigue siendo correcto (la expiración también ocurre al consultar y al reservar).
 
 ## Orden y dependencias
