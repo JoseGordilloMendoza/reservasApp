@@ -6,6 +6,11 @@ urlpatterns = [
     path("business/", views.BusinessView.as_view(), name="panel-business"),
     path("resources/", views.ResourceListCreateView.as_view(), name="panel-resources"),
     path("resources/<int:pk>/", views.ResourceDetailView.as_view(), name="panel-resource"),
+    path(
+        "resources/<int:pk>/schedule/",
+        views.ResourceScheduleView.as_view(),
+        name="panel-resource-schedule",
+    ),
     path("services/", views.ServiceListCreateView.as_view(), name="panel-services"),
     path("services/<int:pk>/", views.ServiceDetailView.as_view(), name="panel-service"),
     path("blocks/", views.BlockListCreateView.as_view(), name="panel-blocks"),

@@ -3,6 +3,7 @@ from datetime import datetime, time, timedelta
 from datetime import timezone as dt_timezone
 from zoneinfo import ZoneInfo
 
+from django.db import transaction
 from django.db.models import Count, Max, Q, RestrictedError
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -13,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.api.errors import error_response
-from apps.availability.models import Block
+from apps.availability.models import AvailabilityRule, Block
 from apps.bookings import services
 from apps.bookings.models import ACTIVE_STATUSES, Booking
 from apps.catalog.models import Resource, Service
@@ -287,6 +288,48 @@ class ResourceDetailView(generics.RetrieveUpdateDestroyAPIView):
             return super().delete(request, *args, **kwargs)
         except RestrictedError:
             return Response(HAS_BOOKINGS, status=status.HTTP_409_CONFLICT)
+
+
+class ResourceScheduleView(PanelAPIView):
+    def resource(self, request, pk):
+        return get_object_or_404(Resource, pk=pk, business=request.business)
+
+    @staticmethod
+    def respond(resource):
+        rules = AvailabilityRule.objects.filter(resource=resource).order_by("weekday", "start_time")
+        return Response({"rules": s.ScheduleRuleSerializer(rules, many=True).data})
+
+    @extend_schema(
+        summary="Weekly opening hours of a resource",
+        description="Local time of the business. An empty list means the resource is closed.",
+        responses=s.ScheduleSerializer,
+    )
+    def get(self, request, pk):
+        return self.respond(self.resource(request, pk))
+
+    @extend_schema(
+        summary="Replace the weekly opening hours",
+        description=(
+            "Send the complete schedule; it replaces the current one. Several windows per day are "
+            "allowed but must not overlap. An end of 00:00 means midnight, and 00:00-00:00 means "
+            "open all day. Hours past midnight go in a second window on the next weekday. "
+            "Existing bookings are not affected."
+        ),
+        request=s.ScheduleSerializer,
+        responses={200: s.ScheduleSerializer, 400: OpenApiResponse(description="Invalid schedule.")},
+    )
+    def put(self, request, pk):
+        resource = self.resource(request, pk)
+        schedule = s.ScheduleSerializer(data=request.data)
+        schedule.is_valid(raise_exception=True)
+
+        with transaction.atomic():
+            AvailabilityRule.objects.filter(resource=resource).delete()
+            AvailabilityRule.objects.bulk_create(
+                AvailabilityRule(business=request.business, resource=resource, **rule)
+                for rule in schedule.validated_data["rules"]
+            )
+        return self.respond(resource)
 
 
 class ServiceListCreateView(generics.ListCreateAPIView):

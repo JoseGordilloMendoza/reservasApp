@@ -1,3 +1,5 @@
+from datetime import time
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
@@ -8,7 +10,7 @@ from apps.api.public.serializers import (
     ResourceRefSerializer,
     ServiceRefSerializer,
 )
-from apps.availability.models import Block
+from apps.availability.models import AvailabilityRule, Block
 from apps.bookings.models import Booking, BookingEvent, BookingStatus
 from apps.bookings.phone import InvalidPhone, normalize_phone
 from apps.businesses.models import Business
@@ -271,6 +273,46 @@ class ServiceSerializer(serializers.ModelSerializer):
                 {"resource_id": "Un servicio no se puede mover a otro recurso."}
             )
         return attrs
+
+
+WEEKDAY_NAMES = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+MAX_SCHEDULE_RULES = 50
+
+
+class ScheduleRuleSerializer(serializers.ModelSerializer):
+    weekday = serializers.IntegerField(min_value=0, max_value=6, help_text="0 = Monday ... 6 = Sunday")
+
+    class Meta:
+        model = AvailabilityRule
+        fields = ["weekday", "start_time", "end_time"]
+
+    def validate(self, attrs):
+        start, end = attrs["start_time"], attrs["end_time"]
+        # An end of 00:00 means midnight; 00:00-00:00 is open all day.
+        if end != time.min and end <= start:
+            raise serializers.ValidationError(
+                {"end_time": "Debe ser posterior a la hora de inicio (00:00 significa medianoche)."}
+            )
+        return attrs
+
+
+class ScheduleSerializer(serializers.Serializer):
+    rules = ScheduleRuleSerializer(many=True, max_length=MAX_SCHEDULE_RULES)
+
+    def validate_rules(self, rules):
+        by_day = {}
+        for rule in rules:
+            end = rule["end_time"] if rule["end_time"] != time.min else time.max
+            by_day.setdefault(rule["weekday"], []).append((rule["start_time"], end))
+
+        for weekday, windows in by_day.items():
+            windows.sort()
+            for (_, earlier_end), (later_start, _) in zip(windows, windows[1:]):
+                if later_start < earlier_end:
+                    raise serializers.ValidationError(
+                        f"Los horarios del {WEEKDAY_NAMES[weekday]} se solapan."
+                    )
+        return rules
 
 
 class BlockSerializer(serializers.ModelSerializer):
