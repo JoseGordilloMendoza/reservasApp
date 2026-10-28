@@ -44,8 +44,8 @@ function Day({
       </div>
 
       {windows.map((window, index) => (
-        <div key={index} className="grid grid-cols-[1fr_1fr_auto] items-end gap-3">
-          <label className="grid gap-1 text-sm font-semibold">
+        <div key={index} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-3">
+          <label className="grid min-w-0 gap-1 text-sm font-semibold">
             Abre
             <input
               type="time"
@@ -56,7 +56,7 @@ function Day({
               className={TIME}
             />
           </label>
-          <label className="grid gap-1 text-sm font-semibold">
+          <label className="grid min-w-0 gap-1 text-sm font-semibold">
             Cierra
             <input
               type="time"
@@ -126,7 +126,7 @@ function ScheduleEditor({ resourceId, initial }: { resourceId: number; initial: 
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-1 gap-4">
       {week.map((windows, weekday) => (
         <Day
           key={weekday}
@@ -184,7 +184,7 @@ function ScheduleScreen({ id }: { id: number }) {
   }
 
   return (
-    <div className="grid max-w-[34rem] gap-6">
+    <div className="grid max-w-[34rem] grid-cols-1 gap-6">
       <Link to="/panel/ajustes/espacios" className="inline-flex w-fit items-center gap-2 font-display font-bold underline decoration-[3px] underline-offset-4">
         <ArrowLeft aria-hidden="true" />
         Espacios
