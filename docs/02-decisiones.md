@@ -47,6 +47,11 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D39 | Una reserva manual del dueño puede salirse del horario y del tope, pero no solaparse con reservas ni bloqueos | Tomada | El dueño decide, la integridad se mantiene |
 | D40 | Crear un bloqueo no cancela reservas; se avisan las que quedan en conflicto | Tomada | Ya estaba en RN-04 |
 | D41 | La recuperación de contraseña se hace en M8, junto con el correo | Tomada | Necesita el envío de correos |
+| D42 | El horario semanal de un recurso se lee y se reemplaza completo en una sola llamada (`PUT`) | Tomada | Encaja con una pantalla de configuración y es atómico |
+| D43 | Un recurso o servicio con reservas no se borra, se desactiva | Tomada | Conserva el historial; ya lo garantiza la base de datos |
+| D44 | Las opciones del negocio se fusionan al editar (solo cambian las enviadas) | Tomada | Evita pisar opciones que la pantalla no mostró |
+| D45 | El link, tipo, zona horaria y estado del negocio no los edita el negocio | Tomada | El link es la dirección pública; el estado depende de la suscripción |
+| D46 | Las imágenes del negocio quedan fuera del MVP | Propuesta | Necesitan almacenamiento de archivos, que sumaría costo y complejidad |
 
 ## Preguntas abiertas
 
