@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. Siguen M8 (correos y recuperar contraseña), M9 (superadmin) y M10 (despliegue).
+**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. M8 (correos y recuperar contraseña) está en construcción; siguen M9 (superadmin) y M10 (despliegue).
 
 **M7 (panel en pantalla), completado:**
 
