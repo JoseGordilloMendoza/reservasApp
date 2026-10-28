@@ -19,6 +19,7 @@ import { PanelHome } from "./pages/panel/PanelHome";
 import { PanelLayout } from "./pages/panel/PanelLayout";
 import { RulesSettingsPage } from "./pages/panel/RulesSettingsPage";
 import { SchedulePage } from "./pages/panel/SchedulePage";
+import { ServicesPage } from "./pages/panel/ServicesPage";
 import { SettingsPage } from "./pages/panel/SettingsPage";
 import { SpacesPage } from "./pages/panel/SpacesPage";
 import { TicketPage } from "./pages/TicketPage";
@@ -55,6 +56,7 @@ export function App() {
         <Route path="ajustes/reglas" element={<RulesSettingsPage />} />
         <Route path="ajustes/espacios" element={<SpacesPage />} />
         <Route path="ajustes/espacios/:id/horario" element={<SchedulePage />} />
+        <Route path="ajustes/servicios" element={<ServicesPage />} />
         <Route path="mas" element={<MorePage />} />
       </Route>
     </Routes>
