@@ -8,6 +8,7 @@ import type {
   BookingFilters,
   CustomerDetail,
   CustomerFilters,
+  NewBlock,
   NewPanelBooking,
   PanelBookingDetail,
 } from "./panelTypes";
@@ -147,5 +148,43 @@ export function useUpdateCustomer() {
       void queryClient.invalidateQueries({ queryKey: ["panel", scope, "customers", "list"] });
       void queryClient.invalidateQueries({ queryKey: ["panel", scope, "bookings"] });
     },
+  });
+}
+
+export function useResources() {
+  const scope = useScope();
+  return useQuery({
+    queryKey: ["panel", scope, "resources"],
+    queryFn: panelApi.resources,
+    enabled: scope !== "",
+    staleTime: 60_000,
+  });
+}
+
+/** Upcoming blocks of the business. */
+export function useBlocks() {
+  const scope = useScope();
+  return useQuery({
+    queryKey: ["panel", scope, "blocks"],
+    queryFn: panelApi.blocks,
+    enabled: scope !== "",
+  });
+}
+
+export function useCreateBlock() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (block: NewBlock) => panelApi.createBlock(block),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "blocks"] }),
+  });
+}
+
+export function useDeleteBlock() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => panelApi.deleteBlock(id),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "blocks"] }),
   });
 }
