@@ -138,6 +138,16 @@ def test_expire_stale_bookings_only_touches_overdue_pending_ones(business, booke
     assert confirmed.status == BookingStatus.CONFIRMED
 
 
+def test_expiring_can_be_limited_to_one_business(business, booked):
+    from apps.businesses.models import Business
+
+    booked()
+    other = Business.objects.create(slug="otro", name="Otro")
+
+    assert services.expire_stale_bookings(now=NOW + timedelta(hours=3), business=other) == 0
+    assert services.expire_stale_bookings(now=NOW + timedelta(hours=3), business=business) == 1
+
+
 def test_expiring_is_recorded_and_not_repeated(booked):
     booking = booked()
     later = NOW + timedelta(hours=3)

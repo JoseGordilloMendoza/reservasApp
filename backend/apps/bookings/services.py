@@ -359,15 +359,16 @@ def refresh_if_stale(booking, now=None):
     return booking
 
 
-def expire_stale_bookings(now=None):
-    """Expire every pending booking whose hold ran out. Returns how many were expired."""
+def expire_stale_bookings(now=None, *, business=None):
+    """Expire pending bookings whose hold ran out, of one business or of all.
+
+    Returns how many were expired.
+    """
     now = now or timezone.now()
-    ids = list(
-        Booking.objects.filter(
-            status=BookingStatus.PENDING, expires_at__lte=now
-        ).values_list("pk", flat=True)
-    )
-    return sum(_mark_expired(pk, now) for pk in ids)
+    stale = Booking.objects.filter(status=BookingStatus.PENDING, expires_at__lte=now)
+    if business is not None:
+        stale = stale.filter(business=business)
+    return sum(_mark_expired(pk, now) for pk in list(stale.values_list("pk", flat=True)))
 
 
 def _is_stale_pending(booking, now):
