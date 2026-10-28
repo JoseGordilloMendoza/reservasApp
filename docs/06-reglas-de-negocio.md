@@ -48,7 +48,7 @@
 - **RN-22.** Los intentos de acceso están limitados por dirección y por correo. Superado el límite, ni la contraseña correcta entra hasta que pase el minuto.
 - **RN-23.** La sesión dura mientras se renueve: el acceso vence a los 15 minutos y la renovación a los 7 días. Cada renovación invalida la anterior, y cerrar sesión la invalida del todo.
 - **RN-24.** Un usuario actúa sobre un solo negocio por petición. Si pertenece a varios, indica cuál. Nunca ve ni modifica datos de otro negocio.
-- **RN-25.** El **dueño** puede todo; el **personal** gestiona reservas y clientes y ve los bloqueos, pero no crea ni quita bloqueos ni cambia la configuración.
+- **RN-25.** Quien pertenece a un negocio, sea dueño o personal, puede operar todo el panel: reservas, clientes y bloqueos (y, cuando exista, la configuración). Los negocios son pequeños y quien atiende lo hace todo. La diferencia entre dueño y personal se reserva para lo que afecte a la cuenta, como gestionar usuarios o la suscripción.
 - **RN-26.** Un dueño de un negocio suspendido sigue pudiendo entrar a consultar sus datos.
 - **RN-27.** El teléfono de un cliente identifica a la persona en ese negocio y no se puede cambiar; sí su nombre y correo, y se puede bloquear.
 
