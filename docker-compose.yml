@@ -20,6 +20,8 @@ services:
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     environment:
       DEBUG: "1"
+      # "backend" is the name the frontend dev server uses to reach this container.
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       DATABASE_URL: postgres://reservas:reservas@db:5432/reservas
     volumes:
