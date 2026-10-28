@@ -50,6 +50,28 @@ Para enviarlos de verdad, copia `.env.example` a `.env` y completa los datos SMT
 | `DEFAULT_FROM_EMAIL` | Remitente, por ejemplo `Separa <avisos@tudominio.pe>` |
 | `FRONTEND_URL` | Dirección de la aplicación, para los enlaces dentro de los correos |
 
+Con `EMAIL_USE_SSL=1` se usa SSL directo (puerto 465) en lugar de STARTTLS (587); la mayoría de proveedores usa el segundo.
+
+**Comprobar que funciona**, sin esperar a una reserva real:
+
+```bash
+docker compose run --rm backend python manage.py send_test_email tu@correo.com
+```
+
+Muestra la configuración en uso (sin la contraseña) y, si algo falla, el error completo.
+
+**Proveedores probados en papel** (ambos con capa gratuita, sin tarjeta). Los dos exigen un dominio propio verificado para entregar a cualquier destinatario:
+
+| | Resend (propuesto para empezar) | Brevo (si hace falta más volumen) |
+|---|---|---|
+| Límite gratis | 100 al día y 3000 al mes | 300 al día |
+| `EMAIL_HOST` | `smtp.resend.com` | `smtp-relay.brevo.com` |
+| `EMAIL_PORT` | `587` (también 465 con `EMAIL_USE_SSL=1`) | `587` |
+| `EMAIL_HOST_USER` | `resend` | el usuario SMTP de tu cuenta Brevo |
+| `EMAIL_HOST_PASSWORD` | tu clave de API de Resend | tu clave SMTP de Brevo |
+
+Para probar sin dominio, Resend permite enviar con `DEFAULT_FROM_EMAIL=onboarding@resend.dev`, pero **solo al correo con el que creaste tu cuenta**. Sirve para ver un correo real llegar a tu bandeja, no para clientes.
+
 Un correo que falla no afecta a la reserva: queda registrado en el log del backend. El detalle de quién recibe qué está en [06 - Reglas de negocio](docs/06-reglas-de-negocio.md).
 
 ## Dar de alta un negocio y su dueño
