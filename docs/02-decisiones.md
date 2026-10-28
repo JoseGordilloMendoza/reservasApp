@@ -42,7 +42,7 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D34 | Sesiones con tokens JWT (acceso 15 min, renovación 7 días con rotación) | Tomada | El frontend irá en otro dominio que la API |
 | D35 | Modelo de usuario propio con el correo como identificador, sin distinguir mayúsculas | Tomada | Se decide ahora porque cambiarlo después es muy costoso |
 | D36 | Google solo permite entrar a usuarios existentes; nunca crea cuentas | Tomada | Los negocios los da de alta la plataforma; evita cuentas no autorizadas |
-| D37 | Roles `owner` y `staff` en una pertenencia usuario-negocio; el personal no cambia la configuración ni los bloqueos | Propuesta | Permite recepcionistas sin darles control total. El MVP solo usa dueños |
+| D37 | Roles `owner` y `staff` en la pertenencia usuario-negocio, con los mismos permisos en el panel; la diferencia se reserva para gestionar usuarios y suscripción | Tomada | Negocios pequeños: quien opera lo hace todo. El rol queda listo para cuando haya más personas |
 | D38 | Un usuario con varios negocios indica cuál con la cabecera `X-Business` | Tomada | Simple y sin estado en el servidor |
 | D39 | Una reserva manual del dueño puede salirse del horario y del tope, pero no solaparse con reservas ni bloqueos | Tomada | El dueño decide, la integridad se mantiene |
 | D40 | Crear un bloqueo no cancela reservas; se avisan las que quedan en conflicto | Tomada | Ya estaba en RN-04 |
@@ -59,5 +59,5 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | Q6 | Cumplimiento de la Ley de Protección de Datos Personales de Perú | Revisar qué datos se guardan y cómo se informa al cliente |
 | Q7 | Proveedor concreto de hosting; confirmar que la base de datos permita la extensión `btree_gist` | Ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
 | Q9 | Qué pasa con las reservas confirmadas cuando un negocio se suspende por impago; reservar varios bloques seguidos en una operación | Ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
-| Q10 | Crear el ID de cliente de Google (Google Cloud Console) | Hace falta para activar el acceso con Google; ver README |
-| Q11 | ¿Los dueños se dan de alta solo desde el admin o hace falta una pantalla de registro? | Hoy se hace desde el admin de Django (SA-01) |
+| Q10 | ID de cliente de Google | Resuelto: ya configurado en el `.env` local. Falta autorizar el origen del frontend en Google Cloud Console cuando exista |
+| Q11 | Alta de dueños | Resuelto: basta con el admin de Django para el piloto |
