@@ -74,9 +74,21 @@
   color-scheme: light dark;
 }
 
-/* Dark: near black, off-white lines, and the hard shadow takes the accent. */
+/*
+ * Dark: near black, off-white lines, and the hard shadow takes the accent.
+ * It follows the system, and <html data-theme="light|dark"> forces either one.
+ */
+:root[data-theme="dark"] {
+  --paper: #0f1013;
+  --surface: #181a1f;
+  --text: #eceef2;
+  --muted: #a3a7b3;
+  --line: #eceef2;
+  --shadow-color: var(--accent);
+  --danger: #ff7a8a;
+}
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #0f1013;
     --surface: #181a1f;
     --text: #eceef2;
@@ -123,6 +135,37 @@ h3 {
     transparent 0 6px,
     color-mix(in srgb, var(--line) 22%, transparent) 6px 8px
   );
+}
+
+/* Checkbox in the system's language; the tick takes the color that reads on the accent. */
+.check {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  cursor: pointer;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.check::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.9rem;
+  border: solid var(--on-accent);
+  border-width: 0 4px 4px 0;
+  transform: translateY(-1px) rotate(45deg) scale(0);
+  transition: transform 90ms ease-out;
+}
+.check:checked {
+  background: var(--accent);
+}
+.check:checked::after {
+  transform: translateY(-1px) rotate(45deg) scale(1);
+}
+.check[aria-invalid="true"] {
+  border-color: var(--danger);
 }
 
 /* Press: the element sinks into its own shadow. */
