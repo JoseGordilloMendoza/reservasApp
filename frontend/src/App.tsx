@@ -6,6 +6,7 @@ import { BusinessPage } from "./pages/BusinessPage";
 import { HomePage } from "./pages/HomePage";
 import { MyBookingsPage } from "./pages/MyBookingsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { BlocksPage } from "./pages/panel/BlocksPage";
 import { BookingDetailPage } from "./pages/panel/BookingDetailPage";
 import { BookingsPage } from "./pages/panel/BookingsPage";
 import { CustomerDetailPage } from "./pages/panel/CustomerDetailPage";
@@ -43,6 +44,7 @@ export function App() {
         <Route path="reservas/:id" element={<BookingDetailPage />} />
         <Route path="clientes" element={<CustomersPage />} />
         <Route path="clientes/:id" element={<CustomerDetailPage />} />
+        <Route path="bloqueos" element={<BlocksPage />} />
         <Route path="mas" element={<MorePage />} />
       </Route>
     </Routes>
