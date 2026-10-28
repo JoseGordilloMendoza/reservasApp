@@ -15,10 +15,10 @@ const LINK_CODE = "invalid_reset_link";
 
 function Shell({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="mx-auto grid min-h-dvh max-w-[28rem] content-center gap-6 px-4 py-10">
+    <div className="mx-auto grid min-h-dvh max-w-[28rem] grid-cols-1 content-center gap-6 px-4 py-10">
       <header className="rounded-box border-[3px] border-line bg-accent p-6 pb-8 text-on-accent shadow-hard">
         <p className="font-display text-lg font-extrabold uppercase tracking-tight">{BRAND}</p>
-        <h1 className="mt-3 font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">{title}</h1>
+        <h1 className="mt-3 break-words font-display text-4xl font-extrabold sm:text-5xl uppercase leading-[0.9] tracking-[-0.03em]">{title}</h1>
       </header>
       {children}
     </div>
