@@ -8,7 +8,7 @@
 
 | ID | Requisito | Prioridad |
 |---|---|---|
-| SA-01 | Crear un negocio con su dueño y su link público (slug único) | MVP |
+| SA-01 | Crear un negocio con su dueño, su link público (slug único) y una plantilla de rubro | MVP |
 | SA-02 | Ver el listado de negocios con su estado de suscripción | MVP |
 | SA-03 | Registrar plan, precio acordado, fecha de inicio y vigencia de la suscripción | MVP |
 | SA-04 | Suspender y reactivar un negocio (una suspensión desactiva su página pública y no borra datos) | MVP |
@@ -50,6 +50,7 @@ Cada valor tiene un **valor por defecto de la plataforma**, se ajusta por negoci
 | CF-06 | Intervalo entre inicios de reserva (cada 30 min, cada hora) y tiempo de descanso entre reservas | MVP |
 | CF-07 | Campos adicionales que se piden al cliente (por ejemplo, motivo o cantidad de personas) | Después |
 | CF-08 | Textos de mensajes y de la política mostrada al cliente | Después |
+| CF-09 | Plantillas de rubro (cancha, psicólogo) que precargan los valores iniciales al crear un negocio; el negocio puede cambiar cualquiera | MVP |
 
 ### Cliente final (CL)
 

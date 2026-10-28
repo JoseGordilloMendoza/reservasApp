@@ -26,17 +26,19 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D18 | Criterio de éxito del MVP: las reservas funcionan | Tomada | Alcance mínimo |
 | D19 | Rubro inicial: canchas deportivas | Tomada | Es el caso más claro y frecuente |
 | D20 | Arquitectura: monolito modular con Django, DRF, PostgreSQL y React (PWA); detalle en [07-arquitectura.md](07-arquitectura.md) | Propuesta | Stack conocido por el equipo; PostgreSQL impide reservas solapadas |
+| D21 | Un solo repositorio (monorepo) con `backend/`, `frontend/` y `docs/` | Tomada | Documentación y código juntos |
+| D22 | Documentación en español; código, API y commits en inglés | Tomada | Convención habitual y facilita herramientas y colaboración |
+| D23 | **Plantillas de rubro** que precargan valores según el tipo de negocio (cancha, psicólogo), todos ajustables | Propuesta | Los valores adecuados dependen del negocio; ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
+| D24 | Priorizar herramientas gratuitas de hosting; presupuestar un backend que no se duerma al llegar al piloto | Propuesta | Costo bajo sin perjudicar la experiencia de reserva; ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
 
 ## Preguntas abiertas
 
 | # | Pregunta | Notas |
 |---|---|---|
-| Q1 | Valor por defecto de la política de cancelación | Propuesto: 24 h, en [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
-| Q2 | Tiempo por defecto que una reserva pendiente bloquea el horario | Propuesto: 2 h, en [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
+| Q1 | Valores por defecto de cancelación y de bloqueo de pendientes | Dependen del rubro: propuestos como plantillas en [06-reglas-de-negocio.md](06-reglas-de-negocio.md); validar con negocios reales |
 | Q3 | Precio de la suscripción | Se conversará con los negocios |
-| Q4 | Nombre del producto y dominio | Pendiente |
+| Q4 | Nombre del producto y dominio | "ReservaloYa" descartado por poco atractivo. Pendiente de elegir; verificar disponibilidad de dominio y marca (INDECOPI) |
 | Q5 | Piloto: ¿qué negocio de canchas? | Aún sin definir |
 | Q6 | Cumplimiento de la Ley de Protección de Datos Personales de Perú | Revisar qué datos se guardan y cómo se informa al cliente |
-| Q7 | Hosting y presupuesto mensual | Ver [07-arquitectura.md](07-arquitectura.md), sección 8 |
-| Q8 | Un repositorio o dos; idioma de los nombres en el código | Ver [07-arquitectura.md](07-arquitectura.md), sección 8 |
+| Q7 | Proveedor concreto de hosting; confirmar que la base de datos permita la extensión `btree_gist` | Ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
 | Q9 | Preguntas de reglas pendientes (reservas simultáneas por celular, suspensión por impago) | Ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |

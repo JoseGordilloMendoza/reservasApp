@@ -20,4 +20,5 @@ Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y neg
 
 1. **Flexible por configuración:** lo que varía entre negocios (duración de bloques, cancelación, confirmación) se configura, no se programa.
 2. **Simple primero:** el MVP prueba que las reservas funcionan.
-3. **Preparado para crecer:** el modelo de datos admite recurrencia, varios recursos y varios usuarios aunque su interfaz llegue después.
+3. **Convención de idioma:** documentación en español; código, rutas de la API y commits en inglés.
+4. **Preparado para crecer:** el modelo de datos admite recurrencia, varios recursos y varios usuarios aunque su interfaz llegue después.

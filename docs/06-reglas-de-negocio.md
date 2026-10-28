@@ -36,6 +36,23 @@
 - **RN-18.** Un negocio con suscripción vencida o suspendido no muestra su página pública ni recibe reservas nuevas. Sus reservas ya confirmadas se conservan y su dueño puede entrar al panel para consultarlas.
 - **RN-19.** Suspender un negocio no borra ningún dato.
 
+## Plantillas de rubro
+
+Cada rubro tiene necesidades distintas, así que al crear un negocio se elige una plantilla que precarga los valores. Después el negocio los ajusta libremente (CF-09). Los valores de las columnas son **iniciales y deben validarse con negocios reales**.
+
+| Valor | Valores generales | Cancha | Psicólogo |
+|---|---|---|---|
+| Duración del servicio | 60 min | 60 min | 50 min |
+| Intervalo entre inicios | 60 min | 60 min | 60 min |
+| Descanso entre reservas | 0 min | 0 min | 10 min |
+| Confirmación | manual | manual | manual |
+| Bloqueo de una reserva pendiente | 2 h | 2 h | 12 h |
+| Anticipación para cancelar | 24 h | 12 h | 24 h |
+| Anticipación mínima para reservar | 1 h | 1 h | 12 h |
+| Horizonte de reserva | 30 días | 30 días | 30 días |
+
+Los valores de la columna **Valores generales** son los de las reglas RN-02, RN-07 y RN-11.
+
 ## Pendiente de decidir
 
 - ¿Cuántas reservas activas puede tener un mismo celular a la vez? Limitarlo ayuda contra el abuso.
