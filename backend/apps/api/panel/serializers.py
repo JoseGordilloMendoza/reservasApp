@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from apps.api.public.serializers import ErrorSerializer, ResourceRefSerializer, ServiceRefSerializer
+from apps.api.public.serializers import (
+    CustomerInputSerializer,
+    ErrorSerializer,
+    ResourceRefSerializer,
+    ServiceRefSerializer,
+)
 from apps.bookings.models import Booking, BookingEvent, BookingStatus
 from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
@@ -67,6 +72,22 @@ class PanelBookingDetailSerializer(PanelBookingSerializer):
 
     class Meta(PanelBookingSerializer.Meta):
         fields = PanelBookingSerializer.Meta.fields + ["events"]
+
+
+class PanelBookingCreateSerializer(serializers.Serializer):
+    service = serializers.IntegerField()
+    starts_at = serializers.DateTimeField()
+    customer = CustomerInputSerializer()
+
+
+class PanelBookingCreatedSerializer(PanelBookingDetailSerializer):
+    manage_token = serializers.CharField(
+        read_only=True,
+        help_text="Link token the customer can use to view or cancel; shown only once.",
+    )
+
+    class Meta(PanelBookingDetailSerializer.Meta):
+        fields = PanelBookingDetailSerializer.Meta.fields + ["manage_token"]
 
 
 class BookingFilterSerializer(serializers.Serializer):

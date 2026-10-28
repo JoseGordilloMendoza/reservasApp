@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from apps.api.errors import error_response
 from apps.bookings import services
 from apps.bookings.models import Booking
+from apps.catalog.models import Service
 
 from . import serializers as s
 from .permissions import HasBusiness
@@ -63,11 +64,49 @@ class BookingListView(generics.ListAPIView):
 
     @extend_schema(
         summary="List bookings",
-        description="Newest filters first: status, resource, local dates, customer search.",
+        description="Filter by status, resource, local dates or customer name and phone.",
         parameters=[s.BookingFilterSerializer],
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Create a booking taken by phone or WhatsApp",
+        description=(
+            "Confirmed straight away. May fall outside opening hours and notice limits, but "
+            "cannot overlap another booking or a block. Returns the customer's link token once."
+        ),
+        request=s.PanelBookingCreateSerializer,
+        responses={
+            201: s.PanelBookingCreatedSerializer,
+            400: OpenApiResponse(description="Invalid data or a slot entirely in the past."),
+            404: OpenApiResponse(description="No such active service in this business."),
+            409: s.ErrorSerializer,
+        },
+    )
+    def post(self, request):
+        body = s.PanelBookingCreateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+
+        service = get_object_or_404(
+            Service, pk=data["service"], business=request.business, is_active=True
+        )
+        try:
+            booking, token = services.create_booking_by_business(
+                business=request.business,
+                service=service,
+                starts_at=data["starts_at"],
+                customer_name=data["customer"]["name"],
+                customer_phone=data["customer"]["phone"],
+                customer_email=data["customer"]["email"],
+            )
+        except services.BookingError as error:
+            return error_response(error)
+
+        booking = get_object_or_404(bookings_of(request.business), pk=booking.pk)
+        booking.manage_token = token
+        return Response(s.PanelBookingCreatedSerializer(booking).data, status=201)
 
     def get_queryset(self):
         business = self.request.business
