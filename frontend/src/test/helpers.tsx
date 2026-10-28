@@ -5,7 +5,10 @@ import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
 import { App } from "../App";
+import { AuthProvider } from "../lib/auth";
 import { upcomingDays } from "../lib/dates";
+import type { PanelBooking, PanelBookingDetail, PanelBusiness, SessionUser } from "../lib/panelTypes";
+import { setTokens } from "../lib/session";
 import type { BookingDetails, PublicBusiness, Slot } from "../lib/types";
 
 export const TZ = "America/Lima";
@@ -60,7 +63,8 @@ export function bookingDetails(overrides: Partial<BookingDetails> = {}): Booking
 }
 
 type Reply = { status: number; body: unknown };
-type Responder = Reply | ((init?: RequestInit) => Reply);
+/** A responder can look at the request and at its query string. */
+type Responder = Reply | ((init: RequestInit | undefined, query: URLSearchParams) => Reply);
 
 /**
  * Stand-in for the API. Keys look like "GET /public/bookings/abc/"; query strings are ignored.
@@ -78,7 +82,8 @@ export function mockApi(routes: Record<string, Responder>) {
     const route = routes[`${method} ${path}`];
     if (!route) return { ok: false, status: 404, text: async () => JSON.stringify({ code: "not_found", detail: "No existe" }) };
 
-    const reply = typeof route === "function" ? route(init) : route;
+    const query = new URLSearchParams(url.split("?")[1] ?? "");
+    const reply = typeof route === "function" ? route(init, query) : route;
     return { ok: reply.status < 400, status: reply.status, text: async () => JSON.stringify(reply.body) };
   });
 
@@ -92,9 +97,84 @@ export function renderApp(path: string) {
     <QueryClientProvider client={client}>
       <MotionConfig reducedMotion="always">
         <MemoryRouter initialEntries={[path]}>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </MemoryRouter>
       </MotionConfig>
     </QueryClientProvider>,
   );
+}
+
+
+// --- business panel ----------------------------------------------------------------
+
+export const OWNER: SessionUser = {
+  id: 1,
+  email: "rosa@example.com",
+  name: "Rosa Quispe",
+  is_platform_admin: false,
+  memberships: [{ business: { name: BUSINESS.name, slug: BUSINESS.slug, status: "active" }, role: "owner" }],
+};
+
+export const PANEL_BUSINESS: PanelBusiness = {
+  name: BUSINESS.name,
+  slug: BUSINESS.slug,
+  description: BUSINESS.description,
+  address: BUSINESS.address,
+  phone: BUSINESS.phone,
+  whatsapp: BUSINESS.whatsapp,
+  accent: "lime",
+  business_type: "court",
+  timezone: TZ,
+  status: "active",
+  settings: {},
+  suggested_service_duration_minutes: 60,
+  role: "owner",
+};
+
+let nextId = 100;
+
+export function panelBooking(overrides: Partial<PanelBooking> = {}): PanelBooking {
+  const slot = slotAt(1, 17);
+  const id = overrides.id ?? nextId++;
+  return {
+    id,
+    status: "pending",
+    starts_at: slot.starts_at,
+    ends_at: slot.ends_at,
+    expires_at: null,
+    source: "customer",
+    resource: { id: 1, name: "Cancha 1" },
+    service: { id: 11, name: "Alquiler 1 hora" },
+    customer: { id: 5, name: "Ana Pérez", phone: "+51987654321", email: "", is_blocked: false },
+    price: "60.00",
+    duration_minutes: 60,
+    created_at: slotAt(0, 10).starts_at,
+    ...overrides,
+  };
+}
+
+export function panelDetail(overrides: Partial<PanelBookingDetail> = {}): PanelBookingDetail {
+  const booking = panelBooking(overrides);
+  return {
+    ...booking,
+    events: [{ from_status: "", to_status: booking.status, actor: "customer", created_at: booking.created_at }],
+    ...overrides,
+  };
+}
+
+export function page<T>(results: T[], extra: { next?: string | null; count?: number } = {}) {
+  return { count: extra.count ?? results.length, next: extra.next ?? null, previous: null, results };
+}
+
+/** An owner who is already signed in: the tokens exist and the account and business answer. */
+export function signedInRoutes(extra: Parameters<typeof mockApi>[0] = {}) {
+  setTokens("access-token", "refresh-token");
+  localStorage.setItem("separa.panel.refresh.v1", "refresh-token");
+  return mockApi({
+    "GET /auth/me/": { status: 200, body: OWNER },
+    "GET /panel/business/": { status: 200, body: PANEL_BUSINESS },
+    ...extra,
+  });
 }
