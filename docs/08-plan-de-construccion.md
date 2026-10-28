@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0, M1 y M2 completados.
+**Avance:** M0 a M3 completados (98 pruebas). Siguiente: M4.
 
 | Hito | Objetivo | Entregables | Listo cuando |
 |---|---|---|---|
@@ -21,6 +21,16 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 | **M8. Notificaciones** | Avisos sin costo | Correo al negocio y al cliente, botones de WhatsApp con mensaje prellenado | Los avisos salen en los eventos clave |
 | **M9. Superadmin y suscripciones** | Operar como SaaS | Alta de negocios, suscripción y vigencia, suspensión y reactivación | Se da de alta un negocio y se suspende sin perder datos |
 | **M10. Despliegue y piloto** | Salir a producción | Imagen de producción, hosting elegido, respaldos, dominio | Un negocio real recibe reservas |
+
+## Pendiente para M10 (revisado con `check --deploy`)
+
+El backend arranca limpio desde cero con `docker compose up` y sus endpoints responden, pero la imagen actual es de desarrollo. Antes de publicar falta:
+
+- Imagen de producción con servidor de aplicaciones (por ejemplo gunicorn) en lugar de `runserver`, y archivos estáticos del admin.
+- Ajustes HTTPS: `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`. Django los marca como advertencias con `DEBUG` apagado.
+- `SECRET_KEY` larga y aleatoria como variable de entorno (el sistema ya se niega a arrancar sin ella cuando `DEBUG` está apagado).
+- Fijar versiones exactas de las dependencias.
+- Decidir si la documentación de la API (`API_DOCS_ENABLED`) se publica.
 
 ## Orden y dependencias
 

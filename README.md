@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. Hitos M0 a M2 del [plan](docs/08-plan-de-construccion.md) completados: entorno con Docker, modelo de reservas con restricción anti-solapamiento, y configuración por negocio con plantillas de rubro, todo con pruebas.
+**Estado:** documentación base lista. Hitos M0 a M3 del [plan](docs/08-plan-de-construccion.md) completados: entorno con Docker, modelo de reservas con restricción anti-solapamiento, configuración por negocio con plantillas de rubro, y cálculo de disponibilidad. 98 pruebas.
 
 ## Cómo ejecutar
 
@@ -15,7 +15,13 @@ docker compose run --rm backend python manage.py createsuperuser
 docker compose run --rm backend pytest              # pruebas
 ```
 
-El admin está en http://localhost:8000/admin/.
+| URL | Qué es |
+|---|---|
+| http://localhost:8000/api/docs/ | Lista interactiva de endpoints (Swagger) |
+| http://localhost:8000/api/health/ | Estado de la API y la base de datos |
+| http://localhost:8000/admin/ | Admin de Django (superadmin) |
+
+`docker compose up` aplica las migraciones al arrancar.
 
 ## Documentación
 

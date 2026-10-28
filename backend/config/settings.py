@@ -24,9 +24,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "rest_framework",
+    "drf_spectacular",
     "apps.businesses",
     "apps.catalog",
     "apps.customers",
+    "apps.availability",
     "apps.bookings",
 ]
 
@@ -81,3 +84,19 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Endpoints are private unless a view opts out with AllowAny.
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Reservas API",
+    "DESCRIPTION": "Multi-business booking platform.",
+    "VERSION": "0.1.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
+# Interactive API docs: on in development, opt in elsewhere.
+API_DOCS_ENABLED = os.environ.get("API_DOCS_ENABLED", "1" if DEBUG else "0") == "1"

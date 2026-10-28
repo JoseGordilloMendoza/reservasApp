@@ -6,7 +6,9 @@
 
 - **RN-01.** La disponibilidad se calcula a partir del horario semanal del recurso, menos los bloqueos y las reservas activas (pendientes y confirmadas).
 - **RN-02.** Un horario se ofrece si cumple la anticipación mínima y el horizonte máximo configurados. *Por defecto: reservar con al menos 1 hora de anticipación y hasta 30 días adelante.*
-- **RN-03.** Los inicios posibles siguen el intervalo configurado (cada 30 min o cada hora), y se respeta el descanso entre reservas si existe.
+- **RN-03.** Los inicios posibles siguen el intervalo configurado (cada 30 min o cada hora), contado desde el inicio de cada bloque de atención (si abre a las 18:30 con intervalo de 1 h, los inicios son 18:30, 19:30...). Una reserva debe terminar antes de que cierre el bloque. Se respeta el descanso entre reservas si existe; el descanso aplica alrededor de otras reservas, no alrededor de bloqueos.
+- **RN-03b.** Un horario que termina a las 00:00 significa "hasta la medianoche", y 00:00 a 00:00 significa "abierto todo el día". Las horas después de medianoche se registran como un segundo horario del día siguiente; una reserva puede cruzar la medianoche si ambos horarios se tocan.
+- **RN-03c.** El horizonte cuenta días calendario en la zona horaria del negocio: con 30 días, se ofrece hasta el día 30 contado desde hoy.
 - **RN-04.** Un bloqueo creado sobre un horario con reservas existentes **no las cancela**; la aplicación avisa al negocio de los conflictos para que decida.
 
 ## Reserva

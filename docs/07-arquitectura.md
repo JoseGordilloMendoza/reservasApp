@@ -114,6 +114,15 @@ Si el cron falla, el sistema sigue siendo correcto.
 
 Los horarios libres **no se almacenan**: se calculan al consultar, a partir de reglas, bloqueos y reservas. Evita datos desactualizados y facilita las reservas recurrentes más adelante.
 
+**Implementado** en `backend/apps/availability/slots.py`:
+
+- `get_available_slots(resource, service, from_date, to_date)` devuelve los horarios libres entre dos fechas locales, en UTC. Admite hasta 62 días por consulta.
+- La lógica de cálculo (`build_slots`) es una función pura, sin acceso a la base de datos, lo que facilita probarla.
+- Los horarios de atención se convierten de hora local a UTC con la zona horaria del negocio, así que un cambio de hora (por ejemplo en `America/New_York`) se calcula con tiempo real transcurrido. Perú no tiene cambio de hora, pero el código no lo asume.
+- Una reserva pendiente cuya expiración ya pasó no ocupa el horario, aunque ningún proceso la haya marcado todavía como `expired`.
+- El descanso entre reservas (`buffer_minutes`) lo aplica este cálculo y **no** la base de datos, que solo impide el solapamiento exacto. Por eso, cuando M4 cree reservas, debe volver a validar contra este cálculo dentro de la misma transacción.
+- Los bloqueos (`Block`) sin recurso cierran todo el negocio.
+
 ## 5. API
 
 API REST en `/api/v1/`, dividida por audiencia:
@@ -125,6 +134,19 @@ API REST en `/api/v1/`, dividida por audiencia:
 | Panel del negocio | `GET /api/v1/panel/bookings` | Sesión del usuario |
 | Superadmin | `/admin/` de Django en el MVP | Sesión de superusuario |
 
+### Documentación interactiva y salud
+
+La API se documenta sola con drf-spectacular (OpenAPI 3): cada endpoint nuevo aparece en la lista sin escribir nada aparte.
+
+| Ruta | Contenido |
+|---|---|
+| `/api/docs/` | Lista de endpoints interactiva (Swagger UI) |
+| `/api/redoc/` | La misma documentación en formato de lectura |
+| `/api/schema/` | Esquema OpenAPI en bruto |
+| `/api/health/` | Estado de la API y de la base de datos; devuelve 503 si la base no responde |
+
+La documentación está **activa en desarrollo y desactivada en producción** por defecto (se activa con `API_DOCS_ENABLED=1`). Todo endpoint exige autenticación salvo que declare lo contrario.
+
 ## 6. Estructura del repositorio
 
 ```
@@ -135,6 +157,7 @@ reservasApp/
     apps/
       businesses/      negocio, suscripción, configuración y plantillas
       catalog/         recursos, servicios
+      core/            endpoint de salud y utilidades compartidas
       availability/    reglas, bloqueos, cálculo de horarios libres
       bookings/        reserva, estados, expiración
       customers/       clientes y bloqueos
