@@ -64,7 +64,11 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D56 | Al entrar, el dueño ve primero lo urgente: reservas por confirmar y las de hoy | Propuesta | Es lo que requiere acción; un calendario completo puede agregarse después |
 | D57 | El token de acceso vive solo en memoria y el de renovación en el dispositivo; la renovación se comparte entre peticiones simultáneas | Tomada | Un token de renovación en `localStorage` es accesible si hubiera una falla XSS; se acepta en el MVP porque dura poco, rota en cada uso y React escapa lo que muestra. Pasarlo a una cookie `HttpOnly` requeriría cambiar el backend |
 | D58 | Las acciones que no se pueden deshacer (rechazar, cancelar) piden confirmación | Tomada | Evita errores con el dedo en un celular |
-| D59 | El panel se entrega por tramos: reservas primero; clientes, bloqueos y ajustes después | Tomada | La parte más usada llega antes |
+| D59 | El panel se entrega por tramos: reservas primero; clientes, bloqueos y ajustes después | Tomada | La parte más usada llega antes. Cumplida: los tres tramos están hechos |
+| D60 | En el celular el panel tiene cuatro pestañas (Inicio, Anotar, Reservas, Más); clientes, bloqueos y ajustes viven en "Más", y en pantallas grandes todo va en la barra lateral | Tomada | Cuatro pestañas caben con botones grandes; lo menos frecuente no necesita una pestaña fija |
+| D61 | En la interfaz el recurso se llama **espacio** (cancha, consultorio o persona) | Tomada | "Recurso" es un término técnico; "espacio" sirve para canchas y para psicólogos |
+| D62 | Un bloqueo de todo el día cubre desde la medianoche del primer día hasta la medianoche posterior al último; el horario semanal acepta 00:00 como medianoche | Tomada | Coincide con las reglas del servidor (D42) y evita huecos o solapes al cruzar el día |
+| D63 | Las acciones destructivas de ajustes (desactivar, eliminar) piden confirmación; un espacio o servicio con reservas solo se desactiva (D43) | Tomada | Coherente con D58; el mensaje explica por qué no se puede eliminar |
 
 ## Preguntas abiertas
 
@@ -77,5 +81,5 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | Q6 | Cumplimiento de la Ley de Protección de Datos Personales de Perú | Revisar qué datos se guardan y cómo se informa al cliente |
 | Q7 | Proveedor concreto de hosting; confirmar que la base de datos permita la extensión `btree_gist` | Ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
 | Q9 | Qué pasa con las reservas confirmadas cuando un negocio se suspende por impago; reservar varios bloques seguidos en una operación | Ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
-| Q10 | ID de cliente de Google | Resuelto: ya configurado en el `.env` local. Falta autorizar el origen del frontend en Google Cloud Console cuando exista |
+| Q10 | ID de cliente de Google | Resuelto: configurado en el `.env` local y `http://localhost:5173` autorizado en Google Cloud Console. Google recomienda autorizar también `http://localhost`; falta agregar el dominio real al publicar |
 | Q11 | Alta de dueños | Resuelto: basta con el admin de Django para el piloto |
