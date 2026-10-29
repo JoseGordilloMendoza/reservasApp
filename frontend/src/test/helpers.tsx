@@ -23,6 +23,7 @@ export const BUSINESS: PublicBusiness = {
   accent: "lime",
   business_type: "court",
   timezone: TZ,
+  accepting_bookings: true,
   resources: [
     { id: 1, name: "Cancha 1", services: [{ id: 11, name: "Alquiler 1 hora", duration_minutes: 60, reference_price: "60.00" }] },
     { id: 2, name: "Cancha 2", services: [{ id: 22, name: "Alquiler 1 hora", duration_minutes: 60, reference_price: "70.00" }] },

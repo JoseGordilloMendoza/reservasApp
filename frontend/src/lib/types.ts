@@ -33,6 +33,8 @@ export interface PublicBusiness {
   accent: Accent;
   business_type: string;
   timezone: string;
+  /** False when the business is suspended or past due: it offers nothing to book. */
+  accepting_bookings: boolean;
   resources: PublicResource[];
 }
 
