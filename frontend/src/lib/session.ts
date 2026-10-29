@@ -6,6 +6,7 @@ import type { Session } from "./panelTypes";
 
 const REFRESH_KEY = "separa.panel.refresh.v1";
 const BUSINESS_KEY = "separa.panel.business.v1";
+const SUPPORT_KEY = "separa.support.v1";
 
 let accessToken: string | null = null;
 let inFlight: Promise<string | null> | null = null;
@@ -36,10 +37,36 @@ export function setBusinessSlug(slug: string | null) {
   storage(() => (slug ? localStorage.setItem(BUSINESS_KEY, slug) : localStorage.removeItem(BUSINESS_KEY)), undefined);
 }
 
+/** A support session: the platform team working inside one business, until it expires. */
+export interface SupportInfo {
+  session: number;
+  slug: string;
+  name: string;
+  reason: string;
+  /** ISO instant. */
+  expires_at: string;
+}
+
+/** The stored support session, or null if there is none or it already ran out. */
+export function getSupport(now: number = Date.now()): SupportInfo | null {
+  return storage(() => {
+    const raw = localStorage.getItem(SUPPORT_KEY);
+    if (!raw) return null;
+    const info = JSON.parse(raw) as SupportInfo;
+    return Date.parse(info.expires_at) > now ? info : null;
+  }, null);
+}
+
+export function setSupport(info: SupportInfo | null) {
+  storage(() => (info ? localStorage.setItem(SUPPORT_KEY, JSON.stringify(info)) : localStorage.removeItem(SUPPORT_KEY)), undefined);
+}
+
 /** Forget the session and tell everyone listening (the UI goes back to the login page). */
 export function clearSession() {
   accessToken = null;
   storage(() => localStorage.removeItem(REFRESH_KEY), undefined);
+  // Support is a permission of this sign-in; it must not outlive it.
+  setSupport(null);
   listeners.forEach((listener) => listener());
 }
 
