@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.bookings",
     "apps.billing",
     "apps.notifications",
+    "apps.platformadmin",
 ]
 
 MIDDLEWARE = [
