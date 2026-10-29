@@ -10,6 +10,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.billing import services as billing
 from apps.billing.models import Subscription, SubscriptionPayment
 from apps.billing.services import GRACE_DAYS, business_today, platform_today
 from apps.bookings.models import Booking
@@ -240,3 +241,168 @@ class BusinessDetailView(PlatformAPIView):
         if changed:
             activity.record(request.user, activity.BUSINESS_UPDATED, business, changes=changed)
         return Response(s.BusinessDetailSerializer(business_or_404(slug)).data)
+
+
+def conflict(code, detail):
+    return Response({"code": code, "detail": detail}, status=status.HTTP_409_CONFLICT)
+
+
+class SuspendView(PlatformAPIView):
+    @extend_schema(
+        summary="Suspend a business",
+        description=(
+            "Its public page stops taking bookings and its owner keeps access to see their data. "
+            "Nothing is deleted. A reason is required and is logged."
+        ),
+        request=s.SuspendSerializer,
+        responses={200: s.BusinessDetailSerializer, 409: OpenApiResponse(description="Already suspended.")},
+    )
+    def post(self, request, slug):
+        business = business_or_404(slug)
+        body = s.SuspendSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        if business.status == Business.Status.SUSPENDED:
+            return conflict("already_suspended", "Este negocio ya está suspendido.")
+
+        reason = body.validated_data["reason"].strip()
+        Business.objects.filter(pk=business.pk).update(
+            status=Business.Status.SUSPENDED, suspended_reason=reason, suspended_at=timezone.now()
+        )
+        activity.record(request.user, activity.BUSINESS_SUSPENDED, business, reason=reason)
+        return Response(s.BusinessDetailSerializer(business_or_404(slug)).data)
+
+
+class ReactivateView(PlatformAPIView):
+    @extend_schema(
+        summary="Reactivate a suspended business",
+        responses={200: s.BusinessDetailSerializer, 409: OpenApiResponse(description="Not suspended.")},
+    )
+    def post(self, request, slug):
+        business = business_or_404(slug)
+        if business.status != Business.Status.SUSPENDED:
+            return conflict("not_suspended", "Este negocio no está suspendido.")
+
+        Business.objects.filter(pk=business.pk).update(
+            status=Business.Status.ACTIVE, suspended_reason="", suspended_at=None
+        )
+        activity.record(
+            request.user, activity.BUSINESS_REACTIVATED, business, previous_reason=business.suspended_reason
+        )
+        return Response(s.BusinessDetailSerializer(business_or_404(slug)).data)
+
+
+class SubscriptionView(PlatformAPIView):
+    @extend_schema(summary="The subscription of a business", responses=s.SubscriptionSerializer)
+    def get(self, request, slug):
+        subscription = s.subscription_of(business_or_404(slug))
+        if subscription is None:
+            return Response({"code": "no_subscription", "detail": "Este negocio no tiene suscripción."}, status=404)
+        return Response(s.SubscriptionSerializer(subscription).data)
+
+    @extend_schema(
+        summary="Create or adjust the subscription",
+        description=(
+            "Creating needs `price` and `valid_until`. Adjusting changes the plan, price and notes "
+            "freely; moving `valid_until` needs a `reason`, because normally a payment moves it. "
+            "Both are logged."
+        ),
+        request=s.SubscriptionInputUpdateSerializer,
+        responses={200: s.SubscriptionSerializer, 201: s.SubscriptionSerializer},
+    )
+    def put(self, request, slug):
+        business = business_or_404(slug)
+        body = s.SubscriptionInputUpdateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+        subscription = s.subscription_of(business)
+
+        if subscription is None:
+            missing = {field: "Este campo es obligatorio." for field in ("price", "valid_until") if field not in data}
+            if missing:
+                raise serializers.ValidationError(missing)
+            subscription = billing.start_subscription(
+                business=business,
+                price=data["price"],
+                valid_until=data["valid_until"],
+                plan_name=data.get("plan_name", ""),
+                notes=data.get("notes", ""),
+            )
+            activity.record(
+                request.user, activity.SUBSCRIPTION_SET, business, price=str(data["price"]), valid_until=str(data["valid_until"])
+            )
+            return Response(s.SubscriptionSerializer(subscription).data, status=status.HTTP_201_CREATED)
+
+        reason = data.get("reason", "").strip()
+        moving = "valid_until" in data and data["valid_until"] != subscription.valid_until
+        if moving and not reason:
+            raise serializers.ValidationError({"reason": "Explica por qué cambias la vigencia a mano."})
+
+        previous_end = str(subscription.valid_until)
+        for field in ("plan_name", "price", "valid_until", "notes"):
+            if field in data:
+                setattr(subscription, field, data[field])
+        subscription.save()
+
+        if moving:
+            activity.record(
+                request.user,
+                activity.SUBSCRIPTION_ADJUSTED,
+                business,
+                reason=reason,
+                valid_until=[previous_end, str(subscription.valid_until)],
+            )
+        return Response(s.SubscriptionSerializer(subscription).data)
+
+
+class PaymentListView(PlatformAPIView):
+    @extend_schema(summary="Payments received from a business, latest first", responses=s.PaymentSerializer(many=True))
+    def get(self, request, slug):
+        business = business_or_404(slug)
+        payments = SubscriptionPayment.objects.filter(business=business).select_related("recorded_by")
+        return Response(s.PaymentSerializer(payments, many=True).data)
+
+    @extend_schema(
+        summary="Record a payment",
+        description=(
+            "A payment received outside the platform. It moves the end of the subscription forward "
+            "by the months it bought: from the current end if still covered, from the payment date "
+            "if it had lapsed. Payments are never edited."
+        ),
+        request=s.PaymentInputSerializer,
+        responses={201: s.PaymentSerializer, 409: OpenApiResponse(description="The business has no subscription.")},
+    )
+    def post(self, request, slug):
+        business = business_or_404(slug)
+        body = s.PaymentInputSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+
+        today = business_today(business)
+        paid_on = data.get("paid_on", today)
+        if paid_on > today:
+            raise serializers.ValidationError({"paid_on": "La fecha del pago no puede ser futura."})
+
+        try:
+            payment = billing.register_payment(
+                business=business,
+                amount=data["amount"],
+                method=data["method"],
+                months=data["months"],
+                paid_on=paid_on,
+                reference=data["reference"],
+                note=data["note"],
+                recorded_by=request.user,
+            )
+        except billing.NoSubscription:
+            return conflict("no_subscription", "Este negocio no tiene suscripción. Créala antes de registrar un pago.")
+
+        activity.record(
+            request.user,
+            activity.PAYMENT_RECORDED,
+            business,
+            amount=str(payment.amount),
+            method=payment.method,
+            months=payment.months,
+            period=[str(payment.period_start), str(payment.period_end)],
+        )
+        return Response(s.PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)

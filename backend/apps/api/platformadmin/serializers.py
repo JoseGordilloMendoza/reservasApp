@@ -167,3 +167,26 @@ class BusinessCreateSerializer(serializers.Serializer):
     timezone = serializers.CharField(max_length=64, default="America/Lima", validators=[check_timezone])
     owner = OwnerInputSerializer()
     subscription = SubscriptionInputSerializer()
+
+
+class SuspendSerializer(serializers.Serializer):
+    reason = serializers.CharField(max_length=200, help_text="Required: it is kept in the activity log.")
+
+
+class SubscriptionInputUpdateSerializer(serializers.Serializer):
+    """Create or adjust a subscription. Moving the end date needs a reason (it is logged)."""
+
+    plan_name = serializers.CharField(max_length=60, required=False, allow_blank=True)
+    price = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=0, required=False)
+    valid_until = serializers.DateField(required=False)
+    notes = serializers.CharField(required=False, allow_blank=True, max_length=1000)
+    reason = serializers.CharField(max_length=200, required=False, allow_blank=True)
+
+
+class PaymentInputSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=0)
+    method = serializers.ChoiceField(choices=SubscriptionPayment.Method.choices)
+    paid_on = serializers.DateField(required=False, help_text="Defaults to today.")
+    months = serializers.IntegerField(min_value=1, max_value=24, default=1)
+    reference = serializers.CharField(max_length=80, required=False, allow_blank=True, default="")
+    note = serializers.CharField(max_length=200, required=False, allow_blank=True, default="")
