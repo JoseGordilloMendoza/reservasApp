@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 
 import pytest
 from django.urls import reverse
@@ -6,6 +6,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 from rest_framework.throttling import ScopedRateThrottle
 
+from apps.billing.models import Subscription
 from apps.bookings.models import Booking, BookingStatus
 from apps.bookings.tests.helpers import MON, NOW, at, configure, open_mondays
 from apps.businesses.models import Business
@@ -111,11 +112,21 @@ def test_unknown_business_is_not_found(api):
     assert api.get(link("public-business", slug="no-existe")).status_code == 404
 
 
-def test_suspended_business_has_no_public_page(api, business):
+def test_suspended_business_explains_itself_and_offers_nothing_to_book(api, business, resource, service):
     business.status = Business.Status.SUSPENDED
     business.save()
 
-    assert api.get(link("public-business", slug=business.slug)).status_code == 404
+    response = api.get(link("public-business", slug=business.slug))
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["name"] == "Cancha Los Andes"
+    assert data["accepting_bookings"] is False
+    assert data["resources"] == []
+
+
+def test_an_active_business_says_it_accepts_bookings(api, business):
+    assert api.get(link("public-business", slug=business.slug)).json()["accepting_bookings"] is True
 
 
 # --- availability ---------------------------------------------------------
@@ -427,3 +438,75 @@ def test_public_endpoints_appear_in_the_api_docs(api):
         "/api/v1/public/bookings/{token}/cancel/",
     ):
         assert path in paths
+
+
+# --- subscription ---------------------------------------------------------
+# The clock is frozen at 2030-01-01 noon UTC, which is 2030-01-01 in Lima.
+
+
+@pytest.fixture
+def subscribe(business):
+    def _subscribe(valid_until):
+        return Subscription.objects.create(
+            business=business, price=80, started_on=date(2029, 1, 1), valid_until=valid_until
+        )
+
+    return _subscribe
+
+
+def test_a_paid_up_business_works_as_usual(api, open_business, resource, service, subscribe, book):
+    subscribe(date(2030, 1, 31))
+
+    assert api.get(link("public-business", slug=open_business.slug)).json()["accepting_bookings"] is True
+    assert availability(api, open_business, resource, service).status_code == 200
+    assert book().status_code == 201
+
+
+def test_a_business_in_its_grace_days_still_takes_bookings(api, open_business, resource, service, subscribe, book):
+    subscribe(date(2029, 12, 30))  # ended two days ago; the grace runs to 2030-01-04
+
+    assert api.get(link("public-business", slug=open_business.slug)).json()["accepting_bookings"] is True
+    assert len(availability(api, open_business, resource, service).json()["slots"]) == 4
+    assert book().status_code == 201
+
+
+@pytest.fixture
+def past_due(subscribe):
+    return subscribe(date(2029, 12, 25))  # the grace days ended on 2029-12-30
+
+
+def test_a_business_past_its_grace_days_explains_itself(api, open_business, past_due):
+    data = api.get(link("public-business", slug=open_business.slug)).json()
+
+    assert data["accepting_bookings"] is False
+    assert data["resources"] == []
+
+
+def test_a_business_past_its_grace_days_offers_no_slots(api, open_business, resource, service, past_due):
+    assert availability(api, open_business, resource, service).status_code == 404
+
+
+def test_a_business_past_its_grace_days_refuses_bookings(api, open_business, past_due, book):
+    assert book().status_code == 404
+    assert Booking.objects.count() == 0
+
+
+def test_paying_reopens_the_page_at_once(api, open_business, past_due, book):
+    from apps.billing import services as billing
+
+    billing.register_payment(
+        business=open_business, amount=80, method="yape", months=1, paid_on=date(2030, 1, 1), recorded_by=None
+    )
+
+    assert api.get(link("public-business", slug=open_business.slug)).json()["accepting_bookings"] is True
+    assert book().status_code == 201
+
+
+def test_customers_keep_their_tickets_when_the_business_is_not_taking_bookings(api, book, open_business, subscribe):
+    token = book().json()["manage_token"]
+    subscribe(date(2029, 12, 25))
+
+    response = api.get(link("public-booking", token=token))
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "pending"
