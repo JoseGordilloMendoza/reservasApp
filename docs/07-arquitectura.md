@@ -16,7 +16,7 @@
 
 | Capa | Elección | Motivo |
 |---|---|---|
-| Backend | Python, Django 5.2 y Django REST Framework | Ya lo conoces; el admin integrado sirve como panel de superadmin inicial |
+| Backend | Python, Django 5.2 y Django REST Framework | Ya lo conoces; el admin integrado queda como respaldo; el equipo usa su propio panel (M9) |
 | Base de datos | PostgreSQL | Necesaria para la restricción de exclusión que evita solapamientos |
 | Frontend | React con Vite y TypeScript, como PWA | Ya lo conoces; instalable y sin tiendas de apps |
 | Tareas programadas | Comando de Django invocado por un cron externo, opcional | La corrección no depende de él (ver sección 4) |
@@ -134,7 +134,7 @@ API REST en `/api/v1/`, dividida por audiencia:
 | Gestión del cliente | `GET /api/v1/public/bookings/{token}/` y `POST .../cancel/` | Token del link |
 | Autenticación | `/api/v1/auth/login/`, `google/`, `refresh/`, `logout/`, `me/` | Ninguna (salvo `me/`), con límite de intentos |
 | Panel del negocio | `/api/v1/panel/...` (ver más abajo) | Token JWT del usuario |
-| Superadmin | `/admin/` de Django en el MVP | Sesión de superusuario |
+| Equipo de la plataforma | `/api/v1/platform/` y el área `/plataforma` (M9); `/admin/` de Django como respaldo | Superusuario activo |
 
 ### API pública implementada (M4)
 
@@ -225,6 +225,29 @@ Aún no hay: imágenes del negocio (necesitan almacenamiento de archivos) ni cam
 - **Enlace de recuperación:** el generador de tokens de Django (`default_token_generator`), atado a la contraseña y al último ingreso, de ahí que sirva una sola vez. Dura una hora (`PASSWORD_RESET_TIMEOUT`). Cambiar la contraseña pone en la lista negra los refresh tokens del usuario.
 - **Límites:** pedir enlace 10/hora por dirección y 3/hora por correo; confirmar 20/hora por dirección.
 
+### API de la plataforma y suscripciones (M9)
+
+Solo para el equipo (superusuarios activos); un dueño recibe 403. Rutas bajo `/api/v1/platform/`:
+
+| Ruta | Qué hace |
+|---|---|
+| `GET dashboard/` | Negocios por estado, suscripciones por situación, cobrado del mes y esperado al mes, reservas de 30 días, los más activos y los que requieren atención |
+| `GET`/`POST businesses/` | Lista (búsqueda `q`, filtro `filter`: active, suspended, past_due, expiring, no_subscription) y alta con dueño y suscripción |
+| `GET`/`PATCH businesses/{slug}/` | Ficha; edita nombre, tipo y zona horaria (el link no se cambia, D79) |
+| `POST businesses/{slug}/suspend/`, `reactivate/` | Suspender (con motivo) y reactivar |
+| `GET`/`PUT businesses/{slug}/subscription/` | Ver, crear o ajustar; mover la vigencia pide `reason` |
+| `GET`/`POST businesses/{slug}/payments/` | Historial y registro de pagos |
+| `GET`/`POST businesses/{slug}/users/`, `PATCH`/`DELETE .../{id}/`, `POST .../{id}/send-link/` | Personas del negocio, su rol y el reenvío del correo de acceso |
+| `POST businesses/{slug}/support-session/`, `POST support-sessions/{id}/end/` | Abrir y terminar una sesión de soporte |
+| `GET activity/` | Registro de actividad (filtros `business` y `kind`) |
+
+- **Apps nuevas:** `billing` (`Subscription`, `SubscriptionPayment`, el estado con gracia y los pagos) y `platformadmin` (`ActivityLog`, `SupportSession`, alta guiada y auditoría).
+- **Una sola pregunta, "¿está operativo?"** (`billing.is_operational`) decide en los cuatro lugares donde nace una reserva: la página pública, el cálculo de horarios, la reserva del cliente y la que anota el dueño. La página pública responde con `accepting_bookings: false` y sin recursos en lugar de un 404; disponibilidad y reserva sí responden 404.
+- **Fechas:** cada negocio se juzga en su calendario; los conteos de toda la plataforma usan el día de Lima.
+- **Soporte:** el panel acepta la cabecera `X-Business` de un superusuario solo si tiene una `SupportSession` abierta de ese negocio (suya, sin terminar, sin vencer); entonces actúa con el rol de dueño. Un middleware registra cada cambio exitoso (`POST`, `PATCH`, `PUT`, `DELETE`) sin guardar el cuerpo.
+- **Avisos al dueño:** `GET /panel/business/` incluye `subscription` (estado, vigencia, gracia y días restantes, sin precio ni plan) y `support` (solo durante una sesión de soporte).
+- **Alta:** el dueño nuevo se crea sin contraseña y recibe el correo para elegirla (mismo mecanismo que recuperar contraseña); uno existente conserva su cuenta y se le avisa. Todo ocurre en una transacción: si algo falla, no queda nada a medias.
+
 ### Documentación interactiva y salud
 
 La API se documenta sola con drf-spectacular (OpenAPI 3): cada endpoint nuevo aparece en la lista sin escribir nada aparte.
@@ -288,7 +311,7 @@ El objetivo es gastar lo mínimo. Los planes gratuitos cambian con frecuencia y 
 | A5 | Disponibilidad calculada, no almacenada |
 | A6 | Frontend React con Vite y TypeScript como PWA |
 | A7 | Expiración correcta sin cron (al consultar y al crear), con cron opcional |
-| A8 | Panel de superadmin con el admin de Django en el MVP |
+| A8 | Panel de la plataforma propio en `/plataforma`; el admin de Django solo como respaldo (D72) |
 | A9 | Monorepo; documentación en español, código en inglés |
 
 ## 9. Preguntas abiertas
