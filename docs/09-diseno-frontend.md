@@ -130,7 +130,21 @@ Recuperar la contraseña (dos pantallas con la misma cabecera de color de la ent
 - **Un enlace vencido, usado o incompleto** no muestra un formulario inútil: lo dice y ofrece pedir otro.
 - Los títulos largos ("CONTRASEÑA") se reducen en celular para no desbordar; la misma regla de la sección 8.
 
-## 10. Pendiente de decidir
+## 10. El área del equipo de la plataforma
+
+La misma identidad que el panel del negocio, pero con la prioridad de quien administra muchos negocios: ver qué requiere atención y actuar sin buscar.
+
+- **Lo urgente primero.** El inicio abre con los negocios que vencen esta semana, están en gracia o suspendidos, y después los números (activos, cobrado y esperado del mes, reservas) y el desglose de suscripciones, cada fila con enlace a la lista ya filtrada.
+- **Pestañas en el celular:** Inicio, Nuevo (la acción principal, la más llamativa), Negocios y Actividad; barra lateral en pantallas grandes.
+- **El estado es una palabra en un sello** (Vigente, Vence en 3 días, En gracia, Vencida, Suspendido, Sin suscripción), nunca solo color; suspendido manda sobre lo demás.
+- **La ficha de un negocio** se divide en Resumen, Suscripción y Personas, con la sección en la dirección para poder enlazarla.
+- **Registrar un pago es el camino corto:** el monto llega con el precio acordado, un mes y Yape; casi siempre basta un toque. Mover la vigencia a mano, en cambio, pide explicar por qué.
+- **Lo delicado pregunta:** suspender pide un motivo, quitar a alguien pide confirmar, y entrar como soporte pide por qué.
+- **Soporte con una barra que no se puede ignorar:** negra, fija arriba, dice en qué negocio se está y hasta cuándo, con un botón siempre a mano para terminar. En el celular se acorta. Si la sesión vence, el panel sale solo.
+- **Anchos:** una regla global da una columna que puede encogerse a toda cuadrícula sin columnas propias. Antes, una fila con texto que no se parte (`truncate`) ensanchaba la página más que el celular, y se corregía pantalla por pantalla; ahora se comprobaron 22 pantallas a 390 px exactos.
+- **Una página nueva abre arriba**, no donde estaba la anterior.
+
+## 11. Pendiente de decidir
 
 - **Nombre del producto.** Se usa el nombre de trabajo **Separa** (en Perú "separar" una cancha es reservarla) hasta decidir (Q4). Cambiarlo es cuestión de un archivo de textos.
 - Logotipo definitivo. Los iconos actuales parten de la marca provisional (una S en un sello).
