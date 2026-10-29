@@ -40,6 +40,9 @@ class Business(models.Model):
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.ACTIVE
     )
+    # Why and when the platform team suspended it; cleared on reactivation.
+    suspended_reason = models.CharField(max_length=200, blank=True)
+    suspended_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
