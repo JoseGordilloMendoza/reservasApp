@@ -33,6 +33,10 @@ class ResourcePublicSerializer(serializers.ModelSerializer):
 
 class BusinessPublicSerializer(serializers.ModelSerializer):
     resources = ResourcePublicSerializer(source="active_resources", many=True)
+    accepting_bookings = serializers.BooleanField(
+        read_only=True,
+        help_text="False when the business is suspended or past due: no resources are offered.",
+    )
 
     class Meta:
         model = Business
@@ -46,6 +50,7 @@ class BusinessPublicSerializer(serializers.ModelSerializer):
             "accent",
             "business_type",
             "timezone",
+            "accepting_bookings",
             "resources",
         ]
 

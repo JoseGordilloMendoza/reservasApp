@@ -1,4 +1,5 @@
 from django.db.models import Prefetch
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiResponse, extend_schema
@@ -10,15 +11,27 @@ from rest_framework.views import APIView
 
 from apps.api.errors import error_response
 from apps.availability.slots import get_available_slots
+from apps.billing.services import is_operational
 from apps.bookings import services
 from apps.businesses.models import Business
 from apps.catalog.models import Resource, Service
 
 from . import serializers as s
 
-def active_business_or_404(slug):
-    # A suspended business has no public page.
-    return get_object_or_404(Business, slug=slug, status=Business.Status.ACTIVE)
+def business_or_404(slug):
+    return get_object_or_404(Business, slug=slug)
+
+
+def operational_business_or_404(slug):
+    """For what only makes sense while the business takes bookings: asking for slots or booking.
+
+    A suspended business, or one past its subscription's grace days, is reported as not found.
+    Its public page is the exception (see BusinessProfileView): that one explains itself.
+    """
+    business = business_or_404(slug)
+    if not is_operational(business):
+        raise Http404
+    return business
 
 
 class PublicAPIView(APIView):
@@ -37,15 +50,22 @@ class BusinessProfileView(PublicAPIView):
         responses={200: s.BusinessPublicSerializer, 404: OpenApiResponse(description="Unknown business.")},
     )
     def get(self, request, slug):
-        business = active_business_or_404(slug)
-        business.active_resources = list(
-            Resource.objects.filter(business=business, is_active=True).prefetch_related(
-                Prefetch(
-                    "services",
-                    queryset=Service.objects.filter(is_active=True),
-                    to_attr="active_services",
+        business = business_or_404(slug)
+        # Not taking bookings (suspended or past due): the page still answers, so customers see
+        # an explanation instead of an error, but offers nothing to book (D78).
+        business.accepting_bookings = is_operational(business)
+        business.active_resources = (
+            list(
+                Resource.objects.filter(business=business, is_active=True).prefetch_related(
+                    Prefetch(
+                        "services",
+                        queryset=Service.objects.filter(is_active=True),
+                        to_attr="active_services",
+                    )
                 )
             )
+            if business.accepting_bookings
+            else []
         )
         return Response(s.BusinessPublicSerializer(business).data)
 
@@ -58,7 +78,7 @@ class AvailabilityView(PublicAPIView):
         responses={200: s.AvailabilityResponseSerializer, 400: s.ErrorSerializer},
     )
     def get(self, request, slug):
-        business = active_business_or_404(slug)
+        business = operational_business_or_404(slug)
         query = s.AvailabilityQuerySerializer(data=request.query_params)
         query.is_valid(raise_exception=True)
         data = query.validated_data
@@ -98,7 +118,7 @@ class CreateBookingView(PublicAPIView):
         },
     )
     def post(self, request, slug):
-        business = active_business_or_404(slug)
+        business = operational_business_or_404(slug)
         body = s.CreateBookingSerializer(data=request.data)
         body.is_valid(raise_exception=True)
         data = body.validated_data
