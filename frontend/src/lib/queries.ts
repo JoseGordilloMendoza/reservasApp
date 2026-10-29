@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { ApiError, api } from "./api";
+import { MIN_LETTERS } from "./search";
 import type { Accent } from "./types";
 
 /** Do not retry what a retry cannot fix (a wrong link, a rule that said no). The default for every query. */
@@ -15,6 +16,19 @@ export function useBusiness(slug: string) {
     queryKey: ["business", slug],
     queryFn: () => api.business(slug),
     staleTime: 60_000,
+  });
+}
+
+/** Businesses that match what was typed. Asks nothing until there are enough letters. */
+export function useBusinessSearch(typed: string) {
+  const text = typed.trim();
+  return useQuery({
+    queryKey: ["search", text.toLowerCase()],
+    queryFn: () => api.search(text),
+    enabled: text.length >= MIN_LETTERS,
+    // Keep the last list on screen while the next one loads, so it does not flicker with each letter.
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
   });
 }
 

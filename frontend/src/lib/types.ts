@@ -38,6 +38,15 @@ export interface PublicBusiness {
   resources: PublicResource[];
 }
 
+/** One business in the home page search: only what helps someone recognize it. */
+export interface SearchResult {
+  name: string;
+  slug: string;
+  business_type: string;
+  accent: Accent;
+  address: string;
+}
+
 export interface Slot {
   starts_at: string;
   ends_at: string;
