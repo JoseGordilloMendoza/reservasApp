@@ -40,6 +40,8 @@ export interface PanelBusiness {
   phone: string;
   whatsapp: string;
   accent: Accent;
+  /** Whether the home page search may show this business. */
+  listed: boolean;
   business_type: string;
   timezone: string;
   status: "active" | "suspended";
@@ -168,6 +170,7 @@ export interface BusinessChanges {
   phone?: string;
   whatsapp?: string;
   accent?: Accent;
+  listed?: boolean;
   /** Only the options to change; the server keeps the rest. */
   settings?: Record<string, number | string>;
 }
