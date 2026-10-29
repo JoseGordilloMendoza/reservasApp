@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) está completo: entrar con correo o Google, ver lo urgente, gestionar reservas, anotar las que llegan por teléfono, ver y bloquear clientes, cerrar horarios y configurar su página, reglas, espacios, horarios y servicios (297 pruebas del frontend). Los **correos de aviso** y la **recuperación de contraseña** (M8) también están listos (316 pruebas del frontend y 683 del backend).
+**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) está completo: entrar con correo o Google, ver lo urgente, gestionar reservas, anotar las que llegan por teléfono, ver y bloquear clientes, cerrar horarios y configurar su página, reglas, espacios, horarios y servicios (297 pruebas del frontend). Los **correos de aviso** y la **recuperación de contraseña** (M8) también están listos, y el **panel del equipo de la plataforma** (M9): indicadores, alta de negocios con su dueño, suscripciones con pagos y días de gracia, suspensión, personas, soporte con registro y actividad (503 pruebas del frontend y 895 del backend). Solo falta el despliegue (M10).
 
 ## Cómo ejecutar
 
@@ -21,7 +21,7 @@ docker compose run --rm backend pytest              # pruebas
 docker compose run --rm backend python manage.py seed_demo
 ```
 
-Crea una cancha y un consultorio de ejemplo, cada uno con su dueño (`canchas@demo.pe` y `consultorio@demo.pe`, contraseña `demo12345`). Solo funciona en desarrollo.
+Crea una cancha y un consultorio de ejemplo, cada uno con su dueño (`canchas@demo.pe` y `consultorio@demo.pe`) y su suscripción (la cancha vigente, el consultorio en sus días de gracia, para ver los avisos), y un miembro del equipo de la plataforma (`equipo@demo.pe`). Todos con contraseña `demo12345`. Solo funciona en desarrollo.
 
 | URL | Qué es |
 |---|---|
@@ -29,6 +29,7 @@ Crea una cancha y un consultorio de ejemplo, cada uno con su dueño (`canchas@de
 | http://localhost:5173/consultorio-lucia | La del consultorio, con otro color |
 | http://localhost:5173/mis-reservas | Boletos guardados en este dispositivo |
 | http://localhost:5173/panel | Panel del negocio (entra con `canchas@demo.pe` / `demo12345`) |
+| http://localhost:5173/plataforma | Área del equipo de la plataforma (entra con `equipo@demo.pe` / `demo12345`) |
 | http://localhost:8000/api/docs/ | Lista interactiva de endpoints (Swagger) |
 | http://localhost:8000/api/health/ | Estado de la API y la base de datos |
 | http://localhost:8000/admin/ | Admin de Django (superadmin) |
