@@ -68,6 +68,13 @@
 - **RN-37.** Un correo que falla no impide, no deshace ni retrasa la reserva ni su cambio de estado. El fallo se registra. Los avisos salen una vez que el cambio quedó guardado, nunca antes.
 - **RN-38.** Las reservas que anota el propio negocio solo avisan al cliente (si dejó su correo); el negocio ya lo sabe.
 
+## Buscador
+
+- **RN-47.** Un negocio solo aparece en el buscador del inicio si su dueño lo activó en sus ajustes. Empieza apagado.
+- **RN-48.** El buscador no muestra negocios suspendidos ni con la suscripción vencida más allá de sus días de gracia, y no gasta un lugar en ellos.
+- **RN-49.** Se busca por nombre sin importar mayúsculas ni tildes ("lucia" encuentra "Lucía"), con al menos 2 letras. Los nombres que empiezan con lo escrito van primero. Nunca devuelve más de 8 resultados y no hay manera de listar todos los negocios.
+- **RN-50.** De cada resultado solo se muestra lo que ya es público: nombre, link, tipo, color y dirección.
+
 ## Configuración del negocio
 
 - **RN-28.** El negocio edita su nombre, descripción, dirección, teléfono, WhatsApp y opciones. Su link, tipo, zona horaria y estado los fija la plataforma.
