@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. M8 (correos y recuperar contraseña) también está hecho; M9 (panel de la plataforma) está en construcción y sigue M10 (despliegue).
+**Avance:** M0 a M9 completados; solo falta M10, el despliegue. El backend tiene 895 pruebas y el frontend 503. El cliente reserva desde el link de su negocio; el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin; recibe correos de aviso y puede recuperar su contraseña; y el equipo de la plataforma abre negocios, cobra suscripciones, suspende y da soporte desde su propio panel.
 
 **M7 (panel en pantalla), completado:**
 
@@ -32,11 +32,13 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 | **M9. Panel de la plataforma** | Operar como SaaS | Panel propio en `/plataforma` (D72): indicadores, alta guiada, suscripción con pagos y vigencia, suspender y reactivar, usuarios, entrar como soporte y registro de actividad | Se da de alta un negocio, se le registra un pago, vence con gracia y se suspende sin perder datos |
 | **M10. Despliegue y piloto** | Salir a producción | Imagen de producción, hosting elegido, respaldos, dominio | Un negocio real recibe reservas |
 
-**M9 se construye en tres partes**, cada una con sus pruebas:
+**M9, completado en tres partes**, cada una con sus pruebas:
 
-1. **Suscripción y bloqueo automático:** modelos de suscripción y pagos, vigencia con gracia (D73, D74) y que las páginas públicas y las reservas respeten el vencimiento (RN-18).
+1. **Suscripción y bloqueo automático:** modelos de suscripción y pagos, vigencia con gracia (D73, D74) y que las páginas públicas y las reservas respeten el vencimiento (RN-18). El dueño ve avisos antes, durante y después del vencimiento.
 2. **API de plataforma** bajo `/api/v1/platform/`, solo para el equipo: indicadores, negocios, alta con dueño, suspender, suscripción y pagos, usuarios, sesión de soporte y registro de actividad.
-3. **Pantallas de `/plataforma`** y el aviso de soporte dentro del panel del negocio.
+3. **Pantallas de `/plataforma`**: inicio con lo que requiere atención, negocios con filtros, alta guiada, ficha (resumen, suscripción y pagos, personas, soporte, suspensión) y actividad; y la barra de soporte dentro del panel del negocio.
+
+El equipo de ejemplo se crea con `seed_demo` (`equipo@demo.pe` / `demo12345`), y los dos negocios de ejemplo traen suscripciones en estados distintos (uno vigente y otro en gracia) para ver los avisos.
 
 ## Pendiente para M10 (revisado con `check --deploy`)
 
