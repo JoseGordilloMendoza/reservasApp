@@ -144,7 +144,13 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **Anchos:** una regla global da una columna que puede encogerse a toda cuadrícula sin columnas propias. Antes, una fila con texto que no se parte (`truncate`) ensanchaba la página más que el celular, y se corregía pantalla por pantalla; ahora se comprobaron 22 pantallas a 390 px exactos.
 - **Una página nueva abre arriba**, no donde estaba la anterior.
 
-## 11. Pendiente de decidir
+## 11. El inicio y su buscador
+
+- **Titular genérico.** "Separa tu hora. Sin llamadas." y, debajo, "Canchas, consultorios y más". El primer titular hablaba solo de canchas y la plataforma sirve a más rubros.
+- **Buscar es opcional para el negocio y simple para el cliente.** Una caja que espera a que se deje de escribir (no pide en cada letra), pide 2 letras, y muestra nombre, tipo y dirección de cada resultado. Si no hay coincidencias lo dice, y debajo siempre queda el recordatorio de pedirle su link al negocio.
+- **El dueño decide** si aparece, con una casilla en "Mi página" que explica qué significa.
+
+## 12. Pendiente de decidir
 
 - **Nombre del producto.** Se usa el nombre de trabajo **Separa** (en Perú "separar" una cancha es reservarla) hasta decidir (Q4). Cambiarlo es cuestión de un archivo de textos.
 - Logotipo definitivo. Los iconos actuales parten de la marca provisional (una S en un sello).
