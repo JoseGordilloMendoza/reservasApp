@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. M8 (correos y recuperar contraseña) también está hecho; siguen M9 (superadmin) y M10 (despliegue).
+**Avance:** M0 a M7 completados. El backend del MVP está completo (587 pruebas), el **frontend público** también y el **panel del negocio** ya cubre todo lo que la API permite (297 pruebas del frontend en total): el cliente reserva desde el link de su negocio y el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin. M8 (correos y recuperar contraseña) también está hecho; M9 (panel de la plataforma) está en construcción y sigue M10 (despliegue).
 
 **M7 (panel en pantalla), completado:**
 
@@ -29,8 +29,14 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 | **M6. Frontend público (PWA)** | Pantalla de reserva para el cliente | Página del negocio, selección de horario, formulario, resultado, gestión por link | Una reserva completa desde un celular |
 | **M7. Frontend del panel** | Pantalla de gestión | Lista, acciones sobre reservas, clientes, bloqueos, configuración (el calendario queda para después) | El dueño gestiona su negocio sin usar el admin |
 | **M8. Notificaciones** | Avisos sin costo | Correo al negocio y al cliente, recuperar contraseña, botones de WhatsApp con mensaje prellenado | Los avisos salen en los eventos clave |
-| **M9. Superadmin y suscripciones** | Operar como SaaS | Alta de negocios, suscripción y vigencia, suspensión y reactivación | Se da de alta un negocio y se suspende sin perder datos |
+| **M9. Panel de la plataforma** | Operar como SaaS | Panel propio en `/plataforma` (D72): indicadores, alta guiada, suscripción con pagos y vigencia, suspender y reactivar, usuarios, entrar como soporte y registro de actividad | Se da de alta un negocio, se le registra un pago, vence con gracia y se suspende sin perder datos |
 | **M10. Despliegue y piloto** | Salir a producción | Imagen de producción, hosting elegido, respaldos, dominio | Un negocio real recibe reservas |
+
+**M9 se construye en tres partes**, cada una con sus pruebas:
+
+1. **Suscripción y bloqueo automático:** modelos de suscripción y pagos, vigencia con gracia (D73, D74) y que las páginas públicas y las reservas respeten el vencimiento (RN-18).
+2. **API de plataforma** bajo `/api/v1/platform/`, solo para el equipo: indicadores, negocios, alta con dueño, suspender, suscripción y pagos, usuarios, sesión de soporte y registro de actividad.
+3. **Pantallas de `/plataforma`** y el aviso de soporte dentro del panel del negocio.
 
 ## Pendiente para M10 (revisado con `check --deploy`)
 
