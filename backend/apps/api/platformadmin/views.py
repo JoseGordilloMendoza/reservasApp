@@ -4,16 +4,17 @@ from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.billing.models import Subscription, SubscriptionPayment
-from apps.billing.services import GRACE_DAYS, platform_today
+from apps.billing.services import GRACE_DAYS, business_today, platform_today
 from apps.bookings.models import Booking
 from apps.businesses.models import Business
-from apps.platformadmin import activity
+from apps.platformadmin import activity, onboarding
 
 from . import serializers as s
 from .permissions import IsPlatformAdmin
@@ -151,6 +152,45 @@ class BusinessListView(generics.ListAPIView):
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Open a business",
+        description=(
+            "Creates the business, its owner and its subscription in one go. The owner gets an "
+            "email to choose a password (an existing account just gets added). The vigencia is "
+            "given as a date (valid_until) or as trial days from today."
+        ),
+        request=s.BusinessCreateSerializer,
+        responses={201: s.BusinessDetailSerializer, 400: OpenApiResponse(description="Invalid data.")},
+    )
+    def post(self, request):
+        body = s.BusinessCreateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+
+        subscription = dict(data["subscription"])
+        today = business_today(Business(timezone=data["timezone"]))
+        if "trial_days" in subscription:
+            subscription["valid_until"] = today + timedelta(days=subscription.pop("trial_days"))
+        elif subscription["valid_until"] < today:
+            raise serializers.ValidationError({"subscription": {"valid_until": "La vigencia no puede estar en el pasado."}})
+
+        try:
+            business, owner, account_created = onboarding.create_business(
+                actor=request.user,
+                name=data["name"],
+                slug=data.get("slug"),
+                business_type=data["business_type"],
+                timezone=data["timezone"],
+                owner=dict(data["owner"]),
+                subscription=subscription,
+            )
+        except onboarding.SlugTaken:
+            raise serializers.ValidationError({"slug": "Ese link ya está en uso."})
+
+        result = s.BusinessDetailSerializer(business_or_404(business.slug)).data
+        result["owner"] = {"email": owner.email, "account_created": account_created}
+        return Response(result, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         businesses = businesses_with_counts()

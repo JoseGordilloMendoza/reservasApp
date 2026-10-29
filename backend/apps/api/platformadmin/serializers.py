@@ -5,6 +5,16 @@ from rest_framework import serializers
 from apps.billing.models import Subscription, SubscriptionPayment
 from apps.billing.services import standing
 from apps.businesses.models import Business
+from apps.businesses.validators import validate_slug_not_reserved
+
+
+def check_timezone(value):
+    try:
+        ZoneInfo(value)
+    except (ZoneInfoNotFoundError, ValueError):
+        raise serializers.ValidationError("No es una zona horaria válida, por ejemplo America/Lima.")
+    return value
+
 
 
 class StandingSerializer(serializers.Serializer):
@@ -98,12 +108,7 @@ class BusinessUpdateSerializer(serializers.ModelSerializer):
         model = Business
         fields = ["name", "business_type", "timezone"]
 
-    def validate_timezone(self, value):
-        try:
-            ZoneInfo(value)
-        except (ZoneInfoNotFoundError, ValueError):
-            raise serializers.ValidationError("No es una zona horaria válida, por ejemplo America/Lima.")
-        return value
+    validate_timezone = staticmethod(check_timezone)
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -128,3 +133,37 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     def get_recorded_by(self, payment) -> str | None:
         return payment.recorded_by.email if payment.recorded_by else None
+
+
+class OwnerInputSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=150, required=False, allow_blank=True, default="")
+    last_name = serializers.CharField(max_length=150, required=False, allow_blank=True, default="")
+
+
+class SubscriptionInputSerializer(serializers.Serializer):
+    plan_name = serializers.CharField(max_length=60, required=False, allow_blank=True, default="")
+    price = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=0)
+    valid_until = serializers.DateField(required=False)
+    trial_days = serializers.IntegerField(
+        required=False, min_value=1, max_value=365, help_text="Alternative to valid_until: days from today."
+    )
+
+    def validate(self, attrs):
+        if ("valid_until" in attrs) == ("trial_days" in attrs):
+            raise serializers.ValidationError("Indica la vigencia con valid_until o con trial_days, no ambas ni ninguna.")
+        return attrs
+
+
+class BusinessCreateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=120)
+    slug = serializers.SlugField(
+        max_length=63,
+        required=False,
+        validators=[validate_slug_not_reserved],
+        help_text="The public link. Made from the name when left out.",
+    )
+    business_type = serializers.ChoiceField(choices=Business.BusinessType.choices, default=Business.BusinessType.GENERIC)
+    timezone = serializers.CharField(max_length=64, default="America/Lima", validators=[check_timezone])
+    owner = OwnerInputSerializer()
+    subscription = SubscriptionInputSerializer()
