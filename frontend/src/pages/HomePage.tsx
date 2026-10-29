@@ -14,12 +14,12 @@ export function HomePage() {
         className="rounded-box border-[3px] border-line bg-accent p-6 text-on-accent shadow-hard md:col-span-8 md:p-12"
       >
         <h1 className="font-display text-[clamp(3rem,13vw,7.5rem)] font-extrabold uppercase leading-[0.88] tracking-[-0.035em]">
-          Separa tu cancha.
-          <br />
           Separa tu hora.
+          <br />
+          Sin llamadas.
         </h1>
         <p className="mt-6 max-w-[32ch] text-xl font-medium leading-snug">
-          Elige el horario, deja tu celular y listo. Sin cuenta y sin llamadas.
+          Canchas, consultorios y más. Elige el horario, deja tu celular y listo. No necesitas cuenta.
         </p>
       </motion.section>
 
