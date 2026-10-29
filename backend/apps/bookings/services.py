@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from apps.availability.models import Block
 from apps.availability.slots import get_available_slots
+from apps.billing.services import is_operational
 from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
 from apps.catalog.models import Resource
@@ -143,7 +144,7 @@ def create_booking(
     phone = normalize_phone(customer_phone)
     token = secrets.token_urlsafe(32)
 
-    if business.status != Business.Status.ACTIVE or not service.is_active:
+    if not is_operational(business, now) or not service.is_active:
         raise SlotUnavailable()
 
     with transaction.atomic():
@@ -215,7 +216,7 @@ def create_booking_by_business(
     token = secrets.token_urlsafe(32)
     ends_at = starts_at + timedelta(minutes=service.duration_minutes)
 
-    if business.status != Business.Status.ACTIVE or not service.is_active:
+    if not is_operational(business, now) or not service.is_active:
         raise SlotUnavailable()
     if ends_at <= now:
         raise SlotInPast()

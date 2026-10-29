@@ -6,8 +6,8 @@ from zoneinfo import ZoneInfo
 from django.db.models import Q
 from django.utils import timezone
 
+from apps.billing.services import is_operational
 from apps.bookings.models import SLOT_RELEASING_STATUSES, Booking, BookingStatus
-from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
 
 from .models import AvailabilityRule, Block
@@ -102,14 +102,11 @@ def get_available_slots(resource, service, from_date, to_date=None, *, now=None)
         raise ValueError("The service does not belong to the resource")
 
     business = resource.business
-    if (
-        business.status != Business.Status.ACTIVE
-        or not resource.is_active
-        or not service.is_active
-    ):
+    now = now or timezone.now()
+    # Suspended, or with the subscription past its grace days: nothing to book (RN-18).
+    if not is_operational(business, now) or not resource.is_active or not service.is_active:
         return []
 
-    now = now or timezone.now()
     config = effective_settings(business, service)
     tz = ZoneInfo(business.timezone)
 
