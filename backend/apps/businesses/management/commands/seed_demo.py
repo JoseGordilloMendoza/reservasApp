@@ -1,3 +1,4 @@
+from datetime import timedelta
 from datetime import time
 
 from django.conf import settings
@@ -6,10 +7,12 @@ from django.core.management.base import BaseCommand, CommandError
 
 from apps.accounts.models import Membership
 from apps.availability.models import AvailabilityRule
+from apps.billing import services as billing
 from apps.businesses.models import Business
 from apps.catalog.models import Resource, Service
 
 DEMO_PASSWORD = "demo12345"
+TEAM_EMAIL = "equipo@demo.pe"
 
 DEMOS = [
     {
@@ -24,6 +27,8 @@ DEMOS = [
             "whatsapp": "+51987654321",
         },
         "owner": "canchas@demo.pe",
+        # Paid up, with weeks to go.
+        "subscription": {"days_left": 20, "price": "80.00", "plan": "Mensual"},
         "resources": [
             {"name": "Cancha 1", "service": "Alquiler 1 hora", "minutes": 60, "price": "60.00"},
             {"name": "Cancha 2", "service": "Alquiler 1 hora", "minutes": 60, "price": "70.00"},
@@ -43,6 +48,8 @@ DEMOS = [
             "whatsapp": "+51912345678",
         },
         "owner": "consultorio@demo.pe",
+        # Ended two days ago: in its grace days, so the warnings can be seen.
+        "subscription": {"days_left": -2, "price": "120.00", "plan": "Mensual"},
         "resources": [
             {"name": "Consultorio 1", "service": "Sesión individual", "minutes": 50, "price": "120.00"},
         ],
@@ -57,7 +64,10 @@ DEMOS = [
 
 
 class Command(BaseCommand):
-    help = "Create two demo businesses (a court and a therapist) with their owners. Development only."
+    help = (
+        "Create two demo businesses (a court and a therapist) with their owners and subscriptions, "
+        "and a member of the platform team. Development only."
+    )
 
     def handle(self, *args, **options):
         if not settings.DEBUG:
@@ -91,4 +101,18 @@ class Command(BaseCommand):
 
             owner = User.objects.create_user(demo["owner"], DEMO_PASSWORD)
             Membership.objects.create(user=owner, business=business, role=Membership.Role.OWNER)
+
+            plan = demo["subscription"]
+            billing.start_subscription(
+                business=business,
+                price=plan["price"],
+                plan_name=plan["plan"],
+                valid_until=billing.business_today(business) + timedelta(days=plan["days_left"]),
+            )
             self.stdout.write(f"{data['slug']}: created. Panel login {demo['owner']} / {DEMO_PASSWORD}")
+
+        if User.objects.filter(email=TEAM_EMAIL).exists():
+            self.stdout.write(f"{TEAM_EMAIL}: already exists, left as it is.")
+        else:
+            User.objects.create_superuser(TEAM_EMAIL, DEMO_PASSWORD, first_name="Equipo")
+            self.stdout.write(f"{TEAM_EMAIL}: created. Platform team login {TEAM_EMAIL} / {DEMO_PASSWORD} (open /plataforma)")
