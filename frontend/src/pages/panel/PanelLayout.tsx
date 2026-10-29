@@ -3,6 +3,7 @@ import type { Icon } from "@phosphor-icons/react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { SubscriptionBanner } from "../../components/panel/SubscriptionBanner";
+import { SupportBanner } from "../../components/panel/SupportBanner";
 import { useAuth } from "../../lib/auth";
 import { BRAND } from "../../lib/brand";
 import { usePanelBusiness } from "../../lib/panelQueries";
@@ -54,8 +55,15 @@ export function PanelLayout() {
 
   return (
     <IconContext.Provider value={{ weight: "bold", size: 22 }}>
+      <SupportBanner />
       <div className="mx-auto min-h-dvh max-w-[1120px] md:grid md:grid-cols-[15rem_1fr] md:gap-8 md:px-6">
-        <aside className="relative px-4 pt-4 md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:px-0 md:py-6">
+        <aside
+          className={
+            "relative px-4 pt-4 md:sticky md:flex md:flex-col md:px-0 md:py-6 " +
+            // The support bar stays on top; the sidebar gives it room so "Salir" is never covered.
+            (auth.support ? "md:top-14 md:h-[calc(100dvh-3.5rem)]" : "md:top-0 md:h-dvh")
+          }
+        >
           <p className="flex items-center gap-2 font-display text-xl font-extrabold uppercase tracking-tight">
             <span
               aria-hidden="true"
