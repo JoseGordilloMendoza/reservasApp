@@ -64,7 +64,7 @@ export function BookingsPage() {
   const total = list.data?.pages[0]?.count ?? 0;
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Reservas</h1>
 
       <div role="tablist" aria-label="Filtrar reservas" className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none] md:mx-0 md:px-0">

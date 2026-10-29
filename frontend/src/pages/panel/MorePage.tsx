@@ -12,7 +12,7 @@ const SECTIONS: MenuEntry[] = [
 /** The sections that do not fit in the phone's tab bar. */
 export function MorePage() {
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Más</h1>
       <MenuList entries={SECTIONS} />
     </div>

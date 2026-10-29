@@ -56,7 +56,7 @@ export function CustomersPage() {
   const total = list.data?.pages[0]?.count ?? 0;
 
   return (
-    <div className="grid gap-6">
+    <div className="grid grid-cols-1 gap-6">
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Clientes</h1>
 
       <div role="tablist" aria-label="Filtrar clientes" className="flex gap-3">

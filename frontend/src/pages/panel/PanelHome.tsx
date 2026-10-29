@@ -45,7 +45,7 @@ export function PanelHome() {
   }
 
   return (
-    <div className="grid gap-10">
+    <div className="grid grid-cols-1 gap-10">
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
         {first ? `Hola, ${first}` : "Hola"}
       </h1>

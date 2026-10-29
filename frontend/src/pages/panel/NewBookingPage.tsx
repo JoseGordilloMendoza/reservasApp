@@ -92,7 +92,7 @@ function Done({ booking, business, slug, timeZone, onAnother }: {
   }
 
   return (
-    <div className="grid max-w-[34rem] gap-6">
+    <div className="grid max-w-[34rem] grid-cols-1 gap-6">
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Reserva anotada</h1>
 
       <div className="grid gap-2 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
@@ -222,7 +222,7 @@ export function NewBookingPage() {
   }
 
   return (
-    <div className="grid max-w-[34rem] gap-6">
+    <div className="grid max-w-[34rem] grid-cols-1 gap-6">
       <Link to="/panel" className="inline-flex w-fit items-center gap-2 font-display font-bold underline decoration-[3px] underline-offset-4">
         <ArrowLeft aria-hidden="true" />
         Inicio
