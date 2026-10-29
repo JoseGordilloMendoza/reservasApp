@@ -16,7 +16,8 @@ from apps.billing.models import Subscription, SubscriptionPayment
 from apps.billing.services import GRACE_DAYS, business_today, platform_today
 from apps.bookings.models import Booking
 from apps.businesses.models import Business
-from apps.platformadmin import activity, onboarding
+from apps.platformadmin import activity, onboarding, support
+from apps.platformadmin.models import SupportSession
 
 from . import serializers as s
 from .permissions import IsPlatformAdmin
@@ -520,3 +521,31 @@ class MemberSendLinkView(PlatformAPIView):
         onboarding.send_access_email(membership.user, business)
         activity.record(request.user, activity.USER_LINK_SENT, business, email=membership.user.email)
         return Response({"detail": f"Enviamos el correo a {membership.user.email}."})
+
+
+class SupportStartView(PlatformAPIView):
+    @extend_schema(
+        summary="Open a support session in a business",
+        description=(
+            "Lets the team work inside the business's panel with the owner's powers for two hours: "
+            "send X-Business with its slug on panel calls. A reason is required. The start, the end "
+            "and every change made are written to the activity log."
+        ),
+        request=s.SupportStartSerializer,
+        responses={201: s.SupportSessionSerializer},
+    )
+    def post(self, request, slug):
+        business = business_or_404(slug)
+        body = s.SupportStartSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+
+        session = support.start_session(request.user, business, body.validated_data["reason"].strip())
+        return Response(s.SupportSessionSerializer(session).data, status=status.HTTP_201_CREATED)
+
+
+class SupportEndView(PlatformAPIView):
+    @extend_schema(summary="End a support session", responses={200: s.SupportSessionSerializer})
+    def post(self, request, pk):
+        session = get_object_or_404(SupportSession.objects.select_related("business"), pk=pk, user=request.user)
+        support.end_session(session)
+        return Response(s.SupportSessionSerializer(session).data)

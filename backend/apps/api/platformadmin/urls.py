@@ -25,4 +25,14 @@ urlpatterns = [
         views.MemberSendLinkView.as_view(),
         name="platform-user-link",
     ),
+    path(
+        "businesses/<slug:slug>/support-session/",
+        views.SupportStartView.as_view(),
+        name="platform-support-start",
+    ),
+    path(
+        "support-sessions/<int:pk>/end/",
+        views.SupportEndView.as_view(),
+        name="platform-support-end",
+    ),
 ]

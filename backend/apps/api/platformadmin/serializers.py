@@ -223,3 +223,15 @@ class MemberCreateSerializer(serializers.Serializer):
 
 class MemberUpdateSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=Membership.Role.choices)
+
+
+class SupportStartSerializer(serializers.Serializer):
+    reason = serializers.CharField(max_length=200, help_text="Why the team is going in. It is logged.")
+
+
+class SupportSessionSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    business = serializers.SlugField(source="business.slug")
+    reason = serializers.CharField()
+    started_at = serializers.DateTimeField()
+    expires_at = serializers.DateTimeField()
