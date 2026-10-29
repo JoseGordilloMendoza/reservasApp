@@ -7,6 +7,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from apps.availability.models import AvailabilityRule
+from apps.billing import services as billing
 from apps.businesses.models import Business
 from apps.catalog.models import Resource, Service
 
@@ -73,3 +74,48 @@ def test_it_refuses_to_run_outside_development(settings):
         seed()
 
     assert not get_user_model().objects.exists()
+
+
+def test_the_demo_subscriptions_show_both_a_paid_up_and_a_lapsed_business():
+    seed()
+
+    court = billing.standing(Business.objects.get(slug="canchas-los-andes"))
+    therapist = billing.standing(Business.objects.get(slug="consultorio-lucia"))
+
+    assert (court.state, court.days_left) == ("active", 20)
+    assert therapist.state == "grace"  # so the warning can be seen without waiting
+
+
+def test_a_lapsed_demo_business_still_takes_bookings_while_in_grace():
+    seed()
+
+    data = APIClient().get(reverse("public-business", kwargs={"slug": "consultorio-lucia"})).json()
+
+    assert data["accepting_bookings"] is True
+
+
+def test_a_member_of_the_platform_team_is_created_and_can_sign_in():
+    output = seed()
+
+    response = APIClient().post(
+        reverse("auth-login"), {"email": "equipo@demo.pe", "password": "demo12345"}, format="json"
+    )
+
+    assert response.status_code == 200
+    user = response.json()["user"]
+    assert user["is_platform_admin"] is True
+    assert user["memberships"] == []
+    assert "/plataforma" in output
+
+
+def test_the_team_member_is_not_duplicated_and_keeps_a_changed_password():
+    seed()
+    team = get_user_model().objects.get(email="equipo@demo.pe")
+    team.set_password("otra-clave-123")
+    team.save()
+
+    output = seed()
+
+    assert get_user_model().objects.filter(email="equipo@demo.pe").count() == 1
+    assert get_user_model().objects.get(email="equipo@demo.pe").check_password("otra-clave-123")
+    assert "equipo@demo.pe: already exists" in output
