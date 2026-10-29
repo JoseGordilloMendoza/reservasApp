@@ -25,6 +25,7 @@ import { SchedulePage } from "./pages/panel/SchedulePage";
 import { ServicesPage } from "./pages/panel/ServicesPage";
 import { SettingsPage } from "./pages/panel/SettingsPage";
 import { SpacesPage } from "./pages/panel/SpacesPage";
+import { ActivityPage } from "./pages/platform/ActivityPage";
 import { BusinessAdminPage } from "./pages/platform/BusinessAdminPage";
 import { BusinessesPage } from "./pages/platform/BusinessesPage";
 import { NewBusinessPage } from "./pages/platform/NewBusinessPage";
@@ -55,6 +56,7 @@ export function App() {
         <Route path="negocios" element={<BusinessesPage />} />
         <Route path="negocios/nuevo" element={<NewBusinessPage />} />
         <Route path="negocios/:slug" element={<BusinessAdminPage />} />
+        <Route path="actividad" element={<ActivityPage />} />
       </Route>
 
       <Route path="panel/entrar" element={<LoginPage />} />
