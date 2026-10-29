@@ -189,3 +189,15 @@ h3 {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * A grid that declares no columns of its own is a stack of rows. Its one column must be able to
+ * shrink: with the default "auto" column, a row holding text that does not wrap (truncate) asks
+ * for its whole width and pushes the page wider than the screen. Anything with a grid-cols-*
+ * utility keeps what it asked for, because utilities come after the base layer.
+ */
+@layer base {
+  .grid:not([class*="grid-cols"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
