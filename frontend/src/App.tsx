@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { Layout } from "./components/Layout";
+import { RequirePlatform } from "./components/platform/RequirePlatform";
 import { RequireAuth } from "./components/RequireAuth";
 import { BusinessPage } from "./pages/BusinessPage";
 import { HomePage } from "./pages/HomePage";
@@ -24,6 +25,8 @@ import { SchedulePage } from "./pages/panel/SchedulePage";
 import { ServicesPage } from "./pages/panel/ServicesPage";
 import { SettingsPage } from "./pages/panel/SettingsPage";
 import { SpacesPage } from "./pages/panel/SpacesPage";
+import { PlatformHome } from "./pages/platform/PlatformHome";
+import { PlatformLayout } from "./pages/platform/PlatformLayout";
 import { TicketPage } from "./pages/TicketPage";
 
 export function App() {
@@ -35,6 +38,17 @@ export function App() {
         <Route path=":slug" element={<BusinessPage />} />
         <Route path=":slug/reserva/:token" element={<TicketPage />} />
         <Route path="*" element={<NotFoundPage />} />
+      </Route>
+
+      <Route
+        path="plataforma"
+        element={
+          <RequirePlatform>
+            <PlatformLayout />
+          </RequirePlatform>
+        }
+      >
+        <Route index element={<PlatformHome />} />
       </Route>
 
       <Route path="panel/entrar" element={<LoginPage />} />

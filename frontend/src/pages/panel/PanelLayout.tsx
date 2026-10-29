@@ -1,6 +1,6 @@
 import { CalendarX, DotsThree, Gear, House, IconContext, ListChecks, Plus, SignOut, Users } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { SubscriptionBanner } from "../../components/panel/SubscriptionBanner";
 import { useAuth } from "../../lib/auth";
@@ -102,6 +102,15 @@ export function PanelLayout() {
               </NavLink>
             ))}
           </nav>
+
+          {auth.user?.is_platform_admin && !auth.support && (
+            <Link
+              to="/plataforma"
+              className="mt-2 inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold underline decoration-[3px] underline-offset-4 md:mt-auto"
+            >
+              Ir a la plataforma
+            </Link>
+          )}
 
           <button
             type="button"

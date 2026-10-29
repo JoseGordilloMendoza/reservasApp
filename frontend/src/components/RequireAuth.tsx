@@ -23,6 +23,11 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     return <Navigate to="/panel/entrar" replace state={{ from: location.pathname }} />;
   }
 
+  // The platform team has no business of its own: its home is the team area.
+  if (!auth.membership && auth.user?.is_platform_admin) {
+    return <Navigate to="/plataforma" replace />;
+  }
+
   if (!auth.membership) {
     return (
       <div className="mx-auto grid min-h-dvh max-w-[28rem] content-center gap-4 px-4 py-10">
