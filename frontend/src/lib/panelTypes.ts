@@ -22,6 +22,16 @@ export interface Session {
   user: SessionUser;
 }
 
+export interface SubscriptionNotice {
+  state: "active" | "grace" | "expired";
+  /** Last covered day, "YYYY-MM-DD". */
+  valid_until: string;
+  /** Last day the business keeps working after the subscription ended. */
+  grace_ends_on: string;
+  /** Days until valid_until; negative once it passed. */
+  days_left: number;
+}
+
 export interface PanelBusiness {
   name: string;
   slug: string;
@@ -33,6 +43,8 @@ export interface PanelBusiness {
   business_type: string;
   timezone: string;
   status: "active" | "suspended";
+  /** Null when the business has no subscription, which never expires. */
+  subscription: SubscriptionNotice | null;
   settings: Record<string, number | string>;
   suggested_service_duration_minutes: number;
   role: Role;

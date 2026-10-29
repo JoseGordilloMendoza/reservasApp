@@ -129,6 +129,7 @@ export const PANEL_BUSINESS: PanelBusiness = {
   business_type: "court",
   timezone: TZ,
   status: "active",
+  subscription: null,
   settings: {},
   suggested_service_duration_minutes: 60,
   role: "owner",
