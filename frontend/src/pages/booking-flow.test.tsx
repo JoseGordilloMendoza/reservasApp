@@ -29,6 +29,37 @@ async function fillCustomer(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByLabelText(/Acepto que/));
 }
 
+describe("a business that is not taking bookings", () => {
+  const PAUSED = { ...BUSINESS, accepting_bookings: false, resources: [] };
+
+  it("explains it instead of offering to book", async () => {
+    api({}, PAUSED);
+    renderApp(PATH);
+
+    expect(await screen.findByRole("heading", { level: 1, name: "Canchas Los Andes" })).toBeInTheDocument();
+    expect(await screen.findByRole("status")).toHaveTextContent("No está recibiendo reservas por ahora");
+    expect(screen.queryByRole("button", { name: /Reservar/ })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Tu nombre")).not.toBeInTheDocument();
+  });
+
+  it("still lets the customer reach the business, and points to the bookings already made", async () => {
+    api({}, PAUSED);
+    renderApp(PATH);
+
+    const notice = await screen.findByRole("status");
+    expect(notice).toHaveTextContent("Mis reservas");
+    expect(within(notice).getByRole("link", { name: /WhatsApp/ })).toBeInTheDocument();
+  });
+
+  it("does not ask for availability", async () => {
+    const { calls } = api({}, PAUSED);
+    renderApp(PATH);
+
+    await screen.findByRole("status");
+    expect(calls.some((call) => call.path.includes("availability"))).toBe(false);
+  });
+});
+
 describe("the business page", () => {
   it("shows the business, its contact details and the booking steps", async () => {
     api();
