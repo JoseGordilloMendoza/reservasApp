@@ -58,6 +58,15 @@ describe("a business, for the team", () => {
     expect(await screen.findByText("No pudimos cargar el negocio")).toBeInTheDocument();
   });
 
+  it("leads to what the team did in this business", async () => {
+    open();
+
+    expect(await screen.findByRole("link", { name: /Ver lo que el equipo hizo/ })).toHaveAttribute(
+      "href",
+      "/plataforma/actividad?negocio=canchas-los-andes",
+    );
+  });
+
   it("has a way back to the list", async () => {
     open();
 
