@@ -1,8 +1,9 @@
-import { MapPin, Phone, WhatsappLogo } from "@phosphor-icons/react";
+import { MapPin, Phone, Storefront, WhatsappLogo } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { useParams } from "react-router-dom";
 
 import { BookingFlow } from "../components/BookingFlow";
+import { ContactLinks } from "../components/ContactLinks";
 import { Skeleton } from "../components/Skeleton";
 import { formatPrice } from "../lib/format";
 import { ApiError } from "../lib/api";
@@ -101,6 +102,25 @@ function PageSkeleton() {
   );
 }
 
+/** Shown instead of the booking flow when the business is suspended or past due (D78). */
+function NotAccepting({ business }: { business: PublicBusiness }) {
+  const phone = business.whatsapp || business.phone;
+  return (
+    <section
+      role="status"
+      className="grid gap-4 rounded-box border-[3px] border-dashed border-line bg-surface p-6 text-text"
+    >
+      <Storefront aria-hidden="true" size={36} />
+      <h2 className="font-display text-3xl font-extrabold leading-tight">No está recibiendo reservas por ahora</h2>
+      <p className="text-muted">
+        {business.name} no tiene horarios disponibles en este momento. Las reservas que ya hiciste se conservan: las
+        encuentras en Mis reservas.
+      </p>
+      {phone && <ContactLinks phone={phone} message={`Hola ${business.name}, quería hacer una reserva.`} />}
+    </section>
+  );
+}
+
 export function BusinessPage() {
   const { slug = "" } = useParams();
   const query = useBusiness(slug);
@@ -129,7 +149,7 @@ export function BusinessPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 140, damping: 20, delay: 0.08 }}
       >
-        <BookingFlow business={business} />
+        {business.accepting_bookings ? <BookingFlow business={business} /> : <NotAccepting business={business} />}
       </motion.div>
     </div>
   );
