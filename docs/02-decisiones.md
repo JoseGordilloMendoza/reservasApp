@@ -85,6 +85,9 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D77 | El alta de un negocio crea al dueño **sin contraseña** y le envía un correo para elegir la suya, con el mismo mecanismo de recuperar contraseña. El equipo puede reenviar el enlace cuando quiera | Tomada | Nadie inventa ni comparte contraseñas por WhatsApp |
 | D78 | Un negocio no operativo (suspendido o vencido más allá de la gracia) muestra al público "este negocio no está recibiendo reservas por ahora"; sus reservas confirmadas se conservan y los boletos de sus clientes siguen funcionando | Tomada | Resuelve Q9 en lo que hoy se puede decidir; reservar varios bloques seguidos sigue abierto |
 | D79 | El link (`slug`) de un negocio no se cambia desde el panel de plataforma | Tomada | Cambiarlo rompe los enlaces ya compartidos en WhatsApp e Instagram; si hace falta, se hace a mano con el admin de Django |
+| D80 | El inicio de la aplicación ofrece un **buscador por nombre**, solo de los negocios que lo activan en sus ajustes (apagado por defecto), con un mínimo de 2 letras, hasta 8 resultados y límite de solicitudes. No hay lista completa | Tomada | Cierra el callejón de quien llega sin link sin volver la plataforma un marketplace ni exponer negocios que no lo pidieron. Matiza D2: el link propio sigue siendo la entrada principal |
+| D81 | El titular del inicio es genérico ("Separa tu hora. Sin llamadas.", con "Canchas, consultorios y más") | Tomada | La plataforma no es solo de canchas |
+| D82 | Despliegue: **Cloudflare Pages** (frontend), **Render de pago** (backend, para que no se duerma) y **Neon** (base de datos, con `btree_gist` confirmado en su documentación) | Tomada | Un cliente que abre el link desde WhatsApp no puede esperar un minuto a que despierte el servidor. Concreta D24. Los precios y límites se confirman en las páginas oficiales antes de contratar |
 
 ## Preguntas abiertas
 
@@ -95,7 +98,7 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | Q4 | Nombre del producto y dominio | "ReservaloYa" descartado por poco atractivo. Pendiente de elegir; verificar disponibilidad de dominio y marca (INDECOPI). **Bloquea el envío real de correos**: el proveedor necesita un dominio verificado para entregar a cualquier destinatario (D71) |
 | Q5 | Piloto: ¿qué negocio de canchas? | Aún sin definir |
 | Q6 | Cumplimiento de la Ley de Protección de Datos Personales de Perú | Revisar qué datos se guardan y cómo se informa al cliente |
-| Q7 | Proveedor concreto de hosting; confirmar que la base de datos permita la extensión `btree_gist` | Ver [07-arquitectura.md](07-arquitectura.md), sección 7 |
+| Q7 | Hosting | Decidido en D82 (Cloudflare Pages, Render de pago y Neon). Falta confirmar en las páginas oficiales el precio del servicio de Render, la región más cercana a Perú y que la restricción de exclusión funcione en una base de prueba de Neon |
 | Q9 | Reservar varios bloques seguidos en una operación (lo de las reservas confirmadas de un negocio suspendido quedó resuelto en D78) | Ver [06-reglas-de-negocio.md](06-reglas-de-negocio.md) |
 | Q10 | ID de cliente de Google | Resuelto: configurado en el `.env` local y `http://localhost:5173` autorizado en Google Cloud Console. Google recomienda autorizar también `http://localhost`; falta agregar el dominio real al publicar |
 | Q11 | Alta de dueños | Resuelto: basta con el admin de Django para el piloto |
