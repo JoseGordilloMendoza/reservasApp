@@ -207,3 +207,33 @@ def password_reset(user, link):
         ]
     )
     return f"Cambia tu contraseña de {BRAND}", body
+
+
+def owner_welcome(user, business, link):
+    """For someone who has just been given a business and has no password yet."""
+    greeting = f"Hola {user.first_name}," if user.first_name else "Hola,"
+    body = "\n\n".join(
+        [
+            greeting,
+            f"{business.name} ya está en {BRAND}. Para entrar a tu panel, elige tu contraseña. "
+            "El enlace vale una hora y sirve una sola vez:\n" + link,
+            f"Si el enlace venció, pide otro aquí: {settings.FRONTEND_URL}/panel/recuperar",
+            f"Esta es la página donde tus clientes reservarán:\n{settings.FRONTEND_URL}/{business.slug}",
+            BRAND,
+        ]
+    )
+    return f"Bienvenido a {BRAND}: elige tu contraseña", body
+
+
+def user_added(user, business):
+    """For someone who already had an account and now also works on this business."""
+    greeting = f"Hola {user.first_name}," if user.first_name else "Hola,"
+    body = "\n\n".join(
+        [
+            greeting,
+            f"Ahora también puedes administrar {business.name} en {BRAND}. Entra con tu cuenta de siempre:",
+            f"{settings.FRONTEND_URL}/panel",
+            BRAND,
+        ]
+    )
+    return f"Ya puedes administrar {business.name}", body
