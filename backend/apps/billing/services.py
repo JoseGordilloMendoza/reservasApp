@@ -43,9 +43,16 @@ def business_today(business, now=None):
     return now.astimezone(ZoneInfo(business.timezone)).date()
 
 
-def standing(business, now=None, subscription=None):
-    """Compute the state on the spot, so nothing has to run on a schedule (D74)."""
-    if subscription is None:
+_LOOK_IT_UP = object()
+
+
+def standing(business, now=None, subscription=_LOOK_IT_UP):
+    """Compute the state on the spot, so nothing has to run on a schedule (D74).
+
+    Pass `subscription` (a Subscription, or None for "has none") when it is already at hand, as
+    a list of businesses does, to avoid one query per business.
+    """
+    if subscription is _LOOK_IT_UP:
         subscription = Subscription.objects.filter(business=business).first()
     if subscription is None:
         return Standing(NONE)

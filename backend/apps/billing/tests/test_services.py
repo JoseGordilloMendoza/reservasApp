@@ -158,3 +158,17 @@ class TestPayments:
         business.delete()
 
         assert Subscription.objects.count() == 0
+
+
+class TestWhenTheSubscriptionIsAlreadyAtHand:
+    def test_uses_the_one_given_without_looking_it_up(self, business, subscribed, django_assert_num_queries):
+        with django_assert_num_queries(0):
+            result = services.standing(business, noon(2030, 3, 21), subscription=subscribed)
+
+        assert result.days_left == 10
+
+    def test_none_means_the_business_has_no_subscription(self, business, subscribed, django_assert_num_queries):
+        with django_assert_num_queries(0):
+            result = services.standing(business, noon(2099, 1, 1), subscription=None)
+
+        assert result.state == services.NONE
