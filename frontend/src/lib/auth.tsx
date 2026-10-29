@@ -9,10 +9,13 @@ import {
   clearSession,
   getBusinessSlug,
   getRefreshToken,
+  getSupport,
   onSessionLost,
   setBusinessSlug,
+  setSupport,
   startSession,
 } from "./session";
+import type { SupportInfo } from "./session";
 
 type Status = "loading" | "anonymous" | "authenticated";
 
@@ -21,6 +24,10 @@ interface AuthValue {
   user: SessionUser | null;
   /** The business the owner is working on. */
   membership: Membership | null;
+  /** Set while the platform team is working inside a business. */
+  support: SupportInfo | null;
+  startSupport: (info: SupportInfo) => void;
+  leaveSupport: () => void;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -31,6 +38,10 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 /** The stored business if the user still belongs to it, otherwise their first one. */
 function chooseBusiness(user: SessionUser): string | null {
+  // The team member inside a business for support works on that one, even without belonging to it.
+  const support = user.is_platform_admin ? getSupport() : null;
+  if (support) return support.slug;
+
   const stored = getBusinessSlug();
   const slugs = user.memberships.map((membership) => membership.business.slug);
   return stored && slugs.includes(stored) ? stored : (slugs[0] ?? null);
@@ -40,12 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<SessionUser | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
+  const [support, setSupportState] = useState<SupportInfo | null>(null);
   const [status, setStatus] = useState<Status>(() => (getRefreshToken() ? "loading" : "anonymous"));
 
   const apply = useCallback((next: SessionUser) => {
     const chosen = chooseBusiness(next);
     setBusinessSlug(chosen);
     setSlug(chosen);
+    setSupportState(next.is_platform_admin ? getSupport() : null);
     setUser(next);
     setStatus("authenticated");
   }, []);
@@ -53,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const leave = useCallback(() => {
     setUser(null);
     setSlug(null);
+    setSupportState(null);
     setStatus("anonymous");
     queryClient.clear();
   }, [queryClient]);
@@ -90,7 +104,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       status,
       user,
-      membership: user?.memberships.find((item) => item.business.slug === slug) ?? null,
+      membership:
+        user?.memberships.find((item) => item.business.slug === slug) ??
+        // Inside a business for support: the same powers as its owner, for as long as the session lasts.
+        (support && support.slug === slug
+          ? { business: { name: support.name, slug: support.slug, status: "active" as const }, role: "owner" as const }
+          : null),
+      support,
+      startSupport: (info) => {
+        setSupport(info);
+        setBusinessSlug(info.slug);
+        setSlug(info.slug);
+        setSupportState(info);
+        queryClient.clear();
+      },
+      leaveSupport: () => {
+        setSupport(null);
+        setBusinessSlug(null);
+        setSlug(null);
+        setSupportState(null);
+        queryClient.clear();
+      },
       login: async (email, password) => open(await panelApi.login(email, password)),
       loginWithGoogle: async (credential) => open(await panelApi.loginWithGoogle(credential)),
       logout: async () => {
@@ -104,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         queryClient.clear();
       },
     }),
-    [status, user, slug, open, queryClient],
+    [status, user, slug, support, open, queryClient],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

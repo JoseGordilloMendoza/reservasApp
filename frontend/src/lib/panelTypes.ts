@@ -45,6 +45,8 @@ export interface PanelBusiness {
   status: "active" | "suspended";
   /** Null when the business has no subscription, which never expires. */
   subscription: SubscriptionNotice | null;
+  /** Set only while the platform team is inside this business for support. */
+  support: { session: number; reason: string; expires_at: string; user: string } | null;
   settings: Record<string, number | string>;
   suggested_service_duration_minutes: number;
   role: Role;
