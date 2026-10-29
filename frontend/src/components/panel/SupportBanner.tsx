@@ -41,11 +41,12 @@ export function SupportBanner() {
       <div className="mx-auto flex max-w-[1120px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 md:px-6">
         <Lifebuoy aria-hidden="true" size={22} weight="bold" className="shrink-0" />
         <p className="min-w-0 flex-1 text-sm font-semibold">
-          Sesión de soporte en {support.name}. Vence a las {formatTime(support.expires_at, ZONE)}. Cada cambio queda registrado.
+          Sesión de soporte en {support.name}. Vence a las {formatTime(support.expires_at, ZONE)}.{" "}
+          <span className="max-sm:hidden">Cada cambio queda registrado.</span>
         </p>
         <Button
           variant="primary"
-          className="min-h-[44px] px-4 py-2 text-base"
+          className="min-h-[44px] px-3 py-2 text-sm sm:px-4 sm:text-base"
           disabled={end.isPending}
           onClick={() => end.mutate(support.session, { onSettled: leave })}
         >
