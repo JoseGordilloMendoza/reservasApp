@@ -37,6 +37,16 @@ class Standing:
     days_left: int | None = None
 
 
+# The platform serves Peru, so its own day (dashboard counts, list filters) is the Lima one.
+# Each business is still judged on its own calendar, in standing().
+PLATFORM_TIMEZONE = ZoneInfo("America/Lima")
+
+
+def platform_today(now=None):
+    """The current date in Lima, for questions about the platform as a whole."""
+    return (now or timezone.now()).astimezone(PLATFORM_TIMEZONE).date()
+
+
 def business_today(business, now=None):
     """The current date on the business's own calendar, which is the one its dates are in."""
     now = now or timezone.now()

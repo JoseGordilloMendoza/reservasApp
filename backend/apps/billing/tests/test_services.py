@@ -172,3 +172,12 @@ class TestWhenTheSubscriptionIsAlreadyAtHand:
             result = services.standing(business, noon(2099, 1, 1), subscription=None)
 
         assert result.state == services.NONE
+
+
+class TestThePlatformDay:
+    def test_is_the_day_in_lima(self):
+        # 02:00 UTC on the 1st is still 21:00 of the 31st in Lima.
+        assert services.platform_today(datetime(2030, 4, 1, 2, 0, tzinfo=timezone.utc)) == date(2030, 3, 31)
+
+    def test_matches_utc_when_both_are_on_the_same_day(self):
+        assert services.platform_today(noon(2030, 4, 1)) == date(2030, 4, 1)
