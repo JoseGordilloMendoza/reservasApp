@@ -5,6 +5,7 @@ import {
   clockLabel,
   dateKey,
   dayNumber,
+  formatDayKey,
   formatLongDate,
   formatShortDate,
   formatTime,
@@ -135,5 +136,13 @@ describe("the next whole hour", () => {
   it("rolls over to the next day after 23:00", () => {
     // 23:30 in Lima.
     expect(nextWholeHour(LIMA, new Date("2030-01-08T04:30:00Z"))).toEqual({ date: "2030-01-08", time: "00:00" });
+  });
+});
+
+describe("a plain date", () => {
+  it("reads as day and month, whatever the timezone of the machine", () => {
+    expect(formatDayKey("2030-03-31")).toBe("31 de marzo");
+    expect(formatDayKey("2030-01-01")).toBe("1 de enero");
+    expect(formatDayKey("2030-12-05")).toBe("5 de diciembre");
   });
 });

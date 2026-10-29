@@ -89,6 +89,14 @@ export function nextWholeHour(timeZone: string, now: Date = new Date()): { date:
     : { date: today, time: `${String(hour + 1).padStart(2, "0")}:00` };
 }
 
+/** "2030-03-31" -> "31 de marzo". A plain date has no timezone, so it is read as is. */
+export function formatDayKey(key: string): string {
+  const [year = 1970, month = 1, day = 1] = key.split("-").map(Number);
+  return new Intl.DateTimeFormat(LOCALE, { timeZone: "UTC", day: "numeric", month: "long" }).format(
+    new Date(Date.UTC(year, month - 1, day)),
+  );
+}
+
 /** The `count` days starting today, as date keys. */
 export function upcomingDays(timeZone: string, count: number, now: Date = new Date()): string[] {
   const first = todayKey(timeZone, now);
