@@ -17,7 +17,7 @@ from apps.billing.services import GRACE_DAYS, business_today, platform_today
 from apps.bookings.models import Booking
 from apps.businesses.models import Business
 from apps.platformadmin import activity, onboarding, support
-from apps.platformadmin.models import SupportSession
+from apps.platformadmin.models import ActivityLog, SupportSession
 
 from . import serializers as s
 from .permissions import IsPlatformAdmin
@@ -549,3 +549,32 @@ class SupportEndView(PlatformAPIView):
         session = get_object_or_404(SupportSession.objects.select_related("business"), pk=pk, user=request.user)
         support.end_session(session)
         return Response(s.SupportSessionSerializer(session).data)
+
+
+class ActivityListView(generics.ListAPIView):
+    permission_classes = [IsPlatformAdmin]
+    pagination_class = Pagination
+    serializer_class = s.ActivitySerializer
+
+    @extend_schema(
+        summary="What the team did, latest first",
+        parameters=[
+            OpenApiParameter("business", str, description="Only this business (its link)."),
+            OpenApiParameter(
+                "kind",
+                str,
+                description="Only one family of actions: business, subscription, payment, user or support.",
+            ),
+        ],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        entries = ActivityLog.objects.all()
+        params = self.request.query_params
+        if params.get("business"):
+            entries = entries.filter(business_slug=params["business"])
+        if params.get("kind"):
+            entries = entries.filter(action__startswith=f"{params['kind']}.")
+        return entries

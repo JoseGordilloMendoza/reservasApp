@@ -7,6 +7,7 @@ from apps.billing.models import Subscription, SubscriptionPayment
 from apps.billing.services import standing
 from apps.businesses.models import Business
 from apps.businesses.validators import validate_slug_not_reserved
+from apps.platformadmin.models import ActivityLog
 
 
 def check_timezone(value):
@@ -235,3 +236,10 @@ class SupportSessionSerializer(serializers.Serializer):
     reason = serializers.CharField()
     started_at = serializers.DateTimeField()
     expires_at = serializers.DateTimeField()
+
+
+class ActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivityLog
+        fields = ["id", "actor_email", "business_slug", "action", "detail", "created_at"]
+        read_only_fields = fields
