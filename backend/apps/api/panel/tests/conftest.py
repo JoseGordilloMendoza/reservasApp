@@ -40,3 +40,9 @@ def other_panel(other_owner):
     client = APIClient()
     client.force_authenticate(other_owner)
     return client
+
+
+@pytest.fixture
+def api_client():
+    """A visitor who is not signed in."""
+    return APIClient()
