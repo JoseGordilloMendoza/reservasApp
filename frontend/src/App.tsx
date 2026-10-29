@@ -25,6 +25,7 @@ import { SchedulePage } from "./pages/panel/SchedulePage";
 import { ServicesPage } from "./pages/panel/ServicesPage";
 import { SettingsPage } from "./pages/panel/SettingsPage";
 import { SpacesPage } from "./pages/panel/SpacesPage";
+import { BusinessesPage } from "./pages/platform/BusinessesPage";
 import { PlatformHome } from "./pages/platform/PlatformHome";
 import { PlatformLayout } from "./pages/platform/PlatformLayout";
 import { TicketPage } from "./pages/TicketPage";
@@ -49,6 +50,7 @@ export function App() {
         }
       >
         <Route index element={<PlatformHome />} />
+        <Route path="negocios" element={<BusinessesPage />} />
       </Route>
 
       <Route path="panel/entrar" element={<LoginPage />} />
