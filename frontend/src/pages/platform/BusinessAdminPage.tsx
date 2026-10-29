@@ -240,6 +240,13 @@ function Summary({ business }: { business: PlatformBusiness }) {
         <PublicLink slug={business.slug} />
       </section>
 
+      <Link
+        to={`/plataforma/actividad?negocio=${business.slug}`}
+        className="font-display font-bold underline decoration-[3px] underline-offset-4"
+      >
+        Ver lo que el equipo hizo en este negocio
+      </Link>
+
       <Support business={business} />
       <Suspension business={business} />
     </div>
