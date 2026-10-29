@@ -4,7 +4,7 @@ import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 
 import { Button } from "../../components/Button";
-import { Field } from "../../components/Field";
+import { CheckField, Field } from "../../components/Field";
 import { AccentPicker } from "../../components/panel/AccentPicker";
 import { Skeleton } from "../../components/Skeleton";
 import { TextAreaField } from "../../components/TextAreaField";
@@ -13,7 +13,7 @@ import type { PanelBusiness } from "../../lib/panelTypes";
 import { usePanelBusiness, useUpdateBusiness } from "../../lib/panelQueries";
 
 const FIELDS = ["name", "description", "address", "phone", "whatsapp"] as const;
-type Values = Pick<PanelBusiness, (typeof FIELDS)[number] | "accent">;
+type Values = Pick<PanelBusiness, (typeof FIELDS)[number] | "accent" | "listed">;
 
 const valuesOf = (business: PanelBusiness): Values => ({
   name: business.name,
@@ -22,6 +22,7 @@ const valuesOf = (business: PanelBusiness): Values => ({
   phone: business.phone,
   whatsapp: business.whatsapp,
   accent: business.accent,
+  listed: business.listed,
 });
 
 function BusinessForm({ business }: { business: PanelBusiness }) {
@@ -55,6 +56,7 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
         phone: values.phone.trim(),
         whatsapp: values.whatsapp.trim(),
         accent: values.accent,
+        listed: values.listed,
       },
       {
         onSuccess: (updated) => {
@@ -112,6 +114,20 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
           Color
         </h2>
         <AccentPicker value={values.accent} onChange={(accent) => set({ accent })} />
+      </section>
+
+      <section aria-labelledby="buscador" className="grid gap-3">
+        <h2 id="buscador" className="font-display text-base font-bold">
+          Buscador
+        </h2>
+        <CheckField
+          label="Aparecer en el buscador de la página de inicio"
+          checked={values.listed}
+          onChange={(event) => set({ listed: event.target.checked })}
+        />
+        <p className="text-sm text-muted">
+          Quien llegue sin tu link podrá encontrarte por tu nombre. Si no lo marcas, solo entran tus clientes que tengan tu link.
+        </p>
       </section>
 
       {formError && (
