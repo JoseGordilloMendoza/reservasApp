@@ -73,19 +73,19 @@ describe("working inside a business as the platform team", () => {
     expect(getBusinessSlug()).toBe("canchas-los-andes");
   });
 
-  it("without a support session the team member has no business to work on", async () => {
+  it("without a support session the team member lands in the team area, not in a business", async () => {
     openPanel();
     renderApp("/panel");
 
-    expect(await screen.findByText("Esta cuenta no tiene un negocio")).toBeInTheDocument();
+    expect(await screen.findByText("Equipo de la plataforma")).toBeInTheDocument();
   });
 
-  it("an expired support session gives no access", async () => {
+  it("an expired support session gives no access to the business", async () => {
     setSupport({ ...SUPPORT, expires_at: new Date(Date.now() - 1000).toISOString() });
     openPanel();
     renderApp("/panel");
 
-    expect(await screen.findByText("Esta cuenta no tiene un negocio")).toBeInTheDocument();
+    expect(await screen.findByText("Equipo de la plataforma")).toBeInTheDocument();
   });
 
   it("a business owner cannot use a support session someone left in the browser", async () => {
