@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { RequirePlatform } from "./components/platform/RequirePlatform";
 import { RequireAuth } from "./components/RequireAuth";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { BusinessPage } from "./pages/BusinessPage";
 import { HomePage } from "./pages/HomePage";
 import { MyBookingsPage } from "./pages/MyBookingsPage";
@@ -35,7 +36,9 @@ import { TicketPage } from "./pages/TicketPage";
 
 export function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="mis-reservas" element={<MyBookingsPage />} />
@@ -85,6 +88,7 @@ export function App() {
         <Route path="ajustes/servicios" element={<ServicesPage />} />
         <Route path="mas" element={<MorePage />} />
       </Route>
-    </Routes>
+      </Routes>
+    </>
   );
 }

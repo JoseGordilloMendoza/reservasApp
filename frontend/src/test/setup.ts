@@ -26,6 +26,7 @@ beforeEach(() => {
   });
 
   window.HTMLElement.prototype.scrollIntoView = () => {};
+  window.scrollTo = vi.fn();
 });
 
 afterEach(() => {
