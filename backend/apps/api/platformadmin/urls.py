@@ -14,4 +14,15 @@ urlpatterns = [
         name="platform-subscription",
     ),
     path("businesses/<slug:slug>/payments/", views.PaymentListView.as_view(), name="platform-payments"),
+    path("businesses/<slug:slug>/users/", views.MemberListView.as_view(), name="platform-users"),
+    path(
+        "businesses/<slug:slug>/users/<int:pk>/",
+        views.MemberDetailView.as_view(),
+        name="platform-user",
+    ),
+    path(
+        "businesses/<slug:slug>/users/<int:pk>/send-link/",
+        views.MemberSendLinkView.as_view(),
+        name="platform-user-link",
+    ),
 ]

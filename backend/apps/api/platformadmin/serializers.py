@@ -2,6 +2,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from rest_framework import serializers
 
+from apps.accounts.models import Membership
 from apps.billing.models import Subscription, SubscriptionPayment
 from apps.billing.services import standing
 from apps.businesses.models import Business
@@ -190,3 +191,35 @@ class PaymentInputSerializer(serializers.Serializer):
     months = serializers.IntegerField(min_value=1, max_value=24, default=1)
     reference = serializers.CharField(max_length=80, required=False, allow_blank=True, default="")
     note = serializers.CharField(max_length=200, required=False, allow_blank=True, default="")
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    """A person who works the panel of a business, as the team sees them."""
+
+    email = serializers.EmailField(source="user.email")
+    name = serializers.CharField(source="user.get_full_name")
+    last_login = serializers.DateTimeField(source="user.last_login")
+    is_active = serializers.BooleanField(source="user.is_active")
+    has_password = serializers.SerializerMethodField()
+    uses_google = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Membership
+        fields = ["id", "email", "name", "role", "is_active", "last_login", "has_password", "uses_google", "created_at"]
+
+    def get_has_password(self, membership) -> bool:
+        return membership.user.has_usable_password()
+
+    def get_uses_google(self, membership) -> bool:
+        return membership.user.google_sub is not None
+
+
+class MemberCreateSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=150, required=False, allow_blank=True, default="")
+    last_name = serializers.CharField(max_length=150, required=False, allow_blank=True, default="")
+    role = serializers.ChoiceField(choices=Membership.Role.choices, default=Membership.Role.STAFF)
+
+
+class MemberUpdateSerializer(serializers.Serializer):
+    role = serializers.ChoiceField(choices=Membership.Role.choices)

@@ -10,6 +10,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.accounts.models import Membership
 from apps.billing import services as billing
 from apps.billing.models import Subscription, SubscriptionPayment
 from apps.billing.services import GRACE_DAYS, business_today, platform_today
@@ -406,3 +407,116 @@ class PaymentListView(PlatformAPIView):
             period=[str(payment.period_start), str(payment.period_end)],
         )
         return Response(s.PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
+
+
+def members_of(business):
+    return Membership.objects.filter(business=business).select_related("user").order_by("created_at", "id")
+
+
+def member_or_404(business, pk):
+    return get_object_or_404(members_of(business), pk=pk)
+
+
+def is_last_owner(membership):
+    """Whether removing or demoting this person would leave the business without an owner."""
+    if membership.role != Membership.Role.OWNER:
+        return False
+    return not Membership.objects.filter(business=membership.business, role=Membership.Role.OWNER).exclude(pk=membership.pk).exists()
+
+
+class MemberListView(PlatformAPIView):
+    @extend_schema(summary="People who work the panel of a business", responses=s.MemberSerializer(many=True))
+    def get(self, request, slug):
+        business = business_or_404(slug)
+        return Response(s.MemberSerializer(members_of(business), many=True).data)
+
+    @extend_schema(
+        summary="Add a person to a business",
+        description=(
+            "A new account has no password: it gets an email to choose one. An existing account "
+            "keeps everything it had and is told it can now manage this business too."
+        ),
+        request=s.MemberCreateSerializer,
+        responses={201: s.MemberSerializer, 409: OpenApiResponse(description="Already part of the business.")},
+    )
+    def post(self, request, slug):
+        business = business_or_404(slug)
+        body = s.MemberCreateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+
+        email = onboarding.User.objects.normalize_email(data["email"])
+        if Membership.objects.filter(business=business, user__email=email).exists():
+            return conflict("already_member", "Esa persona ya trabaja en este negocio.")
+
+        membership, created = onboarding.add_member(
+            actor=request.user,
+            business=business,
+            email=email,
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            role=data["role"],
+        )
+        result = s.MemberSerializer(members_of(business).get(pk=membership.pk)).data
+        result["account_created"] = created
+        return Response(result, status=status.HTTP_201_CREATED)
+
+
+class MemberDetailView(PlatformAPIView):
+    @extend_schema(
+        summary="Change someone's role",
+        request=s.MemberUpdateSerializer,
+        responses={200: s.MemberSerializer, 409: OpenApiResponse(description="It would leave no owner.")},
+    )
+    def patch(self, request, slug, pk):
+        business = business_or_404(slug)
+        membership = member_or_404(business, pk)
+        body = s.MemberUpdateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        role = body.validated_data["role"]
+
+        if role == membership.role:
+            return Response(s.MemberSerializer(membership).data)
+        if role != Membership.Role.OWNER and is_last_owner(membership):
+            return conflict("last_owner", "Es el único dueño: nombra a otro dueño antes de cambiarle el rol.")
+
+        previous = membership.role
+        membership.role = role
+        membership.save(update_fields=["role"])
+        activity.record(
+            request.user, activity.USER_ROLE_CHANGED, business, email=membership.user.email, role=[previous, role]
+        )
+        return Response(s.MemberSerializer(membership).data)
+
+    @extend_schema(
+        summary="Remove someone from a business",
+        description="Only takes away their place in this business; their account and other businesses stay.",
+        responses={204: None, 409: OpenApiResponse(description="It would leave no owner.")},
+    )
+    def delete(self, request, slug, pk):
+        business = business_or_404(slug)
+        membership = member_or_404(business, pk)
+        if is_last_owner(membership):
+            return conflict("last_owner", "Es el único dueño: nombra a otro dueño antes de quitarlo.")
+
+        email = membership.user.email
+        membership.delete()
+        activity.record(request.user, activity.USER_REMOVED, business, email=email)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MemberSendLinkView(PlatformAPIView):
+    @extend_schema(
+        summary="Send someone their access email again",
+        description=(
+            "Someone who never signed in gets a link to choose a password. Someone who did gets "
+            "a reminder of where to sign in (they can use Forgot password for a new link)."
+        ),
+        responses={200: OpenApiResponse(description="Sent.")},
+    )
+    def post(self, request, slug, pk):
+        business = business_or_404(slug)
+        membership = member_or_404(business, pk)
+        onboarding.send_access_email(membership.user, business)
+        activity.record(request.user, activity.USER_LINK_SENT, business, email=membership.user.email)
+        return Response({"detail": f"Enviamos el correo a {membership.user.email}."})
