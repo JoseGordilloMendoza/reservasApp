@@ -1,7 +1,8 @@
-import { CalendarX, DotsThree, Gear, House, IconContext, ListChecks, Plus, SignOut, Users, WarningCircle } from "@phosphor-icons/react";
+import { CalendarX, DotsThree, Gear, House, IconContext, ListChecks, Plus, SignOut, Users } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
+import { SubscriptionBanner } from "../../components/panel/SubscriptionBanner";
 import { useAuth } from "../../lib/auth";
 import { BRAND } from "../../lib/brand";
 import { usePanelBusiness } from "../../lib/panelQueries";
@@ -113,12 +114,7 @@ export function PanelLayout() {
         </aside>
 
         <main className="min-w-0 px-4 pb-32 pt-6 md:max-w-[46rem] md:px-0 md:pb-16 md:pt-6">
-          {business.data?.status === "suspended" && (
-            <p role="status" className="mb-6 flex items-start gap-3 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
-              <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
-              Tu negocio está suspendido: no recibe reservas nuevas. Puedes seguir viendo tus datos.
-            </p>
-          )}
+          {business.data && <SubscriptionBanner business={business.data} />}
           <Outlet />
         </main>
       </div>
