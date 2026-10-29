@@ -78,14 +78,15 @@ def standing(business, now=None, subscription=_LOOK_IT_UP):
     return Standing(state, subscription.valid_until, grace_ends_on, (subscription.valid_until - today).days)
 
 
-def is_operational(business, now=None):
+def is_operational(business, now=None, subscription=_LOOK_IT_UP):
     """Whether the business shows its page and takes new bookings (RN-18).
 
-    Suspended by hand, or with the subscription past its grace days, it does not.
+    Suspended by hand, or with the subscription past its grace days, it does not. Pass
+    `subscription` when it is already at hand, as `standing` allows.
     """
     if business.status != Business.Status.ACTIVE:
         return False
-    return standing(business, now).state != EXPIRED
+    return standing(business, now, subscription).state != EXPIRED
 
 
 def add_months(day, months):
