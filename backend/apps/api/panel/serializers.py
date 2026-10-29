@@ -11,6 +11,7 @@ from apps.api.public.serializers import (
     ServiceRefSerializer,
 )
 from apps.availability.models import AvailabilityRule, Block
+from apps.billing.services import standing
 from apps.bookings.models import Booking, BookingEvent, BookingStatus
 from apps.bookings.phone import InvalidPhone, normalize_phone
 from apps.businesses.models import Business
@@ -24,6 +25,7 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
     settings = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     suggested_service_duration_minutes = serializers.SerializerMethodField()
+    subscription = serializers.SerializerMethodField()
 
     class Meta:
         model = Business
@@ -38,6 +40,7 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
             "business_type",
             "timezone",
             "status",
+            "subscription",
             "settings",
             "suggested_service_duration_minutes",
             "role",
@@ -46,6 +49,20 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
     def get_settings(self, business) -> dict:
         """Every option with its effective value (defaults filled in)."""
         return effective_settings(business)
+
+    def get_subscription(self, business) -> dict | None:
+        """Where the subscription stands, so the panel can warn before the page closes. Null when
+        the business has none (it never expires). Only what the warning needs: plan and price are
+        managed from the platform panel."""
+        current = standing(business)
+        if current.state == "none":
+            return None
+        return {
+            "state": current.state,
+            "valid_until": current.valid_until,
+            "grace_ends_on": current.grace_ends_on,
+            "days_left": current.days_left,
+        }
 
     def get_role(self, business) -> str:
         return self.context["membership"].role
