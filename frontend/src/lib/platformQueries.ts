@@ -99,3 +99,11 @@ export function useActivity(filters: ActivityFilters) {
     getNextPageParam: (last, pages) => (last.next ? pages.length + 1 : undefined),
   });
 }
+
+export function useStartSupport(slug: string) {
+  return useMutation({ mutationFn: (reason: string) => platformApi.startSupport(slug, reason) });
+}
+
+export function useEndSupport() {
+  return useMutation({ mutationFn: (session: number) => platformApi.endSupport(session) });
+}
