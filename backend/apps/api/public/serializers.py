@@ -55,6 +55,12 @@ class BusinessPublicSerializer(serializers.ModelSerializer):
         ]
 
 
+class BusinessSearchResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Business
+        fields = ["name", "slug", "business_type", "accent", "address"]
+
+
 # --- availability -------------------------------------------------------------
 
 

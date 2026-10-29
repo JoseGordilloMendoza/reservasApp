@@ -2,7 +2,7 @@ from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from drf_spectacular.utils import OpenApiResponse, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import serializers, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from apps.api.errors import error_response
 from apps.availability.slots import get_available_slots
 from apps.billing.services import is_operational
+from apps.businesses.search import normalize_for_search
 from apps.bookings import services
 from apps.businesses.models import Business
 from apps.catalog.models import Resource, Service
@@ -189,3 +190,48 @@ class CancelBookingView(ManagedBookingView):
             return error_response(error)
         booking = services.find_booking_by_token(token)
         return Response(s.BookingPublicSerializer(booking).data)
+
+
+SEARCH_MIN_LETTERS = 2
+SEARCH_RESULTS = 8
+# More than will be shown, so that removing the ones that are not taking bookings still leaves enough.
+SEARCH_CANDIDATES = 40
+
+
+class BusinessSearchView(PublicAPIView):
+    throttle_scope = "public_search"
+
+    @extend_schema(
+        summary="Find a business by name",
+        description=(
+            "For the home page. Only businesses that chose to appear (`listed`) and are taking "
+            "bookings show up, and only when at least two letters are typed: there is no way to "
+            "list them all. Case and accents do not matter. Names that start with what was typed "
+            "come first. At most eight results."
+        ),
+        parameters=[OpenApiParameter("q", str, description="Part of the name; at least two letters.")],
+        responses={200: s.BusinessSearchResultSerializer(many=True)},
+    )
+    def get(self, request):
+        typed = normalize_for_search(request.query_params.get("q", ""))
+        if len(typed) < SEARCH_MIN_LETTERS:
+            return Response({"results": []})
+
+        candidates = (
+            Business.objects.filter(listed=True, status=Business.Status.ACTIVE, search_name__contains=typed)
+            .select_related("subscription")
+            .order_by("search_name")[:SEARCH_CANDIDATES]
+        )
+
+        found = []
+        for business in sorted(candidates, key=lambda item: (not item.search_name.startswith(typed), item.search_name)):
+            try:
+                subscription = business.subscription
+            except Business.subscription.RelatedObjectDoesNotExist:
+                subscription = None
+            if is_operational(business, subscription=subscription):
+                found.append(business)
+            if len(found) == SEARCH_RESULTS:
+                break
+
+        return Response({"results": s.BusinessSearchResultSerializer(found, many=True).data})
