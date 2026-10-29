@@ -2,13 +2,12 @@ import { screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { Dashboard } from "../../lib/platformTypes";
-import { OWNER, mockApi, page, renderApp, signedInRoutes } from "../../test/helpers";
+import { mockApi, page, renderApp, signedInRoutes } from "../../test/helpers";
+import { TEAM } from "../../test/platform";
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
-
-const TEAM = { ...OWNER, name: "Jose Gordillo", email: "equipo@example.com", is_platform_admin: true, memberships: [] };
 
 const DASHBOARD: Dashboard = {
   businesses: { total: 5, active: 4, suspended: 1 },

@@ -3,26 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { PlatformBusinessRow } from "../../lib/platformTypes";
-import { OWNER, page, renderApp, signedInRoutes } from "../../test/helpers";
+import { page, renderApp, signedInRoutes } from "../../test/helpers";
+import { TEAM, row } from "../../test/platform";
 
 afterEach(() => {
   vi.unstubAllGlobals();
-});
-
-const TEAM = { ...OWNER, is_platform_admin: true, memberships: [] };
-
-export const row = (overrides: Partial<PlatformBusinessRow> = {}): PlatformBusinessRow => ({
-  slug: "canchas-los-andes",
-  name: "Canchas Los Andes",
-  business_type: "court",
-  status: "active",
-  created_at: "2030-01-01T00:00:00Z",
-  standing: { state: "active", valid_until: "2030-03-31", grace_ends_on: "2030-04-05", days_left: 30 },
-  plan_name: "Mensual",
-  price: "80.00",
-  users_count: 2,
-  bookings_30d: 41,
-  ...overrides,
 });
 
 function open(rows: PlatformBusinessRow[], path = "/plataforma/negocios", extra: Parameters<typeof signedInRoutes>[0] = {}) {
