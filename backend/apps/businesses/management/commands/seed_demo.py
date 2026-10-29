@@ -25,6 +25,7 @@ DEMOS = [
             "address": "Av. Ejército 123, Cayma",
             "phone": "+51987654321",
             "whatsapp": "+51987654321",
+            "listed": True,
         },
         "owner": "canchas@demo.pe",
         # Paid up, with weeks to go.
@@ -46,6 +47,7 @@ DEMOS = [
             "address": "Calle Mercaderes 100, Cercado",
             "phone": "+51912345678",
             "whatsapp": "+51912345678",
+            "listed": True,
         },
         "owner": "consultorio@demo.pe",
         # Ended two days ago: in its grace days, so the warnings can be seen.
