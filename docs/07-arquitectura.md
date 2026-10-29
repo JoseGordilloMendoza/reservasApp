@@ -140,11 +140,12 @@ API REST en `/api/v1/`, dividida por audiencia:
 
 | Método y ruta | Qué hace | Errores propios |
 |---|---|---|
-| `GET /api/v1/public/businesses/{slug}/` | Página del negocio: recursos y servicios activos | 404 si no existe o está suspendido |
+| `GET /api/v1/public/businesses/{slug}/` | Página del negocio: recursos y servicios activos, y `accepting_bookings` | 404 si no existe. Un negocio suspendido o vencido responde 200 con `accepting_bookings: false` y sin recursos |
 | `GET /api/v1/public/businesses/{slug}/availability/?resource=&service=&date=[&to_date=]` | Horarios libres en UTC y zona horaria del negocio | 400 parámetros inválidos o rango mayor a 62 días |
 | `POST /api/v1/public/businesses/{slug}/bookings/` | Crea una reserva sin cuenta; devuelve `manage_token` una sola vez | 400 datos inválidos, 403 `booking_not_allowed`, 409 `slot_unavailable` o `too_many_active_bookings`, 429 demasiadas solicitudes |
 | `GET /api/v1/public/bookings/{token}/` | Estado de la reserva, `can_cancel` y `cancel_deadline` | 404 |
 | `POST /api/v1/public/bookings/{token}/cancel/` | Cancela la reserva | 403 `cancellation_window_closed`, 409 `not_cancellable` |
+| `GET /api/v1/public/search/?q=` | Busca negocios por nombre entre los que aceptaron aparecer y están recibiendo reservas (RN-47 a RN-50) | Vacío con menos de 2 letras; 429 demasiadas solicitudes |
 
 Las rutas usan `businesses/{slug}` y `bookings/{token}` para que un negocio nunca pueda chocar con la ruta de reservas por su nombre. Los errores de reglas devuelven `{"code": "...", "detail": "..."}`; `code` es estable para el frontend y `detail` está en español.
 
@@ -294,11 +295,25 @@ El objetivo es gastar lo mínimo. Los planes gratuitos cambian con frecuencia y 
 | Base de datos | [Neon o Supabase](https://flaviocopes.com/database-hosting-options/) | Ambos tienen plan gratuito con límites de almacenamiento y de inactividad (Supabase pausa proyectos inactivos). **No pude confirmar que ofrezcan `btree_gist`**, y es obligatorio |
 | Backend | [Render, PythonAnywhere u otros](https://appliku.com/post/free-django-hosting/) | Render gratuito se duerme tras un tiempo sin uso y tarda de 30 a 60 segundos en despertar. Railway y Fly.io no tienen plan gratuito permanente |
 
-**Riesgo principal:** un sistema de reservas que tarda un minuto en abrir, o cuya base de datos se pausa, pierde clientes del negocio. Mi recomendación por fases:
+**Elegido (D82): Cloudflare Pages, Render de pago y Neon.**
 
-1. **Desarrollo y demostraciones:** todo gratuito, sin problema.
-2. **Piloto con un negocio real:** presupuestar un backend que no se duerma. Suele costar unos pocos dólares al mes, según las fuentes consultadas.
-3. **Antes de elegir proveedor de base de datos:** probar que `btree_gist` funcione creando la restricción en una base de prueba.
+Lo que se verificó en las páginas oficiales (octubre de 2026):
+
+- **Neon** lista `btree_gist` entre sus extensiones (versión 1.7 en PostgreSQL 15 a 17) y no indica restricciones por plan. Su almacenamiento gratuito es de 0.5 o 1 GB según la fuente.
+- **Render gratuito:** el servicio web se duerme tras 15 minutos sin visitas y tarda cerca de un minuto en despertar; la base de datos gratuita **expira a los 30 días**, así que no sirve. Mantenerlo despierto con pings está desaconsejado por el personal de Render en sus foros.
+- **Supabase** pausa los proyectos gratuitos tras una semana sin uso y no pude confirmar `btree_gist`; por eso se descartó.
+- **Railway y Fly.io** ya no tienen un plan gratuito real, según blogs.
+
+**Pendiente de confirmar antes de contratar:** el precio actual del servicio de pago de Render (los blogs hablan de unos 7 dólares al mes), la región más cercana a Perú de Render y de Neon (para no sumar latencia), que Cloudflare Pages resuelva cualquier ruta con `index.html`, y que la restricción de exclusión funcione de verdad creándola en una base de prueba de Neon.
+
+**Riesgo principal:** un sistema de reservas que tarda un minuto en abrir pierde clientes del negocio. Por eso el backend va en un plan que no se duerme.
+
+### Buscador del inicio
+
+- **Campos del negocio:** `listed` (el dueño lo activa; apagado por defecto) y `search_name` (el nombre en minúsculas y sin tildes, que `save()` mantiene al día; una migración de datos llenó el de los negocios que ya existían).
+- **Sin extensiones:** la normalización se hace en Python (`businesses/search.py`) y no con `unaccent`, porque algunos proveedores de base de datos no la ofrecen.
+- **Consultas:** se leen hasta 40 candidatos con su suscripción en una sola consulta, se ordenan (los que empiezan con lo escrito primero) y se quedan los 8 primeros que estén operativos.
+- **Límites:** `public_search` 60 por minuto por dirección.
 
 ## 8. Decisiones de arquitectura propuestas
 
