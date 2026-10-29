@@ -12,8 +12,8 @@
 | SA-02 | Ver el listado de negocios con su estado de suscripción | MVP |
 | SA-03 | Registrar plan, precio acordado, fecha de inicio y vigencia de la suscripción | MVP |
 | SA-04 | Suspender y reactivar un negocio (una suspensión desactiva su página pública y no borra datos) | MVP |
-| SA-05 | Ingresar como soporte al panel de un negocio, con registro de auditoría | Después |
-| SA-06 | Registro de pagos de suscripción e historial | Después |
+| SA-05 | Ingresar como soporte al panel de un negocio, con registro de auditoría | MVP (adelantado en M9) |
+| SA-06 | Registro de pagos de suscripción e historial | MVP (adelantado en M9) |
 | SA-07 | Alta de negocios por autoservicio (el negocio se registra solo) | Después |
 
 ### Negocio (NG)
