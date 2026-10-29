@@ -217,3 +217,54 @@ describe("the booking rules", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("buffer_minutes: must be at most 240");
   });
 });
+
+describe("appearing in the home page search", () => {
+  const PATH = "/panel/ajustes/negocio";
+
+  it("is off until the owner asks for it, and explains what it does", async () => {
+    signedInRoutes();
+    renderApp(PATH);
+
+    expect(await screen.findByLabelText("Aparecer en el buscador de la página de inicio")).not.toBeChecked();
+    expect(screen.getByText(/solo entran tus clientes que tengan tu link/)).toBeInTheDocument();
+  });
+
+  it("reflects a business that already appears", async () => {
+    signedInRoutes({ "GET /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, listed: true } } });
+    renderApp(PATH);
+
+    expect(await screen.findByLabelText("Aparecer en el buscador de la página de inicio")).toBeChecked();
+  });
+
+  it("asks to appear when it is ticked and saved", async () => {
+    const api = signedInRoutes({
+      "PATCH /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, listed: true } },
+    });
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    await user.click(await screen.findByLabelText("Aparecer en el buscador de la página de inicio"));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => {
+      expect(api.calls.find((call) => call.method === "PATCH")?.body).toMatchObject({ listed: true });
+    });
+    expect(await screen.findByRole("status")).toHaveTextContent("Cambios guardados");
+  });
+
+  it("can be withdrawn again", async () => {
+    const api = signedInRoutes({
+      "GET /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, listed: true } },
+      "PATCH /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, listed: false } },
+    });
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    await user.click(await screen.findByLabelText("Aparecer en el buscador de la página de inicio"));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => {
+      expect(api.calls.find((call) => call.method === "PATCH")?.body).toMatchObject({ listed: false });
+    });
+  });
+});
