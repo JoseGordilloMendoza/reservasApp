@@ -13,7 +13,6 @@ const isDay = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value);
 const pair = (value: unknown): [string, string] =>
   Array.isArray(value) ? [text(value[0]), text(value[1])] : ["", ""];
 
-/** "Mensual" and the like, never the raw value of a field the log did not give. */
 function plural(count: number, one: string, many: string) {
   return count === 1 ? one : many;
 }
