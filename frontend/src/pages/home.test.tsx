@@ -93,7 +93,7 @@ describe("finding a business by name", () => {
     expect(api.fetchMock.mock.calls.some(([url]) => String(url).includes("q=luc%C3%ADa%20q%26a"))).toBe(true);
   });
 
-  it("says so when nothing matches, and points to the link", async () => {
+  it("says so when nothing matches, while the page keeps saying to ask for the link", async () => {
     mockApi({ "GET /public/search/": { status: 200, body: { results: [] } } });
     const user = userEvent.setup();
     renderApp("/");
@@ -101,7 +101,7 @@ describe("finding a business by name", () => {
     await user.type(await screen.findByRole("searchbox"), "inexistente");
 
     expect(await screen.findByText(/No encontramos ese negocio/)).toBeInTheDocument();
-    expect(screen.getByText(/pídele su link directamente/)).toBeInTheDocument();
+    expect(screen.getByText(/¿No aparece\? Cada negocio tiene su propia página/)).toBeInTheDocument();
   });
 
   it("says when the search could not be done", async () => {

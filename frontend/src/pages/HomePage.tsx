@@ -14,7 +14,7 @@ export function HomePage() {
         transition={{ type: "spring", stiffness: 140, damping: 20 }}
         className="rounded-box border-[3px] border-line bg-accent p-6 text-on-accent shadow-hard md:col-span-8 md:p-12"
       >
-        <h1 className="font-display text-[clamp(3rem,13vw,7.5rem)] font-extrabold uppercase leading-[0.88] tracking-[-0.035em]">
+        <h1 className="font-display text-[clamp(3rem,12vw,6.5rem)] font-extrabold uppercase leading-[0.88] tracking-[-0.035em]">
           Separa tu hora.
           <br />
           Sin llamadas.

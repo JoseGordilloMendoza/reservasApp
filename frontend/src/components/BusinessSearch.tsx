@@ -22,15 +22,15 @@ export function BusinessSearch() {
   return (
     <div className="grid grid-cols-1 gap-3">
       <label className="relative block">
-        <span className="font-display text-base font-bold">Busca tu negocio por su nombre</span>
-        <MagnifyingGlass aria-hidden="true" className="pointer-events-none absolute bottom-[15px] left-4 text-muted" size={22} />
+        <span className="sr-only">Busca tu negocio por su nombre</span>
+        <MagnifyingGlass aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" size={22} />
         <input
           type="search"
           value={typed}
           onChange={(event) => setTyped(event.target.value)}
           autoComplete="off"
           placeholder="Canchas, consultorio..."
-          className="mt-2 min-h-[52px] w-full rounded-box border-[3px] border-line bg-paper pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:shadow-hard focus:outline-none"
+          className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-paper pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:shadow-hard focus:outline-none"
         />
       </label>
 
@@ -51,7 +51,7 @@ export function BusinessSearch() {
 
         {ready && !waiting && search.isSuccess && results.length === 0 && (
           <p className="rounded-box border-[3px] border-dashed border-line p-4 font-semibold">
-            No encontramos ese negocio. No todos aparecen aquí: pídele su link directamente.
+            No encontramos ese negocio.
           </p>
         )}
 
