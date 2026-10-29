@@ -2,6 +2,7 @@ import { ArrowRight } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 
+import { BusinessSearch } from "../components/BusinessSearch";
 import { buttonClass } from "../components/Button";
 
 export function HomePage() {
@@ -29,9 +30,12 @@ export function HomePage() {
         transition={{ type: "spring", stiffness: 140, damping: 20, delay: 0.1 }}
         className="rounded-box border-[3px] border-line bg-surface p-6 shadow-hard md:col-span-4"
       >
-        <h2 className="font-display text-2xl font-extrabold leading-tight">Pídele su link al negocio</h2>
-        <p className="mt-3 text-muted">
-          Cada negocio tiene su propia página. Entra por su link y reserva en menos de un minuto.
+        <h2 className="font-display text-2xl font-extrabold leading-tight">Encuentra tu negocio</h2>
+        <div className="mt-4">
+          <BusinessSearch />
+        </div>
+        <p className="mt-5 text-muted">
+          ¿No aparece? Cada negocio tiene su propia página: pídele su link y reserva en menos de un minuto.
         </p>
         <Link to="/mis-reservas" className={buttonClass("ink", "mt-6 w-full")}>
           Mis reservas
