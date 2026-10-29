@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { mockApi, renderApp } from "../test/helpers";
@@ -24,6 +24,7 @@ describe("the home page", () => {
     renderApp("/");
 
     expect(await screen.findByRole("heading", { name: "Pídele su link al negocio" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Mis reservas/ })).toHaveAttribute("href", "/mis-reservas");
+    // The header has its own link to the same place; this is the one in the page.
+    expect(within(screen.getByRole("main")).getByRole("link", { name: /Mis reservas/ })).toHaveAttribute("href", "/mis-reservas");
   });
 });
