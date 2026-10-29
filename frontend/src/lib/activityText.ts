@@ -9,8 +9,7 @@ const FIELD: Record<string, string> = { name: "el nombre", business_type: "el ti
 
 const text = (value: unknown) => (typeof value === "string" ? value : "");
 
-/** A date when the entry has a real one; otherwise a plain word, never a made up date. */
-const day = (value: string) => (/^\d{4}-\d{2}-\d{2}$/.test(value) ? formatDayKeyWithYear(value) : "una fecha");
+const isDay = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value);
 const pair = (value: unknown): [string, string] =>
   Array.isArray(value) ? [text(value[0]), text(value[1])] : ["", ""];
 
@@ -36,11 +35,14 @@ export function describeActivity(entry: ActivityEntry): string {
       return "Reactivó el negocio";
     case "subscription.set": {
       const price = formatPrice(text(d.price));
-      return `Creó la suscripción${price ? ` de ${price} al mes` : ""}, hasta el ${day(text(d.valid_until))}`;
+      const until = text(d.valid_until);
+      return `Creó la suscripción${price ? ` de ${price} al mes` : ""}${isDay(until) ? `, hasta el ${formatDayKeyWithYear(until)}` : ""}`;
     }
     case "subscription.adjusted": {
       const [from, to] = pair(d.valid_until);
-      return `Movió la vigencia del ${day(from)} al ${day(to)}. Motivo: ${text(d.reason)}`;
+      // Only with both dates is there a span to describe; a made up date would be worse than none.
+      const span = isDay(from) && isDay(to) ? `del ${formatDayKeyWithYear(from)} al ${formatDayKeyWithYear(to)}` : "de una fecha a otra";
+      return `Movió la vigencia ${span}. Motivo: ${text(d.reason)}`;
     }
     case "payment.recorded": {
       const months = Number(d.months) || 1;

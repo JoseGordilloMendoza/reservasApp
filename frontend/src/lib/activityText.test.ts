@@ -79,7 +79,8 @@ describe("telling what the team did", () => {
       expect(sentence).not.toMatch(/null|undefined|NaN|\b0\b/);
     }
     expect(describeActivity(entry("payment.recorded"))).toBe("Registró un pago (1 mes)");
-    expect(describeActivity(entry("subscription.adjusted"))).toBe("Movió la vigencia de una fecha a una fecha. Motivo: ");
+    expect(describeActivity(entry("subscription.set"))).toBe("Creó la suscripción");
+    expect(describeActivity(entry("subscription.adjusted"))).toBe("Movió la vigencia de una fecha a otra. Motivo: ");
   });
 
   it("does not break on an entry with missing detail", () => {
