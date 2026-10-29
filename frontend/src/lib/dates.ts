@@ -97,6 +97,15 @@ export function formatDayKey(key: string): string {
   );
 }
 
+/** "2030-03-31" -> "31 mar 2030": for records, where the year matters. */
+export function formatDayKeyWithYear(key: string): string {
+  const [year = 1970, month = 1, day = 1] = key.split("-").map(Number);
+  const text = new Intl.DateTimeFormat(LOCALE, { timeZone: "UTC", day: "numeric", month: "short" }).format(
+    new Date(Date.UTC(year, month - 1, day)),
+  );
+  return `${text.replace(".", "")} ${year}`;
+}
+
 /** The `count` days starting today, as date keys. */
 export function upcomingDays(timeZone: string, count: number, now: Date = new Date()): string[] {
   const first = todayKey(timeZone, now);

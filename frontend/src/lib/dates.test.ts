@@ -6,6 +6,7 @@ import {
   dateKey,
   dayNumber,
   formatDayKey,
+  formatDayKeyWithYear,
   formatLongDate,
   formatShortDate,
   formatTime,
@@ -144,5 +145,16 @@ describe("a plain date", () => {
     expect(formatDayKey("2030-03-31")).toBe("31 de marzo");
     expect(formatDayKey("2030-01-01")).toBe("1 de enero");
     expect(formatDayKey("2030-12-05")).toBe("5 de diciembre");
+  });
+});
+
+describe("a plain date with its year", () => {
+  it("is short and says the year", () => {
+    expect(formatDayKeyWithYear("2030-03-31")).toBe("31 mar 2030");
+    expect(formatDayKeyWithYear("2030-12-05")).toBe("5 dic 2030");
+  });
+
+  it("does not leave the dot some browsers add to abbreviated months", () => {
+    expect(formatDayKeyWithYear("2030-09-01")).not.toContain(".");
   });
 });
