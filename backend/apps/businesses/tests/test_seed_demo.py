@@ -119,3 +119,11 @@ def test_the_team_member_is_not_duplicated_and_keeps_a_changed_password():
     assert get_user_model().objects.filter(email="equipo@demo.pe").count() == 1
     assert get_user_model().objects.get(email="equipo@demo.pe").check_password("otra-clave-123")
     assert "equipo@demo.pe: already exists" in output
+
+
+def test_the_demo_businesses_can_be_found_from_the_home_page_search():
+    seed()
+
+    results = APIClient().get(reverse("public-search"), {"q": "lucia"}).json()["results"]
+
+    assert [item["slug"] for item in results] == ["consultorio-lucia"]
