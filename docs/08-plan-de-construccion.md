@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M9 completados; solo falta M10, el despliegue. El backend tiene 895 pruebas y el frontend 503. El cliente reserva desde el link de su negocio; el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin; recibe correos de aviso y puede recuperar su contraseña; y el equipo de la plataforma abre negocios, cobra suscripciones, suspende y da soporte desde su propio panel.
+**Avance:** M0 a M9 completados; solo falta M10, el despliegue. El backend tiene 930 pruebas y el frontend 521. El cliente reserva desde el link de su negocio; el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin; recibe correos de aviso y puede recuperar su contraseña; y el equipo de la plataforma abre negocios, cobra suscripciones, suspende y da soporte desde su propio panel.
 
 **M7 (panel en pantalla), completado:**
 
