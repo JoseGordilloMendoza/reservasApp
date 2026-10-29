@@ -38,6 +38,7 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
             "phone",
             "whatsapp",
             "accent",
+            "listed",
             "business_type",
             "timezone",
             "status",
@@ -105,7 +106,7 @@ class BusinessUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Business
-        fields = ["name", "description", "address", "phone", "whatsapp", "accent", "settings"]
+        fields = ["name", "description", "address", "phone", "whatsapp", "accent", "listed", "settings"]
 
     def validate_phone(self, value):
         return _optional_phone(value)
