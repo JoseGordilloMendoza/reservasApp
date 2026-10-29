@@ -26,6 +26,7 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
     suggested_service_duration_minutes = serializers.SerializerMethodField()
     subscription = serializers.SerializerMethodField()
+    support = serializers.SerializerMethodField()
 
     class Meta:
         model = Business
@@ -41,6 +42,7 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
             "timezone",
             "status",
             "subscription",
+            "support",
             "settings",
             "suggested_service_duration_minutes",
             "role",
@@ -62,6 +64,18 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
             "valid_until": current.valid_until,
             "grace_ends_on": current.grace_ends_on,
             "days_left": current.days_left,
+        }
+
+    def get_support(self, business) -> dict | None:
+        """Set only while the platform team is inside, so the screen can say so."""
+        membership = self.context["membership"]
+        if not getattr(membership, "is_support", False):
+            return None
+        return {
+            "session": membership.session.pk,
+            "reason": membership.session.reason,
+            "expires_at": membership.session.expires_at,
+            "user": membership.user.email,
         }
 
     def get_role(self, business) -> str:

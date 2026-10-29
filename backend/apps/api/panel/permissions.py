@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 from apps.accounts.models import Membership
+from apps.platformadmin.support import SupportMembership, open_session
 
 BUSINESS_HEADER = "X-Business"
 
@@ -8,6 +9,7 @@ NO_BUSINESS = "No tienes acceso a ningún negocio."
 NOT_YOUR_BUSINESS = "No tienes acceso a ese negocio."
 BUSINESS_REQUIRED = f"Indica el negocio con la cabecera {BUSINESS_HEADER}."
 OWNER_ONLY = "Solo el dueño del negocio puede hacer esto."
+NEEDS_SUPPORT_SESSION = "Abre una sesión de soporte para entrar al panel de ese negocio."
 
 
 def find_membership(request):
@@ -17,7 +19,16 @@ def find_membership(request):
     slug = request.headers.get(BUSINESS_HEADER)
     if slug:
         membership = memberships.filter(business__slug=slug).first()
-        return (membership, None) if membership else (None, NOT_YOUR_BUSINESS)
+        if membership:
+            return membership, None
+
+        # The platform team gets into a business only through an open support session (D76).
+        if request.user.is_superuser:
+            session = open_session(request.user, slug)
+            if session:
+                return SupportMembership(session), None
+            return None, NEEDS_SUPPORT_SESSION
+        return None, NOT_YOUR_BUSINESS
 
     found = list(memberships[:2])
     if not found:
@@ -48,6 +59,9 @@ class HasBusiness(BasePermission):
 
         request.membership = membership
         request.business = membership.business
+        if isinstance(membership, SupportMembership):
+            # Read by SupportAuditMiddleware, which only sees the plain Django request.
+            request._request.support_session = membership.session
         return True
 
 
