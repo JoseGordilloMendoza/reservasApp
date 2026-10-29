@@ -38,8 +38,15 @@
 
 ## Suscripción
 
-- **RN-18.** Un negocio con suscripción vencida o suspendido no muestra su página pública ni recibe reservas nuevas. Sus reservas ya confirmadas se conservan y su dueño puede entrar al panel para consultarlas.
+- **RN-18.** Un negocio suspendido, o con la suscripción vencida más allá de sus días de gracia, no ofrece horarios ni recibe reservas nuevas. Su página pública no desaparece: explica que no está recibiendo reservas por ahora y deja contactarlo. Sus reservas ya hechas se conservan, los boletos de sus clientes siguen funcionando y su dueño puede entrar al panel.
 - **RN-19.** Suspender un negocio no borra ningún dato.
+- **RN-40.** La suscripción tiene plan, precio mensual acordado y la fecha hasta la que vale (inclusive, en el calendario del propio negocio). Un negocio sin suscripción registrada no vence nunca.
+- **RN-41.** Al vencer hay **5 días de gracia**: sigue recibiendo reservas y su panel avisa hasta cuándo. Pasados, se comporta como suspendido. Se calcula al consultar, sin tarea programada.
+- **RN-42.** Cada pago recibido (Yape, Plin, transferencia, efectivo) se registra con los meses que cubre. Si el negocio sigue al día, los meses nuevos continúan desde el final actual; si ya había vencido, empiezan el día del pago. Un pago no se edita: un error se corrige moviendo la vigencia, con un motivo.
+- **RN-43.** Suspender exige un motivo y no depende de la suscripción: un negocio suspendido a mano sigue suspendido aunque pague, hasta que se reactive. Reactivar no reabre a un negocio con la suscripción vencida.
+- **RN-44.** Un negocio nunca se queda sin dueño: no se puede quitar ni bajar de rol al último.
+- **RN-45.** El equipo de la plataforma solo entra al panel de un negocio con una sesión de soporte: tiene motivo, dura 2 horas, se puede terminar antes y es personal. Mientras dura, el panel lo dice con una barra fija. Quedan registrados su inicio, su fin y cada cambio hecho (método y dirección, nunca el contenido).
+- **RN-46.** Todo lo que hace el equipo sobre un negocio (altas, cambios, suspensiones, pagos, ajustes de vigencia, personas y soporte) queda en un registro que no se edita y que sobrevive aunque se borre el negocio o la persona.
 
 ## Acceso
 
