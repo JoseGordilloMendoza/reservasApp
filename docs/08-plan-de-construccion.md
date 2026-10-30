@@ -6,7 +6,7 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 
 ## Hitos
 
-**Avance:** M0 a M9 completados; solo falta M10, el despliegue. El backend tiene 930 pruebas y el frontend 521. El cliente reserva desde el link de su negocio; el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin; recibe correos de aviso y puede recuperar su contraseña; y el equipo de la plataforma abre negocios, cobra suscripciones, suspende y da soporte desde su propio panel.
+**Avance:** M0 a M9 completados; solo falta M10, el despliegue. El backend tiene 982 pruebas y el frontend 521. El cliente reserva desde el link de su negocio; el dueño gestiona reservas, clientes, bloqueos y ajustes sin usar el admin; recibe correos de aviso y puede recuperar su contraseña; y el equipo de la plataforma abre negocios, cobra suscripciones, suspende y da soporte desde su propio panel.
 
 **M7 (panel en pantalla), completado:**
 
@@ -39,6 +39,15 @@ El desarrollo corre en contenedores con **Docker Compose** (PostgreSQL y backend
 3. **Pantallas de `/plataforma`**: inicio con lo que requiere atención, negocios con filtros, alta guiada, ficha (resumen, suscripción y pagos, personas, soporte, suspensión) y actividad; y la barra de soporte dentro del panel del negocio.
 
 El equipo de ejemplo se crea con `seed_demo` (`equipo@demo.pe` / `demo12345`), y los dos negocios de ejemplo traen suscripciones en estados distintos (uno vigente y otro en gracia) para ver los avisos.
+
+**M10, parte A (hecha):** el código está listo para producción y verificado en una imagen idéntica a la de Render, contra una base vacía.
+
+- `backend/Dockerfile.prod` y `start.sh`: dependencias con versión exacta (`requirements.lock.txt`), estáticos recogidos, usuario sin privilegios; al iniciar migra, crea al administrador (`ensure_platform_admin`, a partir de `PLATFORM_ADMIN_EMAIL` y `PLATFORM_ADMIN_PASSWORD`) y arranca gunicorn con un solo proceso.
+- Ajustes de producción solo con `DEBUG` apagado: HTTPS detrás del proxy (sin bucles, y con la revisión de salud exenta), cookies seguras, HSTS que empieza en una hora, WhiteNoise para los estáticos del admin, hosts desde Render, `NUM_PROXIES` y registros en consola. `check --deploy` no da ninguna advertencia y una prueba lo vigila.
+- `render.yaml` para la API en el plan gratuito, sin secretos escritos, y encabezados de caché para Cloudflare Pages.
+- Se corrigió de paso el esquema de la API (`/api/docs/`), que tenía nombres repetidos y endpoints sin describir; una prueba exige ahora que se genere sin advertencias.
+
+**M10, parte B (pendiente, con tus cuentas):** seguir [10 - Despliegue de prueba](10-despliegue.md): crear la base en Neon, la API en Render y la aplicación en Cloudflare Pages, y recorrer la lista de comprobaciones. Después, con el nombre y el dominio: correo propio verificado, Google, y el plan de pago de Render.
 
 ## Pendiente para M10 (revisado con `check --deploy`)
 
