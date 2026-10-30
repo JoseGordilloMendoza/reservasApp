@@ -2,7 +2,7 @@
 
 Plataforma SaaS multi-negocio de reservas (canchas deportivas, psicólogos y negocios afines), pensada para Arequipa, Perú.
 
-**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) está completo: entrar con correo o Google, ver lo urgente, gestionar reservas, anotar las que llegan por teléfono, ver y bloquear clientes, cerrar horarios y configurar su página, reglas, espacios, horarios y servicios (297 pruebas del frontend). Los **correos de aviso** y la **recuperación de contraseña** (M8) también están listos, y el **panel del equipo de la plataforma** (M9): indicadores, alta de negocios con su dueño, suscripciones con pagos y días de gracia, suspensión, personas, soporte con registro y actividad (521 pruebas del frontend y 930 del backend). Solo falta el despliegue (M10).
+**Estado:** documentación base lista. **El backend del MVP está completo** (hitos M0 a M5 del [plan](docs/08-plan-de-construccion.md)): entorno con Docker, reservas sin solapamiento, configuración por negocio, disponibilidad, API pública de reservas, acceso con correo y Google, y API del panel (reservas, clientes, bloqueos, recursos, servicios, horarios y perfil). 587 pruebas del backend, incluidas pruebas de concurrencia con conexiones reales. El **frontend público** (M6) está listo: página del negocio, reserva, boleto, cancelación y "Mis reservas", instalable como aplicación, con 99 pruebas. El **panel del negocio** (M7) está completo: entrar con correo o Google, ver lo urgente, gestionar reservas, anotar las que llegan por teléfono, ver y bloquear clientes, cerrar horarios y configurar su página, reglas, espacios, horarios y servicios (297 pruebas del frontend). Los **correos de aviso** y la **recuperación de contraseña** (M8) también están listos, y el **panel del equipo de la plataforma** (M9): indicadores, alta de negocios con su dueño, suscripciones con pagos y días de gracia, suspensión, personas, soporte con registro y actividad (521 pruebas del frontend y 982 del backend). El código ya está **preparado para producción** (imagen, ajustes de seguridad, Blueprint de Render) y hay una guía para probarlo gratis en internet; falta ejecutarla con las cuentas reales (M10).
 
 ## Cómo ejecutar
 
@@ -107,6 +107,7 @@ Mientras no esté configurado, `POST /api/v1/auth/google/` responde 503. Google 
 | [07 - Arquitectura](docs/07-arquitectura.md) | Stack, multi-tenancy, modelo de datos y API (propuesta) |
 | [08 - Plan de construcción](docs/08-plan-de-construccion.md) | Hitos M0 a M10, dependencias y riesgos |
 | [09 - Diseño del frontend](docs/09-diseno-frontend.md) | Dirección visual, sistema, pantallas y reglas de contenido |
+| [10 - Despliegue de prueba](docs/10-despliegue.md) | Cómo montar todo gratis en Neon, Render y Cloudflare Pages, y qué probar |
 
 ## Principios
 
