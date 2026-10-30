@@ -16,7 +16,10 @@ if not SECRET_KEY:
         raise ImproperlyConfigured("SECRET_KEY is required when DEBUG is off")
     SECRET_KEY = "dev-only-insecure-key-never-use-this-outside-development"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host.strip()]
+# Render tells the service its own public address; it is always a valid host for it.
+if os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -95,6 +98,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -136,6 +140,12 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Multi-business booking platform.",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # Several fields are called "status" with different choices; without names the schema
+    # invents ones with hashes in them.
+    "ENUM_NAME_OVERRIDES": {
+        "BookingStatusEnum": "apps.bookings.models.BookingStatus",
+        "BusinessStatusEnum": "apps.businesses.models.Business.Status",
+    },
 }
 
 # Origins of the frontend allowed to call the API from a browser, comma separated.
@@ -180,3 +190,49 @@ PASSWORD_RESET_TIMEOUT = 60 * 60
 
 # Send some emails without making the request wait (see notifications.background). Tests turn it off.
 EMAIL_IN_BACKGROUND = os.environ.get("EMAIL_IN_BACKGROUND", "1") == "1"
+
+
+# --- Production ------------------------------------------------------------------------
+# Everything here applies only with DEBUG off. The service sits behind the host's proxy, which
+# ends HTTPS and says so in X-Forwarded-Proto.
+
+# Number of proxies in front of the app, so throttling sees the visitor's address and not the proxy's.
+NUM_PROXIES = int(os.environ["NUM_PROXIES"]) if os.environ.get("NUM_PROXIES") else None
+if NUM_PROXIES is not None:
+    REST_FRAMEWORK["NUM_PROXIES"] = NUM_PROXIES
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip() for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()
+]
+
+if not DEBUG:
+    # Serves the admin's static files without a separate server; right after the security checks.
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "1") == "1"
+    # The platform's own health check may not speak HTTPS; it must still get an answer.
+    SECURE_REDIRECT_EXEMPT = [r"^api/health/$"]
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # Starts short on purpose: HSTS makes browsers refuse plain HTTP for that long, so it is
+    # raised (HSTS_SECONDS) only once the HTTPS setup is known to be right.
+    SECURE_HSTS_SECONDS = int(os.environ.get("HSTS_SECONDS", "3600"))
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "same-origin"
+    # Hashed names with long caching for the admin's files. Needs `collectstatic` at build time.
+    STORAGES = {
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    }
+    # The site is served from a host's shared domain (onrender.com), where "include subdomains"
+    # and "preload" would be wrong: they would bind domains that are not ours.
+    SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W021"]
+
+# What happened and what failed goes to the console, where the host collects it (NF-14).
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"plain": {"format": "%(asctime)s %(levelname)s %(name)s %(message)s"}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "plain"}},
+    "root": {"handlers": ["console"], "level": os.environ.get("LOG_LEVEL", "INFO")},
+}
