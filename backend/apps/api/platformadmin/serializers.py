@@ -19,6 +19,23 @@ def check_timezone(value):
 
 
 
+class DashboardSerializer(serializers.Serializer):
+    """The indicators of the platform home. Documentation only: the view builds the data itself."""
+
+    businesses = serializers.DictField(child=serializers.IntegerField(), help_text="total, active, suspended")
+    subscriptions = serializers.DictField(
+        child=serializers.IntegerField(),
+        help_text="active, expiring_soon, grace, expired, without_subscription",
+    )
+    revenue = serializers.DictField(
+        child=serializers.DecimalField(max_digits=10, decimal_places=2),
+        help_text="received_this_month and expected_monthly, in soles",
+    )
+    bookings_30d = serializers.IntegerField()
+    busiest = serializers.ListField(child=serializers.DictField())
+    attention = serializers.ListField(child=serializers.DictField())
+
+
 class StandingSerializer(serializers.Serializer):
     state = serializers.CharField()
     valid_until = serializers.DateField(allow_null=True)
@@ -103,7 +120,7 @@ class BusinessDetailSerializer(BusinessRowSerializer):
         return SubscriptionSerializer(subscription).data if subscription else None
 
 
-class BusinessUpdateSerializer(serializers.ModelSerializer):
+class PlatformBusinessChangesSerializer(serializers.ModelSerializer):
     """What the team may change of a business. The link (slug) is left alone on purpose (D79)."""
 
     class Meta:

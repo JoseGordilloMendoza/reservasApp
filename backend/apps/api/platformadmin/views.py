@@ -62,6 +62,7 @@ class DashboardView(PlatformAPIView):
             "each month, bookings of the last 30 days, and the businesses that need attention "
             "(past due or about to expire). Days are Lima days."
         ),
+        responses=s.DashboardSerializer,
     )
     def get(self, request):
         today = platform_today()
@@ -229,12 +230,12 @@ class BusinessDetailView(PlatformAPIView):
     @extend_schema(
         summary="Edit a business",
         description="Name, type and timezone. The link (slug) cannot be changed from here (D79).",
-        request=s.BusinessUpdateSerializer,
+        request=s.PlatformBusinessChangesSerializer,
         responses={200: s.BusinessDetailSerializer, 400: OpenApiResponse(description="Invalid data.")},
     )
     def patch(self, request, slug):
         business = business_or_404(slug)
-        update = s.BusinessUpdateSerializer(business, data=request.data, partial=True)
+        update = s.PlatformBusinessChangesSerializer(business, data=request.data, partial=True)
         update.is_valid(raise_exception=True)
 
         before = {field: getattr(business, field) for field in update.validated_data}
@@ -277,6 +278,7 @@ class SuspendView(PlatformAPIView):
 class ReactivateView(PlatformAPIView):
     @extend_schema(
         summary="Reactivate a suspended business",
+        request=None,
         responses={200: s.BusinessDetailSerializer, 409: OpenApiResponse(description="Not suspended.")},
     )
     def post(self, request, slug):
@@ -513,6 +515,7 @@ class MemberSendLinkView(PlatformAPIView):
             "Someone who never signed in gets a link to choose a password. Someone who did gets "
             "a reminder of where to sign in (they can use Forgot password for a new link)."
         ),
+        request=None,
         responses={200: OpenApiResponse(description="Sent.")},
     )
     def post(self, request, slug, pk):
@@ -544,7 +547,7 @@ class SupportStartView(PlatformAPIView):
 
 
 class SupportEndView(PlatformAPIView):
-    @extend_schema(summary="End a support session", responses={200: s.SupportSessionSerializer})
+    @extend_schema(summary="End a support session", request=None, responses={200: s.SupportSessionSerializer})
     def post(self, request, pk):
         session = get_object_or_404(SupportSession.objects.select_related("business"), pk=pk, user=request.user)
         support.end_session(session)
