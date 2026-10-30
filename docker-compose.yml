@@ -29,9 +29,12 @@ services:
       EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
       DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Separa <no-responder@localhost>}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      REPO_ROOT: /repo
       DATABASE_URL: postgres://reservas:reservas@db:5432/reservas
     volumes:
       - ./backend:/app
+      # The whole repository, read only, for the tests that check files outside backend/ (render.yaml).
+      - .:/repo:ro
     ports:
       - "8000:8000"
     depends_on:
