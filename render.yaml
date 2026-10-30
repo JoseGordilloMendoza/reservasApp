@@ -1,0 +1,50 @@
+# Render Blueprint: the API (Django in Docker). The database is Neon and the frontend is
+# Cloudflare Pages, so neither appears here. Steps and every variable: docs/10-despliegue.md
+#
+# Variables with `sync: false` are asked for once, when the Blueprint is created. Later changes
+# are made in the service's Environment tab on Render.
+services:
+  - type: web
+    name: separa-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile.prod
+    dockerContext: ./backend
+    healthCheckPath: /api/health/
+    envVars:
+      - key: DEBUG
+        value: "0"
+      - key: SECRET_KEY
+        generateValue: true
+      # Render sits in front of the service: one proxy to read the visitor's address through.
+      - key: NUM_PROXIES
+        value: "1"
+      - key: WEB_CONCURRENCY
+        value: "1"
+      # Connection string of the Neon database, ending in ?sslmode=require
+      - key: DATABASE_URL
+        sync: false
+      # Where the frontend lives, once for the browser's permission (CORS) and once for the links in emails.
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      # The first person of the platform team. The password must be long; it is only used the first time.
+      - key: PLATFORM_ADMIN_EMAIL
+        sync: false
+      - key: PLATFORM_ADMIN_PASSWORD
+        sync: false
+      # Email through Resend. Without a verified domain it only delivers to the Resend account's own address.
+      - key: EMAIL_HOST
+        value: smtp.resend.com
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        value: resend
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: Separa <onboarding@resend.dev>
+      # Optional: leave empty to hide the Google button.
+      - key: GOOGLE_CLIENT_ID
+        sync: false
