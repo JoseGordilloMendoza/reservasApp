@@ -1,0 +1,24 @@
+FROM python:3.13-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Exact versions, so the image that was tested is the image that runs.
+COPY requirements.lock.txt ./
+RUN pip install --no-cache-dir -r requirements.lock.txt
+
+COPY . .
+
+# The admin's static files are collected now and served by WhiteNoise. The values only let
+# Django start; nothing here reaches the running container.
+RUN SECRET_KEY=only-for-collectstatic-at-build-time-not-a-real-secret-key-0123456789 DEBUG=0 \
+    python manage.py collectstatic --noinput \
+ && chmod +x start.sh \
+ && useradd --system --no-create-home app
+
+USER app
+
+EXPOSE 10000
+CMD ["./start.sh"]

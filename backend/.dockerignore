@@ -2,3 +2,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
+staticfiles/
+.env*
+Dockerfile*
+requirements-dev.txt
+pytest.ini
+conftest.py
+**/tests/
