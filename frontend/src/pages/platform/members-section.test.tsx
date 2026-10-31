@@ -101,7 +101,7 @@ describe("adding someone", () => {
     await user.click(screen.getByRole("button", { name: "Agregar" }));
 
     await waitFor(() =>
-      expect(called(api, "POST", `${BASE}/users/`)?.body).toEqual({ email: "luis@example.com", role: "staff", first_name: "Luis" }),
+      expect(called(api, "POST", `${BASE}/users/`)?.body).toEqual({ email: "luis@example.com", role: "staff", delivery: "email", first_name: "Luis" }),
     );
     expect(await screen.findByRole("button", { name: "Agregar a alguien" })).toBeInTheDocument();
   });

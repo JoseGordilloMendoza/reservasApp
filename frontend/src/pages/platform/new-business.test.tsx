@@ -22,7 +22,7 @@ const created = (overrides: Partial<CreatedBusiness> = {}): CreatedBusiness => (
   address: "",
   phone: "",
   whatsapp: "",
-  owner: { email: "rosa@example.com", account_created: true },
+  owner: { email: "rosa@example.com", account_created: true, temporary_password: null },
   ...overrides,
 });
 
@@ -60,6 +60,7 @@ describe("opening a business", () => {
     expect(post(api)?.body).toEqual({
       name: "Canchas El Sol",
       business_type: "court",
+      delivery: "email",
       owner: { email: "rosa@example.com" },
       subscription: { price: "80.00", trial_days: 30 },
     });
@@ -97,6 +98,7 @@ describe("opening a business", () => {
       name: "Canchas El Sol",
       slug: "el-sol",
       business_type: "psychologist",
+      delivery: "email",
       owner: { email: "rosa@example.com", first_name: "Rosa", last_name: "Quispe" },
       subscription: { plan_name: "Mensual", price: "80.00", trial_days: 30 },
     });
@@ -140,7 +142,7 @@ describe("opening a business", () => {
   });
 
   it("says when the owner already had an account, which stays as it was", async () => {
-    open({ "POST /platform/businesses/": { status: 201, body: created({ owner: { email: "rosa@example.com", account_created: false } }) } });
+    open({ "POST /platform/businesses/": { status: 201, body: created({ owner: { email: "rosa@example.com", account_created: false, temporary_password: null } }) } });
     const user = userEvent.setup();
     await fillMinimum(user);
 
@@ -172,5 +174,50 @@ describe("opening a business", () => {
     await user.click(screen.getByRole("button", { name: "Abrir negocio" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Falla del servidor");
+  });
+});
+
+describe("handing over access without an email", () => {
+  it("offers both ways, starting with the email", async () => {
+    open();
+
+    expect(await screen.findByRole("radio", { name: /Por correo/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /Con contraseña temporal/ })).not.toBeChecked();
+  });
+
+  it("asks for a temporary password and shows it once the business is open", async () => {
+    const api = open({
+      "POST /platform/businesses/": {
+        status: 201,
+        body: created({ owner: { email: "rosa@example.com", account_created: true, temporary_password: "k7mq-4xpd-9tzw" } }),
+      },
+    });
+    const user = userEvent.setup();
+    await fillMinimum(user);
+    await user.click(screen.getByRole("radio", { name: /Con contraseña temporal/ }));
+
+    await user.click(screen.getByRole("button", { name: "Abrir negocio" }));
+
+    expect(await screen.findByText("k7mq-4xpd-9tzw")).toBeInTheDocument();
+    expect(post(api)?.body).toMatchObject({ delivery: "credentials" });
+    expect(screen.getByText(/No enviamos ningún correo/)).toBeInTheDocument();
+    expect(screen.queryByText(/Le enviamos un correo/)).not.toBeInTheDocument();
+  });
+
+  it("says an existing account keeps its own password, and that no email went out", async () => {
+    open({
+      "POST /platform/businesses/": {
+        status: 201,
+        body: created({ owner: { email: "rosa@example.com", account_created: false, temporary_password: null } }),
+      },
+    });
+    const user = userEvent.setup();
+    await fillMinimum(user);
+    await user.click(screen.getByRole("radio", { name: /Con contraseña temporal/ }));
+
+    await user.click(screen.getByRole("button", { name: "Abrir negocio" }));
+
+    expect(await screen.findByText(/entra con su contraseña de siempre/)).toBeInTheDocument();
+    expect(screen.queryByLabelText("Mensaje para enviar")).not.toBeInTheDocument();
   });
 });

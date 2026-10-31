@@ -68,6 +68,7 @@ describe("what the API receives", () => {
     expect(toNewBusiness(valid())).toEqual({
       name: "Canchas El Sol",
       business_type: "court",
+      delivery: "email",
       owner: { email: "rosa@example.com" },
       subscription: { price: "80.00", trial_days: 30 },
     });
@@ -90,6 +91,7 @@ describe("what the API receives", () => {
       name: "Canchas El Sol",
       slug: "el-sol",
       business_type: "psychologist",
+      delivery: "email",
       owner: { email: "rosa@example.com", first_name: "Rosa", last_name: "Quispe" },
       subscription: { plan_name: "Mensual", price: "79.90", trial_days: 30 },
     });
