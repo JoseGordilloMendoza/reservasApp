@@ -46,7 +46,9 @@ def test_login_returns_tokens_and_the_user(api, owner):
 def test_login_does_not_leak_sensitive_fields(api, owner):
     body = login(api).content.decode()
 
-    assert "password" not in body
+    # The flag that says the password must change is fine; the password and its hash are not.
+    assert '"password"' not in body
+    assert "pbkdf2" not in body
     assert "google_sub" not in body
 
 

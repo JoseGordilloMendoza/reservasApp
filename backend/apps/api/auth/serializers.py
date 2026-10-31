@@ -28,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "email", "name", "is_platform_admin", "memberships"]
+        fields = ["id", "email", "name", "is_platform_admin", "must_change_password", "memberships"]
 
 
 class LoginSerializer(serializers.Serializer):
@@ -46,6 +46,11 @@ class SessionSerializer(serializers.Serializer):
     access = serializers.CharField(help_text="Short-lived token for the Authorization header.")
     refresh = serializers.CharField(help_text="Used to get a new access token.")
     user = UserSerializer()
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True, trim_whitespace=False)
+    new_password = serializers.CharField(write_only=True, trim_whitespace=False, max_length=128)
 
 
 class PasswordResetSerializer(serializers.Serializer):

@@ -8,6 +8,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 
+from apps.accounts.credentials import WrongCurrentPassword, change_own_password
 from apps.accounts.google import GoogleNotConfigured, GoogleSignInError, verify_google_credential
 from apps.accounts.password_reset import InvalidResetLink, send_reset_email, set_new_password
 from apps.accounts.services import user_for_google_identity
@@ -88,6 +89,12 @@ class GoogleLoginView(APIView):
                 {"code": error.code, "detail": error.message},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+        if user.must_change_password:
+            # Google has just proven who they are, so the password the team handed over is no longer
+            # needed (and the team should not keep a way in). They can set one with "Forgot password".
+            user.set_unusable_password()
+            user.must_change_password = False
+            user.save(update_fields=["password", "must_change_password"])
         return Response(start_session(user))
 
 
@@ -173,6 +180,38 @@ class PasswordResetConfirmView(APIView):
         except DjangoValidationError as error:
             return Response({"password": error.messages}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "Listo. Ya puedes entrar con tu nueva contraseña."})
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "auth_login"
+
+    @extend_schema(
+        summary="Choose your own password",
+        description=(
+            "Needs the current password. It is how someone replaces the temporary password the team "
+            "gave them, and the only thing a panel session may do until they have. Every other "
+            "session is closed and a new one is returned."
+        ),
+        request=s.ChangePasswordSerializer,
+        responses={
+            200: s.SessionSerializer,
+            400: OpenApiResponse(description="Wrong current password, or a weak or unchanged one."),
+        },
+    )
+    def post(self, request):
+        body = s.ChangePasswordSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+
+        try:
+            change_own_password(request.user, data["current_password"], data["new_password"])
+        except WrongCurrentPassword:
+            return Response({"current_password": ["La contraseña actual no es correcta."]}, status=status.HTTP_400_BAD_REQUEST)
+        except DjangoValidationError as error:
+            return Response({"new_password": error.messages}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(start_session(request.user))
 
 
 class MeView(APIView):

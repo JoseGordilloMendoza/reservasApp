@@ -1,3 +1,4 @@
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import BasePermission
 
 from apps.accounts.models import Membership
@@ -10,6 +11,15 @@ NOT_YOUR_BUSINESS = "No tienes acceso a ese negocio."
 BUSINESS_REQUIRED = f"Indica el negocio con la cabecera {BUSINESS_HEADER}."
 OWNER_ONLY = "Solo el dueño del negocio puede hacer esto."
 NEEDS_SUPPORT_SESSION = "Abre una sesión de soporte para entrar al panel de ese negocio."
+
+
+class PasswordChangeRequired(PermissionDenied):
+    """The account still has the password the team handed over. Nothing else works until it changes."""
+
+    default_detail = {
+        "code": "password_change_required",
+        "detail": "Cambia tu contraseña temporal para continuar.",
+    }
 
 
 def find_membership(request):
@@ -51,6 +61,8 @@ class HasBusiness(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
+        if request.user.must_change_password:
+            raise PasswordChangeRequired()
 
         membership, error = find_membership(request)
         if membership is None:
