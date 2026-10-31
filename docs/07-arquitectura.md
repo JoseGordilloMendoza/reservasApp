@@ -58,7 +58,7 @@ Booking ──< BookingEvent   (historial de estados)
 | **AvailabilityRule** | `resource`, `weekday`, `start_time`, `end_time` |
 | **Block** | `resource` (o todo el negocio), `starts_at`, `ends_at`, `reason` |
 | **Customer** | `business`, `name`, `phone` en formato `+51...`, `email` opcional, `is_blocked` |
-| **Booking** | `business`, `resource`, `service`, `customer`, `starts_at`, `ends_at`, `status`, `expires_at`, `price_snapshot`, `duration_snapshot`, `source`, `series_id` (vacío en el MVP), `manage_token_hash` |
+| **Booking** | `business`, `resource`, `service`, `customer`, `starts_at`, `ends_at`, `status`, `expires_at`, `price_snapshot`, `duration_snapshot`, `source`, `series_id` (vacío en el MVP), `manage_token_hash`, `code` (6 caracteres, único por negocio), `payment_status`, `amount_paid`, `payment_method`, `arrived_at`, `internal_note` |
 | **BookingEvent** | `booking`, `from_status`, `to_status`, `created_at`, `actor` |
 | **Subscription** | `business`, `plan`, `price`, `starts_on`, `valid_until`, `status` |
 

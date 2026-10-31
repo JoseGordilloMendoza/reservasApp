@@ -75,6 +75,18 @@
 - **RN-49.** Se busca por nombre sin importar mayúsculas ni tildes ("lucia" encuentra "Lucía"), con al menos 2 letras. Los nombres que empiezan con lo escrito van primero. Nunca devuelve más de 8 resultados y no hay manera de listar todos los negocios.
 - **RN-50.** De cada resultado solo se muestra lo que ya es público: nombre, link, tipo, color y dirección.
 
+## Código, llegada y pago de una reserva
+
+- **RN-51.** Toda reserva tiene un código de 6 caracteres, único dentro de su negocio, que no cambia. Se muestra como ABC-DEF y se busca sin importar mayúsculas, espacios ni el guion.
+- **RN-52.** Quien busca por código solo ve reservas de su propio negocio. Un texto que parece código no se toma como parte de un teléfono, salvo que sean solo dígitos.
+- **RN-53.** El dueño o su equipo pueden marcar la llegada del cliente (y deshacerla) mientras la reserva esté pendiente, confirmada o atendida. Una cancelada o vencida no se puede marcar.
+- **RN-54.** El pago de una reserva es un registro: sin pagar, adelanto o pagada, con monto y método (Yape, Plin, transferencia, efectivo u otro). Un adelanto necesita monto mayor que cero y menor que el precio; pagada sin monto toma el precio; sin pagar borra monto y método.
+- **RN-55.** Lo que falta por cobrar es el precio de la reserva menos lo registrado, nunca negativo, y no existe si el servicio no tiene precio. La lista "Con saldo" muestra las reservas vigentes o atendidas que no están pagadas.
+- **RN-56.** La nota privada (hasta 500 caracteres) la ven solo el negocio y su equipo, nunca el cliente.
+- **RN-57.** Registrar pago, llegada o nota no cambia el estado de la reserva ni libera o toma horarios.
+- **RN-58.** El correo y el boleto del cliente llevan el código y, si el negocio lo escribió, cómo pagar (hasta 300 caracteres). Una reserva cancelada, rechazada o vencida no pide pago.
+- **RN-59.** Un negocio nuevo aparece en el inicio salvo que su dueño lo desmarque (D85), y la lista del inicio muestra hasta 12, los más nuevos primero (D86).
+
 ## Configuración del negocio
 
 - **RN-28.** El negocio edita su nombre, descripción, dirección, teléfono, WhatsApp y opciones. Su link, tipo, zona horaria y estado los fija la plataforma.

@@ -32,19 +32,20 @@ Se apoya en las referencias de [tendencias 2026](https://barnimages.com/blog/tip
 - Sombra **dura**, sin desenfoque: `4px 4px 0` en tinta. Al presionar, el elemento se desplaza hacia la sombra y esta se reduce a cero (efecto de botón físico).
 - Sin degradados, sin brillos, sin transparencias decorativas.
 
-**Color.** La tinta y el papel son fijos; el acento cambia por negocio.
+**Color.** Tinta azul `#1B2A78` y papel amarillo mantequilla `#FFF3B0` son fijos; solo el acento cambia por negocio (D87). La amapola `#C9242F` es el de la propia plataforma y el predeterminado; con él el fondo es mantequilla pura, y con los demás deja un 14 % de su color en el fondo.
 
-| Acento | Bloque | Fondo de página | Profundo (texto sobre fondo claro) | Texto sobre el bloque |
-|---|---|---|---|---|
-| `lime` | `#C8F23C` | `#F2F9D0` | `#546F00` | tinta |
-| `tangerine` | `#FF8A3D` | `#FFE9D6` | `#A84300` | tinta |
-| `cobalt` | `#2F55F5` | `#E3E9FF` | `#1630A8` | blanco |
-| `rose` | `#FF5C93` | `#FFE3EC` | `#A8103F` | tinta |
-| `mint` | `#2EE6A6` | `#D9F8EC` | `#0B6F4D` | tinta |
+| Acento | Bloque | Profundo (texto chico sobre fondo claro) | Texto sobre el bloque |
+|---|---|---|---|
+| `poppy` (amapola) | `#C9242F` | `#A3171F` | mantequilla (4,95) |
+| `tangerine` (mandarina) | `#F2872C` | `#A14A00` | tinta (5,0) |
+| `sunflower` (girasol) | `#F5BD1F` | `#7A5A00` | tinta (7,4) |
+| `mint` (menta) | `#2FB98F` | `#0B6A50` | tinta (5,1) |
+| `sky` (cielo) | `#5FB4F0` | `#14649C` | tinta (5,6) |
+| `rose` (rosa) | `#F27BA4` | `#A8164A` | tinta |
 
-Tinta: `#0E0F12`. El fondo de la página toma el tinte del acento del negocio, así cada página se siente distinta aun con la misma estructura. Los contrastes se verifican contra WCAG AA.
+Regla 60-30-10: 60 % papel, 30 % tinta, 10 % acento. Mandarina y girasol son los complementarios de la tinta azul; menta, cielo y rosa son armonías análogas o divididas. Los contrastes entre paréntesis son contra el color indicado y todos pasan 4,5:1 (WCAG AA). Lima y cobalto se retiraron porque chocaban con la tinta.
 
-**Modo oscuro** (obligatorio): fondo casi negro, bordes en blanco roto, la sombra dura toma el color del acento. Sigue la preferencia del sistema.
+**Modo oscuro** (obligatorio): fondo azul muy oscuro `#0E1546`, bordes en mantequilla, la sombra dura toma el color del acento y el texto pequeño del acento se aclara. Sigue la preferencia del sistema.
 
 **Tipografía** (autoalojada, sin enlaces a Google Fonts):
 
@@ -146,9 +147,18 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 
 ## 11. El inicio y su buscador
 
+> Desde D85 el negocio aparece por defecto, y desde D86 el inicio también lista negocios.
+
 - **Titular genérico.** "Separa tu hora. Sin llamadas." y, debajo, "Canchas, consultorios y más". El primer titular hablaba solo de canchas y la plataforma sirve a más rubros.
 - **Buscar es opcional para el negocio y simple para el cliente.** Una caja que espera a que se deje de escribir (no pide en cada letra), pide 2 letras, y muestra nombre, tipo y dirección de cada resultado. Si no hay coincidencias lo dice, y debajo siempre queda el recordatorio de pedirle su link al negocio.
 - **El dueño decide** si aparece, con una casilla en "Mi página" que explica qué significa.
+
+### La composición del inicio
+
+- **Formas de cartel, no adornos.** Una pelota roja recortada por la esquina del bloque azul y una hoja mantequilla abajo, en tres colores planos con borde. Las costuras de la pelota van en rojo oscuro para no cortar las letras que pasan por encima.
+- **Titular con tres tamaños.** "Separa" enorme, "tu hora." y "Sin llamadas." más chicos. La tarjeta de búsqueda queda más abajo para romper la rejilla.
+- **Lista de negocios** como tarjetas con un dibujo plano por rubro (pelota, hojas o boleto), que alternan color y sentido. Se oculta sola si no hay ninguno.
+- **"Así de fácil":** tres boletos con muescas, ligeramente inclinados: elige, separa, llega.
 
 ## 12. Pendiente de decidir
 
