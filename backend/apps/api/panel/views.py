@@ -4,7 +4,8 @@ from datetime import timezone as dt_timezone
 from zoneinfo import ZoneInfo
 
 from django.db import transaction
-from django.db.models import Count, Max, Q, RestrictedError
+from django.db.models import Count, Max, OuterRef, Q, RestrictedError, Subquery
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
@@ -64,8 +65,21 @@ class BusinessView(PanelAPIView):
 
 
 def bookings_of(business):
-    return Booking.objects.filter(business=business).select_related(
-        "resource", "service", "customer"
+    """The bookings of a business, with how many times each customer was attended or missed there."""
+    history = Booking.objects.filter(customer=OuterRef("customer_id"))
+
+    def counted(status_value):
+        return Coalesce(
+            Subquery(
+                history.filter(status=status_value).order_by().values("customer").annotate(total=Count("id")).values("total")
+            ),
+            0,
+        )
+
+    return (
+        Booking.objects.filter(business=business)
+        .select_related("resource", "service", "customer")
+        .annotate(customer_completed=counted(BookingStatus.COMPLETED), customer_no_shows=counted(BookingStatus.NO_SHOW))
     )
 
 
@@ -549,6 +563,15 @@ class CompleteBookingView(BookingActionView):
     perform = staticmethod(services.complete_booking)
 
 
-@action_docs("Mark a no-show", "Only confirmed bookings that have already started.")
+@action_docs(
+    "Turn down a booking as a joke",
+    "Only pending bookings. The slot is freed, the customer is blocked in this business and is not written to. "
+    "The block can be lifted from the customer's page.",
+)
+class DismissBookingView(BookingActionView):
+    perform = staticmethod(services.dismiss_as_prank)
+
+
+@action_docs("Mark a no-show", "Only confirmed bookings that have already started. Repeated no-shows block the customer.")
 class NoShowBookingView(BookingActionView):
     perform = staticmethod(services.mark_no_show)

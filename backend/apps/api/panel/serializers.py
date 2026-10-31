@@ -19,6 +19,7 @@ from apps.businesses.models import Business
 from apps.businesses.presets import preset_for
 from apps.businesses.settings_schema import effective_settings, validate_settings
 from apps.catalog.models import Resource, Service
+from apps.customers import trust
 from apps.customers.models import Customer
 
 
@@ -151,6 +152,12 @@ class BookingEventSerializer(serializers.ModelSerializer):
         fields = ["from_status", "to_status", "actor", "created_at"]
 
 
+class TrustSerializer(serializers.Serializer):
+    level = serializers.ChoiceField(choices=[trust.VERIFIED, trust.KNOWN, trust.NEW, trust.FLAGGED])
+    completed = serializers.IntegerField(help_text="Bookings of this customer that were attended here.")
+    no_shows = serializers.IntegerField(help_text="Bookings of this customer they did not show up for here.")
+
+
 class PanelBookingSerializer(serializers.ModelSerializer):
     resource = ResourceRefSerializer()
     service = ServiceRefSerializer()
@@ -160,6 +167,9 @@ class PanelBookingSerializer(serializers.ModelSerializer):
     )
     duration_minutes = serializers.IntegerField(source="duration_snapshot")
     balance = serializers.SerializerMethodField(help_text="What is still owed; null when there is no price.")
+    customer_trust = serializers.SerializerMethodField(
+        help_text="How far the business can trust who booked: verified, known, new or flagged, with their history here."
+    )
 
     class Meta:
         model = Booking
@@ -180,17 +190,37 @@ class PanelBookingSerializer(serializers.ModelSerializer):
             "resource",
             "service",
             "customer",
+            "customer_trust",
             "price",
             "duration_minutes",
             "created_at",
         ]
 
 
+    @extend_schema_field(TrustSerializer())
+    def get_customer_trust(self, booking):
+        return trust_of(booking)
+
     @extend_schema_field(serializers.DecimalField(max_digits=8, decimal_places=2, allow_null=True))
     def get_balance(self, booking):
         balance = balance_of(booking)
         # A string with two decimals, like the other amounts of the API.
         return None if balance is None else f"{balance:.2f}"
+
+
+def trust_of(booking):
+    """The trust signal of a booking: from the counts the list already asked for, or asked for here."""
+    completed = getattr(booking, "customer_completed", None)
+    no_shows = getattr(booking, "customer_no_shows", None)
+    if completed is None or no_shows is None:
+        completed, no_shows = trust.history(booking.customer)
+    return {
+        "level": trust.level_of_booking(
+            verified=booking.verified, blocked=booking.customer.is_blocked, no_shows=no_shows, completed=completed
+        ),
+        "completed": completed,
+        "no_shows": no_shows,
+    }
 
 
 def balance_of(booking):

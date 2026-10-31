@@ -36,6 +36,11 @@ urlpatterns = [
         name="panel-booking-complete",
     ),
     path(
+        "bookings/<int:pk>/dismiss/",
+        views.DismissBookingView.as_view(),
+        name="panel-booking-dismiss",
+    ),
+    path(
         "bookings/<int:pk>/no-show/",
         views.NoShowBookingView.as_view(),
         name="panel-booking-no-show",
