@@ -29,8 +29,20 @@
   --shadow-hard-sm: 2px 2px 0 0 var(--shadow-color);
 }
 
-/* Accent palettes. Text on the block is dark, except on cobalt. */
+/*
+ * The platform's own palette: ink blue, poppy red and butter yellow, flat like a screen print.
+ * It is what the home page and the platform area use; a business that picks an accent below
+ * keeps its own look on its page.
+ */
 :root,
+[data-accent="separa"] {
+  --accent: #d92e3a;
+  --tint: #fff3b0;
+  --accent-deep: #a5192a;
+  --on-accent: #fff3b0;
+}
+
+/* Accent palettes. Text on the block is dark, except on cobalt. */
 [data-accent="lime"] {
   --accent: #c8f23c;
   --tint: #f2f9d0;
@@ -66,10 +78,10 @@
 :root {
   --paper: var(--tint);
   --surface: #ffffff;
-  --text: #0e0f12;
-  --muted: #4a4d57;
-  --line: #0e0f12;
-  --shadow-color: #0e0f12;
+  --text: #1b2a78;
+  --muted: #4b5280;
+  --line: #1b2a78;
+  --shadow-color: #1b2a78;
   --danger: #c0182f;
   color-scheme: light dark;
 }
@@ -79,23 +91,25 @@
  * It follows the system, and <html data-theme="light|dark"> forces either one.
  */
 :root[data-theme="dark"] {
-  --paper: #0f1013;
-  --surface: #181a1f;
-  --text: #eceef2;
-  --muted: #a3a7b3;
-  --line: #eceef2;
+  --paper: #0e1546;
+  --surface: #172062;
+  --text: #fff3b0;
+  --muted: #cfcba3;
+  --line: #fff3b0;
   --shadow-color: var(--accent);
   --danger: #ff7a8a;
+  --accent-deep: #ff9aa2;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0f1013;
-    --surface: #181a1f;
-    --text: #eceef2;
-    --muted: #a3a7b3;
-    --line: #eceef2;
+    --paper: #0e1546;
+    --surface: #172062;
+    --text: #fff3b0;
+    --muted: #cfcba3;
+    --line: #fff3b0;
     --shadow-color: var(--accent);
     --danger: #ff7a8a;
+    --accent-deep: #ff9aa2;
   }
 }
 
