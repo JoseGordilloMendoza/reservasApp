@@ -18,6 +18,11 @@ urlpatterns = [
     ),
     path("bookings/<str:token>/", views.BookingDetailView.as_view(), name="public-booking"),
     path(
+        "bookings/<str:token>/attendance/",
+        views.ConfirmAttendanceView.as_view(),
+        name="public-confirm-attendance",
+    ),
+    path(
         "bookings/<str:token>/cancel/",
         views.CancelBookingView.as_view(),
         name="public-cancel-booking",

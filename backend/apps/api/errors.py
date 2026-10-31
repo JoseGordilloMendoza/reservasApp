@@ -13,6 +13,7 @@ ERROR_STATUS = {
     services.InvalidTransition: status.HTTP_409_CONFLICT,
     services.BookingExpired: status.HTTP_409_CONFLICT,
     services.NotStartedYet: status.HTTP_409_CONFLICT,
+    services.AttendanceNotYetOpen: status.HTTP_409_CONFLICT,
     services.BookingNotAllowed: status.HTTP_403_FORBIDDEN,
     services.CancellationWindowClosed: status.HTTP_403_FORBIDDEN,
 }

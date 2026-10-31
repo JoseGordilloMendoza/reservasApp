@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from apps.bookings.models import Booking, BookingStatus
 from apps.bookings.phone import InvalidPhone, normalize_phone
-from apps.bookings.services import cancellation_deadline
+from apps.bookings.services import attendance_is_open, cancellation_deadline
 from apps.businesses.models import Business
 from apps.catalog.models import Resource, Service
 
@@ -157,6 +157,10 @@ class BookingPublicSerializer(serializers.ModelSerializer):
     duration_minutes = serializers.IntegerField(source="duration_snapshot")
     can_cancel = serializers.SerializerMethodField()
     cancel_deadline = serializers.SerializerMethodField()
+    attendance_confirmed = serializers.SerializerMethodField(help_text="Whether the customer already said they are coming.")
+    can_confirm_attendance = serializers.SerializerMethodField(
+        help_text="Whether they can say it now: a confirmed booking, in the day before it starts."
+    )
     payment_instructions = serializers.CharField(source="business.payment_instructions")
 
     class Meta:
@@ -177,6 +181,8 @@ class BookingPublicSerializer(serializers.ModelSerializer):
             "duration_minutes",
             "can_cancel",
             "cancel_deadline",
+            "attendance_confirmed",
+            "can_confirm_attendance",
         ]
 
     @extend_schema_field(serializers.BooleanField())
@@ -187,6 +193,14 @@ class BookingPublicSerializer(serializers.ModelSerializer):
             booking.status == BookingStatus.CONFIRMED
             and timezone.now() <= cancellation_deadline(booking)
         )
+
+    @extend_schema_field(serializers.BooleanField())
+    def get_attendance_confirmed(self, booking):
+        return booking.customer_confirmed_at is not None
+
+    @extend_schema_field(serializers.BooleanField())
+    def get_can_confirm_attendance(self, booking):
+        return attendance_is_open(booking, timezone.now())
 
     @extend_schema_field(serializers.DateTimeField())
     def get_cancel_deadline(self, booking):

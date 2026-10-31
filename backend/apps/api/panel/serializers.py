@@ -182,6 +182,7 @@ class PanelBookingSerializer(serializers.ModelSerializer):
             "payment_method",
             "balance",
             "arrived_at",
+            "customer_confirmed_at",
             "internal_note",
             "starts_at",
             "ends_at",

@@ -204,6 +204,32 @@ class CancelBookingView(ManagedBookingView):
         return Response(s.BookingPublicSerializer(booking).data)
 
 
+class ConfirmAttendanceView(ManagedBookingView):
+    @extend_schema(
+        summary="Say you are coming",
+        description=(
+            "Only for a confirmed booking, from a day before it starts. It tells the business; nothing else "
+            "changes. Saying it again is fine."
+        ),
+        request=None,
+        responses={
+            200: s.BookingPublicSerializer,
+            404: OpenApiResponse(description="Unknown token."),
+            409: s.ErrorSerializer,
+        },
+    )
+    def post(self, request, token):
+        booking = self.booking_or_404(token)
+        if booking is None:
+            return Response({"code": "not_found", "detail": "Reserva no encontrada."}, status=404)
+        try:
+            services.confirm_attendance(booking, now=timezone.now())
+        except services.BookingError as error:
+            return error_response(error)
+        booking = services.find_booking_by_token(token)
+        return Response(s.BookingPublicSerializer(booking).data)
+
+
 SEARCH_MIN_LETTERS = 2
 SEARCH_RESULTS = 8
 # More than will be shown, so that removing the ones that are not taking bookings still leaves enough.
