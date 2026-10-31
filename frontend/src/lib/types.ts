@@ -47,6 +47,11 @@ export interface SearchResult {
   address: string;
 }
 
+/** One business in the home page showcase: the search result plus a line about it. */
+export interface DirectoryEntry extends SearchResult {
+  description: string;
+}
+
 export interface Slot {
   starts_at: string;
   ends_at: string;

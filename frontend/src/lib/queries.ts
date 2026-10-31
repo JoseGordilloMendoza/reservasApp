@@ -19,6 +19,11 @@ export function useBusiness(slug: string) {
   });
 }
 
+/** The businesses the home page shows. */
+export function useDirectory() {
+  return useQuery({ queryKey: ["directory"], queryFn: () => api.directory(), staleTime: 60_000 });
+}
+
 /** Businesses that match what was typed. Asks nothing until there are enough letters. */
 export function useBusinessSearch(typed: string) {
   const text = typed.trim();

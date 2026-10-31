@@ -4,6 +4,7 @@ import type {
   BookingDetails,
   CreatedBooking,
   NewBooking,
+  DirectoryEntry,
   PublicBusiness,
   SearchResult,
 } from "./types";
@@ -16,6 +17,8 @@ export const api = {
 
   search: (typed: string) =>
     request<{ results: SearchResult[] }>(`/public/search/?q=${encodeURIComponent(typed)}`),
+
+  directory: () => request<{ results: DirectoryEntry[] }>("/public/directory/"),
 
   availability: (slug: string, params: { resource: number; service: number; from: string; to: string }) =>
     request<Availability>(
