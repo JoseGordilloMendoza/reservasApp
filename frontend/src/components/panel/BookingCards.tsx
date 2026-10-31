@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { clockLabel, formatTime, relativeDay } from "../../lib/dates";
 import { formatPrice } from "../../lib/format";
 import type { PanelBooking } from "../../lib/panelTypes";
+import { formatCode, owesSomething } from "../../lib/payment";
 import { useBookingAction } from "../../lib/panelQueries";
 import { Button } from "../Button";
 import { ConfirmAction } from "../ConfirmAction";
@@ -96,6 +97,11 @@ export function BookingRow({ booking, timeZone, showDay = false }: { booking: Pa
           <span className="block truncate font-display text-lg font-bold leading-tight">{booking.customer.name}</span>
           <span className="block truncate text-sm text-muted">
             {booking.service.name} · {booking.resource.name}
+          </span>
+          <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs font-bold">
+            <span className="font-mono tracking-wider">{formatCode(booking.code)}</span>
+            {booking.arrived_at && <span>Llegó</span>}
+            {owesSomething(booking) && <span className="text-danger">Falta S/ {Number(booking.balance)}</span>}
           </span>
         </span>
         <StatusBadge status={booking.status} />

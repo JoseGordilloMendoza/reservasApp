@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { buttonClass } from "../../components/Button";
 import { BookingRow, PendingCard } from "../../components/panel/BookingCards";
+import { VerifyBooking } from "../../components/panel/VerifyBooking";
 import { Skeleton } from "../../components/Skeleton";
 import { useAuth } from "../../lib/auth";
 import { usePanelBusiness, usePendingBookings, useTodayBookings } from "../../lib/panelQueries";
@@ -49,6 +50,8 @@ export function PanelHome() {
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
         {first ? `Hola, ${first}` : "Hola"}
       </h1>
+
+      <VerifyBooking timeZone={timeZone} />
 
       <section aria-labelledby="por-confirmar" className="grid gap-4">
         <Heading id="por-confirmar" count={pending.data?.count}>
