@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from apps.billing import services as billing
@@ -37,8 +38,10 @@ def test_one_that_asked_not_to_appear_is_left_out(api):
 
 
 def test_the_newest_come_first(api):
-    for name in ("Primera", "Segunda", "Tercera"):
-        make(name)
+    # Dates are set by hand: businesses made one after another can share the same instant.
+    for days_ago, name in ((3, "Primera"), (2, "Segunda"), (1, "Tercera")):
+        business = make(name)
+        Business.objects.filter(pk=business.pk).update(created_at=timezone.now() - timedelta(days=days_ago))
 
     assert directory(api) == ["tercera", "segunda", "primera"]
 
