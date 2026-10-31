@@ -67,6 +67,8 @@ def set_new_password(uid, token, password):
 
     with transaction.atomic():
         user.set_password(password)
-        user.save(update_fields=["password"])
+        # Choosing it from the emailed link settles a temporary password too.
+        user.must_change_password = False
+        user.save(update_fields=["password", "must_change_password"])
         revoke_sessions(user)
     return user

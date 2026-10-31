@@ -42,6 +42,8 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     # Google account id, set the first time the user signs in with Google.
     google_sub = models.CharField(max_length=64, null=True, blank=True, unique=True)
+    # True while the password is one the team handed over: the person must choose their own first.
+    must_change_password = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
