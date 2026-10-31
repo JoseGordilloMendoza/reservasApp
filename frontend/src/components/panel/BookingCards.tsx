@@ -9,6 +9,7 @@ import { useBookingAction } from "../../lib/panelQueries";
 import { Button } from "../Button";
 import { ConfirmAction } from "../ConfirmAction";
 import { ContactLinks } from "../ContactLinks";
+import { TrustBadge } from "./TrustBadge";
 import { StatusBadge } from "../StatusBadge";
 
 /** What the owner would say to a customer about their booking. */
@@ -48,6 +49,8 @@ export function PendingCard({ booking, business, timeZone }: Props) {
         </p>
       </div>
 
+      <TrustBadge trust={booking.customer_trust} />
+
       {booking.expires_at && (
         <p className="flex items-center gap-2 text-sm font-semibold">
           <Clock aria-hidden="true" />
@@ -68,6 +71,13 @@ export function PendingCard({ booking, business, timeZone }: Props) {
           confirmLabel="Sí, rechazar"
           busy={action.isPending}
           onConfirm={() => action.mutate({ id: booking.id, action: "reject" })}
+        />
+        <ConfirmAction
+          label="Era una broma"
+          question="¿Descartar esta reserva y bloquear a este cliente? El horario se libera y no se le avisa."
+          confirmLabel="Sí, descartar y bloquear"
+          busy={action.isPending}
+          onConfirm={() => action.mutate({ id: booking.id, action: "dismiss" })}
         />
       </div>
 
@@ -102,6 +112,7 @@ export function BookingRow({ booking, timeZone, showDay = false }: { booking: Pa
             <span className="font-mono tracking-wider">{formatCode(booking.code)}</span>
             {booking.arrived_at && <span>Llegó</span>}
             {owesSomething(booking) && <span className="text-danger">Falta S/ {Number(booking.balance)}</span>}
+            {booking.customer_trust.level === "flagged" && <span className="text-danger">Con faltas</span>}
           </span>
         </span>
         <StatusBadge status={booking.status} />

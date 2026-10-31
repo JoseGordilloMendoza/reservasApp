@@ -6,6 +6,7 @@ import { ConfirmAction } from "../../components/ConfirmAction";
 import { ContactLinks } from "../../components/ContactLinks";
 import { greeting } from "../../components/panel/BookingCards";
 import { PaymentCard } from "../../components/panel/PaymentCard";
+import { TrustBadge } from "../../components/panel/TrustBadge";
 import { Skeleton } from "../../components/Skeleton";
 import { StatusBadge } from "../../components/StatusBadge";
 import { ApiError } from "../../lib/http";
@@ -56,6 +57,13 @@ function Actions({ booking }: { booking: PanelBookingDetail }) {
             confirmLabel="Sí, rechazar"
             busy={action.isPending}
             onConfirm={() => run("reject")}
+          />
+          <ConfirmAction
+            label="Era una broma"
+            question="¿Descartar esta reserva y bloquear a este cliente? El horario se libera y no se le avisa."
+            confirmLabel="Sí, descartar y bloquear"
+            busy={action.isPending}
+            onConfirm={() => run("dismiss")}
           />
         </>
       )}
@@ -137,6 +145,8 @@ export function BookingDetailPage() {
           </div>
           <StatusBadge status={booking.status} />
         </header>
+
+        <TrustBadge trust={booking.customer_trust} />
 
         <p className="w-fit rounded-box border-[3px] border-line bg-paper px-3 py-1 font-mono text-xl font-bold tracking-widest">
           <span className="sr-only">Código de reserva </span>
