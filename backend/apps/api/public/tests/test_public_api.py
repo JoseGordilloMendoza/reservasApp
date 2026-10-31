@@ -93,12 +93,12 @@ def test_contact_details_are_empty_until_filled_in(api, business):
 
 
 def test_profile_tells_which_accent_color_to_use(api, business):
-    assert api.get(link("public-business", slug=business.slug)).json()["accent"] == "lime"
+    assert api.get(link("public-business", slug=business.slug)).json()["accent"] == "poppy"
 
-    business.accent = "cobalt"
+    business.accent = "sky"
     business.save()
 
-    assert api.get(link("public-business", slug=business.slug)).json()["accent"] == "cobalt"
+    assert api.get(link("public-business", slug=business.slug)).json()["accent"] == "sky"
 
 
 def test_profile_does_not_expose_internal_settings(api, business):

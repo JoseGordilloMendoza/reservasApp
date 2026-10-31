@@ -68,7 +68,7 @@ def test_a_number_can_be_cleared(panel, business):
 
 
 def test_the_accent_color_can_be_chosen_from_the_available_ones(panel, business):
-    assert panel.get(reverse("panel-business")).json()["accent"] == "lime"
+    assert panel.get(reverse("panel-business")).json()["accent"] == "poppy"
 
     response = patch(panel, accent="rose")
 
@@ -85,7 +85,7 @@ def test_an_unknown_accent_is_rejected(panel, business, accent):
     assert response.status_code == 400
     assert "accent" in response.json()
     business.refresh_from_db()
-    assert business.accent == "lime"
+    assert business.accent == "poppy"
 
 
 def test_the_name_cannot_be_empty(panel):

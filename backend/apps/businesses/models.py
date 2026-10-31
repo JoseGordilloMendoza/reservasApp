@@ -19,11 +19,12 @@ class Business(models.Model):
     class Accent(models.TextChoices):
         """Color the business's public page is built around. The frontend defines the shades."""
 
-        LIME = "lime", "Lime"
+        POPPY = "poppy", "Poppy"
         TANGERINE = "tangerine", "Tangerine"
-        COBALT = "cobalt", "Cobalt"
-        ROSE = "rose", "Rose"
+        SUNFLOWER = "sunflower", "Sunflower"
         MINT = "mint", "Mint"
+        SKY = "sky", "Sky"
+        ROSE = "rose", "Rose"
 
     slug = models.SlugField(max_length=63, unique=True, validators=[validate_slug_not_reserved])
     name = models.CharField(max_length=120)
@@ -32,7 +33,7 @@ class Business(models.Model):
     address = models.CharField(max_length=200, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     whatsapp = models.CharField(max_length=20, blank=True)
-    accent = models.CharField(max_length=20, choices=Accent.choices, default=Accent.LIME)
+    accent = models.CharField(max_length=20, choices=Accent.choices, default=Accent.POPPY)
     business_type = models.CharField(
         max_length=20, choices=BusinessType.choices, default=BusinessType.GENERIC
     )

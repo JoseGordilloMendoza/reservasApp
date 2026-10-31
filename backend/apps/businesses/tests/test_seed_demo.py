@@ -30,8 +30,8 @@ def test_creates_a_court_and_a_therapist_ready_to_book():
 
     court = Business.objects.get(slug="canchas-los-andes")
     therapist = Business.objects.get(slug="consultorio-lucia")
-    assert (court.business_type, court.accent) == ("court", "lime")
-    assert (therapist.business_type, therapist.accent) == ("psychologist", "cobalt")
+    assert (court.business_type, court.accent) == ("court", "poppy")
+    assert (therapist.business_type, therapist.accent) == ("psychologist", "sky")
     assert Resource.objects.filter(business=court).count() == 2
     assert Service.objects.filter(business=therapist).get().duration_minutes == 50
     assert AvailabilityRule.objects.filter(business=court, resource__name="Cancha 1").count() == 7
