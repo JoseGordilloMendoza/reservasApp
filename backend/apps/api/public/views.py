@@ -196,6 +196,8 @@ SEARCH_MIN_LETTERS = 2
 SEARCH_RESULTS = 8
 # More than will be shown, so that removing the ones that are not taking bookings still leaves enough.
 SEARCH_CANDIDATES = 40
+DIRECTORY_SIZE = 12
+DIRECTORY_CANDIDATES = 40
 
 
 class BusinessSearchView(PublicAPIView):
@@ -222,16 +224,42 @@ class BusinessSearchView(PublicAPIView):
             .select_related("subscription")
             .order_by("search_name")[:SEARCH_CANDIDATES]
         )
+        ordered = sorted(candidates, key=lambda item: (not item.search_name.startswith(typed), item.search_name))
 
-        found = []
-        for business in sorted(candidates, key=lambda item: (not item.search_name.startswith(typed), item.search_name)):
-            try:
-                subscription = business.subscription
-            except Business.subscription.RelatedObjectDoesNotExist:
-                subscription = None
-            if is_operational(business, subscription=subscription):
-                found.append(business)
-            if len(found) == SEARCH_RESULTS:
-                break
+        return Response({"results": s.BusinessSearchResultSerializer(taking_bookings(ordered, SEARCH_RESULTS), many=True).data})
 
-        return Response({"results": s.BusinessSearchResultSerializer(found, many=True).data})
+
+class BusinessDirectoryView(PublicAPIView):
+    throttle_scope = "public_search"
+
+    @extend_schema(
+        summary="Businesses shown on the home page",
+        description=(
+            "The newest businesses that chose to appear (`listed`) and are taking bookings, "
+            f"at most {DIRECTORY_SIZE}. It is a showcase, not a full list."
+        ),
+        responses={200: s.BusinessCardSerializer(many=True)},
+    )
+    def get(self, request):
+        candidates = (
+            Business.objects.filter(listed=True, status=Business.Status.ACTIVE)
+            .select_related("subscription")
+            .order_by("-created_at")[:DIRECTORY_CANDIDATES]
+        )
+
+        return Response({"results": s.BusinessCardSerializer(taking_bookings(candidates, DIRECTORY_SIZE), many=True).data})
+
+
+def taking_bookings(businesses, limit):
+    """The first `limit` of them whose subscription lets them take bookings."""
+    found = []
+    for business in businesses:
+        try:
+            subscription = business.subscription
+        except Business.subscription.RelatedObjectDoesNotExist:
+            subscription = None
+        if is_operational(business, subscription=subscription):
+            found.append(business)
+        if len(found) == limit:
+            break
+    return found

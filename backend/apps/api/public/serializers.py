@@ -61,6 +61,12 @@ class BusinessSearchResultSerializer(serializers.ModelSerializer):
         fields = ["name", "slug", "business_type", "accent", "address"]
 
 
+class BusinessCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Business
+        fields = ["name", "slug", "business_type", "accent", "address", "description"]
+
+
 # --- availability -------------------------------------------------------------
 
 
