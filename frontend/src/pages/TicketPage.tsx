@@ -12,7 +12,8 @@ import { ApiError, api } from "../lib/api";
 import { clockLabel, formatLongDate, formatTime } from "../lib/dates";
 import { useAccent, useBooking, useBusiness } from "../lib/queries";
 import { DEFAULT_TIME_ZONE, saveBooking } from "../lib/storage";
-import { STATUS_HEADLINE, shortCode } from "../lib/status";
+import { formatCode } from "../lib/payment";
+import { STATUS_HEADLINE } from "../lib/status";
 import type { BookingDetails } from "../lib/types";
 import { whatsappLink } from "../lib/whatsapp";
 import { NotFoundPage } from "./NotFoundPage";
@@ -96,7 +97,7 @@ export function TicketPage() {
         business.data.whatsapp,
         `Hola ${data.business.name}, soy ${data.customer_name}. Reservé ${data.service.name} ` +
           `el ${formatLongDate(data.starts_at, timeZone)} a las ${formatTime(data.starts_at, timeZone)}. ` +
-          `Código ${shortCode(token)}.`,
+          `Código ${formatCode(data.code)}.`,
       )
     : null;
   const live = data.status === "pending" || data.status === "confirmed";
@@ -118,7 +119,7 @@ export function TicketPage() {
         animate={{ opacity: 1, y: 0, rotate: 0 }}
         transition={{ type: "spring", stiffness: 160, damping: 14, delay: 0.1 }}
       >
-        <Ticket booking={data} token={token} timeZone={timeZone} />
+        <Ticket booking={data} timeZone={timeZone} />
       </motion.div>
 
       <p className="flex items-start gap-3 text-lg leading-snug" role="status">

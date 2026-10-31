@@ -1,6 +1,7 @@
 import { formatLongDate, formatTime } from "../lib/dates";
 import { formatDuration, formatPrice } from "../lib/format";
-import { STATUS_LABEL, shortCode } from "../lib/status";
+import { formatCode } from "../lib/payment";
+import { STATUS_LABEL } from "../lib/status";
 import type { BookingDetails, BookingStatus } from "../lib/types";
 
 /** Decorative bars derived from the code, like the stub of a real ticket. */
@@ -45,6 +46,12 @@ const STAMP: Record<BookingStatus, string> = {
   no_show: "bg-surface text-danger border-solid",
 };
 
+const PAYMENT_NOTE: Record<BookingDetails["payment_status"], string> = {
+  unpaid: "",
+  deposit: "El negocio registró tu adelanto.",
+  paid: "El negocio registró tu pago.",
+};
+
 function Stamp({ status }: { status: BookingStatus }) {
   return (
     <span
@@ -57,11 +64,10 @@ function Stamp({ status }: { status: BookingStatus }) {
 
 interface Props {
   booking: BookingDetails;
-  token: string;
   timeZone: string;
 }
 
-export function Ticket({ booking, token, timeZone }: Props) {
+export function Ticket({ booking, timeZone }: Props) {
   const price = formatPrice(booking.price);
   const dead = booking.status === "cancelled" || booking.status === "expired";
 
@@ -115,9 +121,22 @@ export function Ticket({ booking, token, timeZone }: Props) {
 
       <Perforation />
 
-      <div className="flex items-center justify-between gap-4 p-5 pt-6">
-        <Barcode code={shortCode(token)} />
-        <p className="font-mono text-lg font-bold tracking-widest">{shortCode(token)}</p>
+      <div className="grid gap-4 p-5 pt-6">
+        <div className="flex items-center justify-between gap-4">
+          <Barcode code={booking.code} />
+          <p className="text-right">
+            <span className="block text-xs font-bold uppercase tracking-wide text-muted">Tu código</span>
+            <span className="font-mono text-2xl font-bold tracking-widest">{formatCode(booking.code)}</span>
+          </p>
+        </div>
+        <p className="text-sm text-muted">Al llegar, muestra este código o di tu nombre. No reemplaza un comprobante de pago.</p>
+        {PAYMENT_NOTE[booking.payment_status] && <p className="font-semibold">{PAYMENT_NOTE[booking.payment_status]}</p>}
+        {booking.payment_instructions && booking.payment_status !== "paid" && !dead && (
+          <div className="rounded-box border-[3px] border-dashed border-line p-3">
+            <p className="font-display font-bold">Cómo pagar</p>
+            <p className="mt-1 whitespace-pre-line">{booking.payment_instructions}</p>
+          </div>
+        )}
       </div>
     </article>
   );

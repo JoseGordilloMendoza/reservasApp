@@ -34,6 +34,36 @@ describe("the ticket", () => {
     expect(ticket).toHaveTextContent("Pendiente");
   });
 
+  it("shows the code the business will ask for, as it is read aloud", async () => {
+    api(bookingDetails({ code: "K7M42X" }));
+    renderApp(PATH);
+
+    const ticket = await screen.findByLabelText("Boleto de Canchas Los Andes");
+
+    expect(ticket).toHaveTextContent("K7M-42X");
+    expect(ticket).toHaveTextContent("muestra este código o di tu nombre");
+    expect(ticket).toHaveTextContent("No reemplaza un comprobante de pago");
+  });
+
+  it("says how to pay while something is owed, and stops once it is paid", async () => {
+    api(bookingDetails({ payment_instructions: "Yape al 987 654 321 a nombre de Rosa" }));
+    renderApp(PATH);
+
+    const ticket = await screen.findByLabelText("Boleto de Canchas Los Andes");
+    expect(ticket).toHaveTextContent("Cómo pagar");
+    expect(ticket).toHaveTextContent("Yape al 987 654 321 a nombre de Rosa");
+  });
+
+  it("tells the customer when the business registered their payment", async () => {
+    api(bookingDetails({ payment_status: "paid", payment_instructions: "Yape al 987 654 321" }));
+    renderApp(PATH);
+
+    const ticket = await screen.findByLabelText("Boleto de Canchas Los Andes");
+
+    expect(ticket).toHaveTextContent("El negocio registró tu pago.");
+    expect(ticket).not.toHaveTextContent("Cómo pagar");
+  });
+
   it("does not print the secret token on the ticket", async () => {
     api(bookingDetails());
     renderApp(PATH);
