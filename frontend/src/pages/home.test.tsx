@@ -234,8 +234,27 @@ describe("for businesses", () => {
     expect(within(band).getByRole("link", { name: /Escríbenos por WhatsApp/ }).getAttribute("href")).toMatch(/wa\.me\/51914659295\?/);
   });
 
-  it("opens an email to the team when that is all there is", async () => {
+  it("opens a Gmail draft with the request on a computer, which rarely has a mail app set up", async () => {
     contact("", "hola@separa.pe");
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+    const ask = within(band).getByRole("link", { name: /Escríbenos por correo/ });
+    const link = new URL(ask.getAttribute("href") ?? "");
+
+    expect(link.origin + link.pathname).toBe("https://mail.google.com/mail/");
+    expect(link.searchParams.get("to")).toBe("hola@separa.pe");
+    expect(link.searchParams.get("su")).toBe("Quiero mi negocio en Separa");
+    expect(link.searchParams.get("body")).toContain("quiero tener mi negocio en Separa");
+    expect(ask).toHaveAttribute("target", "_blank");
+    expect(within(band).queryByRole("link", { name: /WhatsApp/ })).not.toBeInTheDocument();
+  });
+
+  it("opens the phone's own mail app on a phone", async () => {
+    contact("", "hola@separa.pe");
+    const normal = window.matchMedia;
+    window.matchMedia = ((query: string) => ({ ...normal(query), matches: query.includes("coarse") })) as typeof window.matchMedia;
     mockApi({});
     renderApp("/");
 
@@ -243,8 +262,18 @@ describe("for businesses", () => {
     const ask = within(band).getByRole("link", { name: /Escríbenos por correo/ });
 
     expect(ask.getAttribute("href")).toMatch(/^mailto:hola@separa\.pe\?subject=/);
-    expect(decodeURIComponent(ask.getAttribute("href") ?? "")).toContain("quiero tener mi negocio en Separa");
-    expect(within(band).queryByRole("link", { name: /WhatsApp/ })).not.toBeInTheDocument();
+    expect(ask).not.toHaveAttribute("target");
+    window.matchMedia = normal;
+  });
+
+  it("also shows the address, for whoever uses another mail app", async () => {
+    contact("", "hola@separa.pe");
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+
+    expect(within(band).getByText("hola@separa.pe")).toBeInTheDocument();
   });
 
   it("offers both when both are set up, so each person uses the one they prefer", async () => {

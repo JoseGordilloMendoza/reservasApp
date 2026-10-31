@@ -13,12 +13,26 @@ function withCountryCode(phone: string): string {
   return digits.length === 9 ? `51${digits}` : digits;
 }
 
+const SUBJECT = `Quiero mi negocio en ${BRAND}`;
+
+/** A phone opens its own mail app (usually Gmail); a computer rarely has one set up, so it opens Gmail on the web. */
+function onPhone(): boolean {
+  return typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
+}
+
+/** An email with the request already written. Needs no key or permission: it only opens a draft for the person to send. */
+export function emailLink(address: string): string {
+  if (onPhone()) return `mailto:${address}?subject=${encodeURIComponent(SUBJECT)}&body=${encodeURIComponent(ASK)}`;
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(address)}&su=${encodeURIComponent(SUBJECT)}&body=${encodeURIComponent(ASK)}`;
+}
+
 /** The ways to reach the team that are set up: a WhatsApp chat and an email, each with the request already written. */
-export function contactLinks(): { whatsapp: string | null; email: string | null } {
+export function contactLinks(): { whatsapp: string | null; email: string | null; address: string } {
   const address = contactEmail().trim();
   return {
     whatsapp: whatsappLink(withCountryCode(contactWhatsapp()), ASK),
-    email: address ? `mailto:${address}?subject=${encodeURIComponent(`Quiero mi negocio en ${BRAND}`)}&body=${encodeURIComponent(ASK)}` : null,
+    email: address ? emailLink(address) : null,
+    address,
   };
 }
 
@@ -27,7 +41,7 @@ export function contactLinks(): { whatsapp: string | null; email: string | null 
  * open an account. Businesses do not register themselves (the team opens each one), so this is the way in.
  */
 export function ForBusinesses() {
-  const { whatsapp, email } = contactLinks();
+  const { whatsapp, email, address } = contactLinks();
   const canAsk = Boolean(whatsapp || email);
 
   return (
@@ -52,7 +66,12 @@ export function ForBusinesses() {
             </a>
           )}
           {email && (
-            <a href={email} className={buttonClass(whatsapp ? "plain" : "primary", "w-full border-paper sm:w-auto")}>
+            <a
+              href={email}
+              target={email.startsWith("http") ? "_blank" : undefined}
+              rel="noreferrer"
+              className={buttonClass(whatsapp ? "plain" : "primary", "w-full border-paper sm:w-auto")}
+            >
               <EnvelopeSimple aria-hidden="true" />
               Escríbenos por correo
             </a>
@@ -62,6 +81,12 @@ export function ForBusinesses() {
             <ArrowRight aria-hidden="true" />
           </Link>
         </div>
+
+        {email && (
+          <p className="text-sm font-medium">
+            ¿Prefieres otra app de correo? Escribe a <span className="break-all font-bold">{address}</span>.
+          </p>
+        )}
       </div>
     </section>
   );
