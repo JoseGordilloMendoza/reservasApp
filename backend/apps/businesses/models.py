@@ -44,6 +44,8 @@ class Business(models.Model):
     )
     # Whether the home page may show it, in the search and in the directory. On unless its owner turns it off.
     listed = models.BooleanField(default=True)
+    # How a customer pays this business (a Yape number, an account). Shown on the booking, never used by the platform.
+    payment_instructions = models.CharField(max_length=300, blank=True)
     # The name as the search compares it: lowercase, no accents. Kept up to date by save().
     search_name = models.CharField(max_length=120, blank=True, editable=False, db_index=True)
     # Why and when the platform team suspended it; cleared on reactivation.
