@@ -1,8 +1,25 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach, beforeEach, vi } from "vitest";
+import { createElement, type ComponentType } from "react";
+import { afterEach, beforeAll, beforeEach, vi } from "vitest";
 
 import { clearSession } from "../lib/session";
+
+// The app loads each screen when it is first opened (React.lazy). Tests look for what a screen shows
+// right after rendering it, so here the screens are loaded first and then drawn as plain components.
+const loading: Promise<unknown>[] = [];
+vi.mock("react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react")>();
+  return {
+    ...actual,
+    lazy: (load: () => Promise<{ default: ComponentType<object> }>) => {
+      let screen: ComponentType<object> | undefined;
+      loading.push(load().then((module) => (screen = module.default)));
+      return (props: object) => (screen ? createElement(screen, props) : null);
+    },
+  };
+});
+beforeAll(() => Promise.all(loading));
 
 // jsdom lacks a few browser APIs the app relies on.
 beforeEach(() => {
