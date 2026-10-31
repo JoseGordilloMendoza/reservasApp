@@ -61,6 +61,22 @@ describe("the business page settings", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("Cambios guardados");
   });
 
+  it("saves how customers pay, so it reaches their ticket and email", async () => {
+    const api = signedInRoutes({
+      "PATCH /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, payment_instructions: "Yape al 987 654 321" } },
+    });
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    expect(await screen.findByLabelText("Cómo te pagan")).toHaveValue("");
+    await user.type(screen.getByLabelText("Cómo te pagan"), " Yape al 987 654 321 ");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => {
+      expect(api.calls.find((call) => call.method === "PATCH")?.body).toMatchObject({ payment_instructions: "Yape al 987 654 321" });
+    });
+  });
+
   it("repaints the panel with the new color once it is saved", async () => {
     signedInRoutes({ "PATCH /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, accent: "rose" } } });
     const user = userEvent.setup();

@@ -13,7 +13,7 @@ import type { PanelBusiness } from "../../lib/panelTypes";
 import { usePanelBusiness, useUpdateBusiness } from "../../lib/panelQueries";
 
 const FIELDS = ["name", "description", "address", "phone", "whatsapp"] as const;
-type Values = Pick<PanelBusiness, (typeof FIELDS)[number] | "accent" | "listed">;
+type Values = Pick<PanelBusiness, (typeof FIELDS)[number] | "accent" | "listed" | "payment_instructions">;
 
 const valuesOf = (business: PanelBusiness): Values => ({
   name: business.name,
@@ -23,6 +23,7 @@ const valuesOf = (business: PanelBusiness): Values => ({
   whatsapp: business.whatsapp,
   accent: business.accent,
   listed: business.listed,
+  payment_instructions: business.payment_instructions,
 });
 
 function BusinessForm({ business }: { business: PanelBusiness }) {
@@ -57,6 +58,7 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
         whatsapp: values.whatsapp.trim(),
         accent: values.accent,
         listed: values.listed,
+        payment_instructions: values.payment_instructions.trim(),
       },
       {
         onSuccess: (updated) => {
@@ -109,6 +111,15 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
         onChange={(event) => set({ whatsapp: event.target.value })}
       />
 
+      <TextAreaField
+        label="Cómo te pagan"
+        placeholder="Yape o Plin al 987 654 321, a nombre de Rosa Quispe"
+        hint="Sale en el correo y en el boleto de tu cliente. La plataforma no cobra: el pago es entre ustedes."
+        maxLength={300}
+        value={values.payment_instructions}
+        onChange={(event) => set({ payment_instructions: event.target.value })}
+      />
+
       <section aria-labelledby="color" className="grid gap-3">
         <h2 id="color" className="font-display text-base font-bold">
           Color
@@ -126,7 +137,7 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
           onChange={(event) => set({ listed: event.target.checked })}
         />
         <p className="text-sm text-muted">
-          Quien llegue sin tu link podrá encontrarte por tu nombre. Si no lo marcas, solo entran tus clientes que tengan tu link.
+          Tu negocio sale en la lista de la página de inicio y quien llegue sin tu link podrá encontrarte por tu nombre. Si lo quitas, solo entran tus clientes que tengan tu link.
         </p>
       </section>
 
