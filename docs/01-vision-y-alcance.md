@@ -13,7 +13,7 @@ La plataforma **solo gestiona la reserva**. El pago, la atención y la relación
 | Actor | Descripción |
 |---|---|
 | **Negocio** (tenant) | Se registra, configura recursos, horarios y reglas, y administra sus reservas |
-| **Cliente final** | Reserva desde el link del negocio, sin cuenta |
+| **Cliente final** | Reserva desde el link del negocio, sin cuenta. Si entra con Google queda **verificado** y el negocio puede confiar más en su reserva |
 | **Superadmin** | Equipo de la plataforma: da de alta negocios y administra suscripciones |
 
 ## 3. Idea central del modelo
@@ -58,7 +58,7 @@ El pago (Yape, Plin, efectivo) se coordina fuera de la plataforma. El negocio pu
 - Alta de negocios y gestión de suscripción (panel mínimo de superadmin).
 - Página pública por negocio con link propio (`/nombre-negocio`).
 - Configuración de recursos, horarios y reglas por negocio.
-- Reserva por cliente sin cuenta (nombre y celular).
+- Reserva por cliente sin cuenta (nombre y celular), con la opción de entrar con Google para ser un cliente verificado (propuesta D97).
 - Panel del negocio: ver, confirmar, cancelar reservas y bloquear horarios.
 - Estados de reserva y expiración de pendientes.
 - Link único para que el cliente consulte o cancele su reserva.

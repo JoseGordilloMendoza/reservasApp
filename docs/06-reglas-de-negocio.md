@@ -60,6 +60,20 @@
 - **RN-27.** El teléfono de un cliente identifica a la persona en ese negocio y no se puede cambiar; sí su nombre y correo, y se puede bloquear.
 - **RN-39.** Quien olvidó su contraseña pide un enlace por correo. La respuesta es la misma y llega igual de rápido exista o no la cuenta, para no revelar quién está registrado. El enlace sirve una sola vez y vale una hora; al usarlo se cierran las sesiones abiertas. Una cuenta que solo entra con Google también puede fijar una contraseña así. Los pedidos están limitados por dirección y por correo.
 
+## Clientes de confianza y reservas de broma (propuesta, sin implementar)
+
+Hoy lo único que impide una reserva falsa es que el dueño no la confirme (confirmación manual, el modo por defecto) y el tope de reservas por celular, que se evade escribiendo otro número. Estas reglas lo refuerzan sin pedirle cuenta a nadie (D97 a D103).
+
+- **RN-66.** Un cliente es **verificado** si reservó entrando con Google en el momento; si no, es no verificado. Ser verificado no lo vuelve cliente de otro negocio ni da acceso a ningún panel.
+- **RN-67.** Un cliente es **de confianza** en un negocio si es verificado o tiene al menos una reserva atendida (completada) allí. Quien está bloqueado o tiene una falta reciente no lo es.
+- **RN-68.** Con el modo **automática para clientes de confianza**, la reserva de un cliente de confianza nace confirmada; la de cualquier otro nace pendiente, como en el modo manual.
+- **RN-69.** A un cliente no verificado le valen 1 reserva activa a la vez y una espera de 30 minutos (en lugar de 3 y 2 horas). Ambas cifras se configuran por negocio y el dueño puede igualarlas a las de los demás clientes.
+- **RN-70.** En cada reserva pendiente el dueño ve una señal: verificado con Google, cliente conocido (con el número de reservas atendidas), primera vez, o con faltas (no se presentó o canceló sin avisar).
+- **RN-71.** El dueño puede descartar una reserva pendiente como broma: se rechaza, el horario se libera y el cliente queda bloqueado en ese negocio. Se puede deshacer desde la ficha del cliente.
+- **RN-72.** Un cliente que acumula 2 "no asistió" en un negocio queda bloqueado allí automáticamente (la cifra se configura; 0 lo desactiva). El bloqueo muestra el mismo mensaje genérico de siempre (RN-16).
+- **RN-73.** *(Segunda etapa.)* Si el negocio pide adelanto a los clientes nuevos, su reserva queda pendiente hasta que el dueño registre el adelanto; si no llega antes de que venza la espera, se libera sola.
+- **RN-74.** Al reservar sin verificar se pasa un chequeo anti-robots. Quien entró con Google no lo ve. Si el servicio del chequeo falla, la reserva sigue sin él, para no cerrar el negocio.
+
 ## Contraseña temporal
 
 - **RN-60.** Al abrir un negocio o agregar a alguien, el equipo elige entre enviar un correo o entregar una contraseña temporal. Una persona que ya tenía cuenta conserva su contraseña con cualquiera de las dos, y con la temporal no se envía ningún correo.

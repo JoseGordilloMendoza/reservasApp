@@ -23,6 +23,8 @@ La documentación usa español y el código usa inglés. La columna **En el cód
 | **Confirmación automática / manual** | `settings` | Si la reserva se confirma sola o el negocio la aprueba |
 | **Política de cancelación** | `settings` | Anticipación mínima con la que el cliente puede cancelar |
 | **Plantilla de rubro** | `business_type` | Conjunto de valores iniciales según el tipo de negocio (cancha, psicólogo) |
+| **Cliente verificado** | `verified` | Cliente que entró con Google para reservar: su correo está confirmado por Google. No tiene contraseña |
+| **Cliente de confianza** | `trusted` | Cliente verificado, o con al menos una reserva atendida en ese negocio. Con el modo "automática para clientes de confianza", sus reservas se confirman solas |
 | **Reserva recurrente** | `series_id` | Reserva que se repite (por ejemplo, todos los martes a las 19:00) |
 | **Suscripción** | `Subscription` | Pago periódico del negocio por usar la plataforma |
 | **Link del negocio** | `slug` | Dirección pública propia del negocio, donde sus clientes reservan |
