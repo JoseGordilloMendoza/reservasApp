@@ -95,6 +95,11 @@ class BookingExpired(InvalidTransition):
     message = "La reserva venció y su horario fue liberado. Crea una nueva."
 
 
+class AttendanceNotYetOpen(BookingError):
+    code = "attendance_not_yet_open"
+    message = "Podrás confirmar que vas desde un día antes de tu reserva."
+
+
 class NotStartedYet(BookingError):
     code = "not_started_yet"
     message = "La reserva aún no ha comenzado."
@@ -479,6 +484,42 @@ def update_record(booking, *, arrived=None, now=None, **fields):
     for name, value in fields.items():
         setattr(booking, name, value)
     booking.save(update_fields=list(fields))
+    return booking
+
+
+# The customer can say "I am coming" from this long before the booking until it starts.
+ATTENDANCE_WINDOW = timedelta(hours=24)
+
+
+def attendance_is_open(booking, now):
+    """Whether the customer may confirm now: a confirmed booking, in the day before it starts."""
+    return (
+        booking.status == BookingStatus.CONFIRMED
+        and booking.starts_at - ATTENDANCE_WINDOW <= now < booking.starts_at
+    )
+
+
+def confirm_attendance(booking, now=None):
+    """The customer says they are coming. Saying it twice changes nothing.
+
+    It only tells the business; it does not change the booking or what the customer may do with it.
+    """
+    now = now or timezone.now()
+    refresh_if_stale(booking, now)
+
+    with transaction.atomic():
+        booking = Booking.objects.select_for_update(of=("self",)).get(pk=booking.pk)
+
+        if booking.status != BookingStatus.CONFIRMED:
+            raise InvalidTransition("Solo una reserva confirmada puede confirmar asistencia.")
+        if now >= booking.starts_at:
+            raise InvalidTransition("Esta reserva ya empezó.")
+        if now < booking.starts_at - ATTENDANCE_WINDOW:
+            raise AttendanceNotYetOpen()
+
+        if booking.customer_confirmed_at is None:
+            booking.customer_confirmed_at = now
+            booking.save(update_fields=["customer_confirmed_at"])
     return booking
 
 

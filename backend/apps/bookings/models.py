@@ -85,6 +85,8 @@ class Booking(models.Model):
     arrived_at = models.DateTimeField(null=True, blank=True)
     # Whether the customer proved who they are with Google when they made this booking.
     verified = models.BooleanField(default=False)
+    # When the customer said they are coming, from their ticket, in the day before the booking.
+    customer_confirmed_at = models.DateTimeField(null=True, blank=True)
     internal_note = models.CharField(max_length=500, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
