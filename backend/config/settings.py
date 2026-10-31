@@ -80,6 +80,10 @@ DATABASES = {
     "default": dj_database_url.config(
         default="postgres://reservas:reservas@localhost:5433/reservas",
         conn_max_age=60,
+        # A connection kept for reuse may have been closed on the other side, as when the host
+        # suspends an idle database (Neon does after 5 minutes). Django checks it first and opens a
+        # new one, instead of failing the one request that finds it dead.
+        conn_health_checks=True,
     )
 }
 
