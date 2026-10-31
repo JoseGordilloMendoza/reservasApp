@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 
 import { Button, buttonClass } from "../../components/Button";
 import { Field } from "../../components/Field";
+import { CredentialsCard } from "../../components/platform/CredentialsCard";
+import { DeliveryChoice } from "../../components/platform/DeliveryChoice";
 import { SelectField } from "../../components/SelectField";
 import { formatDayKey } from "../../lib/dates";
 import { KIND_LABEL, KINDS } from "../../lib/kinds";
@@ -12,9 +14,9 @@ import { ApiError } from "../../lib/http";
 import { SERVER_FIELD, emptyBusiness, toNewBusiness, validateNewBusiness } from "../../lib/newBusiness";
 import type { NewBusinessErrors, NewBusinessValues } from "../../lib/newBusiness";
 import { useCreateBusiness } from "../../lib/platformQueries";
-import type { BusinessKind, CreatedBusiness } from "../../lib/platformTypes";
+import type { BusinessKind, CreatedBusiness, Delivery } from "../../lib/platformTypes";
 
-function Done({ business, onAnother }: { business: CreatedBusiness; onAnother: () => void }) {
+function Done({ business, delivery, ownerName, onAnother }: { business: CreatedBusiness; delivery: Delivery; ownerName: string; onAnother: () => void }) {
   const [copied, setCopied] = useState(false);
   const link = `${window.location.origin}/${business.slug}`;
 
@@ -44,20 +46,35 @@ function Done({ business, onAnother }: { business: CreatedBusiness; onAnother: (
           <EnvelopeSimple aria-hidden="true" />
           El dueño
         </h2>
-        <p role="status">
-          {business.owner.account_created ? (
-            <>
-              Le enviamos un correo a <strong className="break-all">{business.owner.email}</strong> para que elija su contraseña. El enlace
-              vale una hora; si vence, puedes reenviarlo desde la ficha del negocio.
-            </>
-          ) : (
-            <>
-              <strong className="break-all">{business.owner.email}</strong> ya tenía cuenta: la conserva tal como estaba, y le avisamos
-              por correo que ahora también administra este negocio.
-            </>
-          )}
-        </p>
+        {business.owner.temporary_password ? (
+          <p role="status">
+            Abrimos la cuenta de <strong className="break-all">{business.owner.email}</strong> con una contraseña temporal. No enviamos ningún correo.
+          </p>
+        ) : (
+          <p role="status">
+            {business.owner.account_created ? (
+              <>
+                Le enviamos un correo a <strong className="break-all">{business.owner.email}</strong> para que elija su contraseña. El enlace
+                vale una hora; si vence, puedes reenviarlo desde la ficha del negocio.
+              </>
+            ) : delivery === "credentials" ? (
+              <>
+                <strong className="break-all">{business.owner.email}</strong> ya tenía cuenta: entra con su contraseña de siempre. No
+                enviamos ningún correo.
+              </>
+            ) : (
+              <>
+                <strong className="break-all">{business.owner.email}</strong> ya tenía cuenta: la conserva tal como estaba, y le avisamos
+                por correo que ahora también administra este negocio.
+              </>
+            )}
+          </p>
+        )}
       </section>
+
+      {business.owner.temporary_password && (
+        <CredentialsCard email={business.owner.email} password={business.owner.temporary_password} name={ownerName} />
+      )}
 
       <section aria-labelledby="enlace" className="grid gap-3">
         <h2 id="enlace" className="font-display text-xl font-extrabold">
@@ -110,6 +127,8 @@ export function NewBusinessPage() {
     return (
       <Done
         business={created}
+        delivery={values.delivery}
+        ownerName={values.ownerFirstName.trim()}
         onAnother={() => {
           setCreated(null);
           setValues(emptyBusiness());
@@ -161,7 +180,7 @@ export function NewBusinessPage() {
         Negocios
       </Link>
       <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Nuevo negocio</h1>
-      <p className="text-muted">Crea el negocio, a su dueño y su suscripción de una vez. El dueño recibe un correo para elegir su contraseña.</p>
+      <p className="text-muted">Crea el negocio, a su dueño y su suscripción de una vez. Tú decides cómo recibe su acceso el dueño: por correo o con una contraseña temporal que le envías tú.</p>
 
       <form ref={formRef} onSubmit={submit} noValidate className="grid gap-8">
         <section aria-labelledby="negocio" className="grid gap-4">
@@ -204,6 +223,7 @@ export function NewBusinessPage() {
             <Field label="Nombre del dueño" autoComplete="off" value={values.ownerFirstName} error={errors.ownerFirstName} onChange={(event) => set({ ownerFirstName: event.target.value })} />
             <Field label="Apellido del dueño" autoComplete="off" value={values.ownerLastName} error={errors.ownerLastName} onChange={(event) => set({ ownerLastName: event.target.value })} />
           </div>
+          <DeliveryChoice value={values.delivery} onChange={(delivery) => set({ delivery })} />
         </section>
 
         <section aria-labelledby="suscripcion" className="grid gap-4">

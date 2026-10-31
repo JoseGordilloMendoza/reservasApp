@@ -120,11 +120,21 @@ export interface Member {
   created_at: string;
 }
 
+/** How a new account gets in: an email to choose a password, or a temporary one the team hands over. */
+export type Delivery = "email" | "credentials";
+
 export interface NewMember {
   email: string;
   first_name?: string;
   last_name?: string;
   role: "owner" | "staff";
+  delivery?: Delivery;
+}
+
+export interface AddedMember extends Member {
+  account_created: boolean;
+  /** Only when a temporary password was asked for and the account is new. Shown once. */
+  temporary_password: string | null;
 }
 
 export interface ActivityEntry {
@@ -149,10 +159,11 @@ export interface NewPlatformBusiness {
   business_type: BusinessKind;
   owner: { email: string; first_name?: string; last_name?: string };
   subscription: { plan_name?: string; price: string; trial_days?: number; valid_until?: string };
+  delivery?: Delivery;
 }
 
 export interface CreatedBusiness extends PlatformBusiness {
-  owner: { email: string; account_created: boolean };
+  owner: { email: string; account_created: boolean; temporary_password: string | null };
 }
 
 export interface SupportSession {

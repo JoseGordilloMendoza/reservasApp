@@ -58,6 +58,8 @@ export function describeActivity(entry: ActivityEntry): string {
     }
     case "user.removed":
       return `Quitó a ${text(d.email)} del negocio`;
+    case "user.password_issued":
+      return `Dio una contraseña temporal a ${text(d.email)}`;
     case "user.link_sent":
       return `Reenvió el acceso a ${text(d.email)}`;
     case "support.started":

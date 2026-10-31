@@ -1,4 +1,4 @@
-import type { BusinessKind, NewPlatformBusiness } from "./platformTypes";
+import type { BusinessKind, Delivery, NewPlatformBusiness } from "./platformTypes";
 
 // The form for opening a business: what is typed, what is wrong with it, and what the API gets.
 
@@ -9,6 +9,8 @@ export interface NewBusinessValues {
   ownerEmail: string;
   ownerFirstName: string;
   ownerLastName: string;
+  /** An email to choose a password, or a temporary password to hand over. */
+  delivery: Delivery;
   plan: string;
   /** In soles per month. */
   price: string;
@@ -29,6 +31,7 @@ export const emptyBusiness = (): NewBusinessValues => ({
   ownerEmail: "",
   ownerFirstName: "",
   ownerLastName: "",
+  delivery: "email",
   plan: "",
   price: "",
   term: "trial",
@@ -77,6 +80,7 @@ export function toNewBusiness(values: NewBusinessValues): NewPlatformBusiness {
     name: values.name.trim(),
     ...(slug ? { slug } : {}),
     business_type: values.kind,
+    delivery: values.delivery,
     owner: {
       email: values.ownerEmail.trim(),
       ...(firstName ? { first_name: firstName } : {}),

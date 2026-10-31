@@ -87,6 +87,10 @@ export function useRemoveMember(slug: string) {
   return useMutation({ mutationFn: (id: number) => platformApi.removeMember(slug, id), onSuccess: refresh });
 }
 
+export function useTemporaryPassword(slug: string) {
+  return useMutation({ mutationFn: (id: number) => platformApi.temporaryPassword(slug, id) });
+}
+
 export function useSendAccessLink(slug: string) {
   return useMutation({ mutationFn: (id: number) => platformApi.sendAccessLink(slug, id) });
 }

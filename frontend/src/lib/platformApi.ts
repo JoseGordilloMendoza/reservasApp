@@ -3,6 +3,7 @@ import type {
   ActivityEntry,
   ActivityFilters,
   BusinessFilters,
+  AddedMember,
   CreatedBusiness,
   Dashboard,
   Member,
@@ -58,12 +59,15 @@ export const platformApi = {
   members: (slug: string) => authed<Member[]>(`${base(slug)}/users/`),
 
   addMember: (slug: string, member: NewMember) =>
-    authed<Member & { account_created: boolean }>(`${base(slug)}/users/`, json("POST", member)),
+    authed<AddedMember>(`${base(slug)}/users/`, json("POST", member)),
 
   changeRole: (slug: string, id: number, role: Member["role"]) =>
     authed<Member>(`${base(slug)}/users/${id}/`, json("PATCH", { role })),
 
   removeMember: (slug: string, id: number) => authed<null>(`${base(slug)}/users/${id}/`, json("DELETE")),
+
+  temporaryPassword: (slug: string, id: number) =>
+    authed<{ temporary_password: string }>(`${base(slug)}/users/${id}/temporary-password/`, json("POST")),
 
   sendAccessLink: (slug: string, id: number) =>
     authed<{ detail: string }>(`${base(slug)}/users/${id}/send-link/`, json("POST")),
