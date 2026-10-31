@@ -7,6 +7,7 @@ import { registerSW } from "virtual:pwa-register";
 
 import { App } from "./App";
 import { AuthProvider } from "./lib/auth";
+import { keepCacheSaved, restoreCache } from "./lib/cache";
 import { retryUnlessClientError } from "./lib/queries";
 import "./styles/index.css";
 
@@ -16,6 +17,11 @@ registerSW({ immediate: true });
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: retryUnlessClientError } },
 });
+
+// The home page and the business pages show the last answer at once while the server (which may be asleep)
+// is asked again; see lib/cache.ts for what is kept.
+restoreCache(queryClient);
+keepCacheSaved(queryClient);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
