@@ -153,6 +153,12 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **Buscar es opcional para el negocio y simple para el cliente.** Una caja que espera a que se deje de escribir (no pide en cada letra), pide 2 letras, y muestra nombre, tipo y dirección de cada resultado. Si no hay coincidencias lo dice, y debajo siempre queda el recordatorio de pedirle su link al negocio.
 - **El dueño decide** si aparece, con una casilla en "Mi página" que explica qué significa.
 
+### El camino de los negocios
+
+- **Un bloque azul al final del inicio** con la pelota recortada, el titular "¿Tienes un negocio con citas?" y dos botones: pedir su cuenta (rojo, con el ícono de WhatsApp o de correo) y "Ya tengo cuenta" (blanco). Si no hay contacto configurado, queda solo "Entrar a mi panel".
+- **Un enlace discreto en el pie** ("Soy un negocio"), para quien busca dónde entrar y no llegó al final de la página.
+- El contacto se configura al compilar el frontend: `VITE_CONTACT_WHATSAPP` (con código de país, por ejemplo `51987654321`) o `VITE_CONTACT_EMAIL`.
+
 ### La composición del inicio
 
 - **Formas de cartel, no adornos.** Una pelota roja recortada por la esquina del bloque azul y una hoja mantequilla abajo, en tres colores planos con borde. Las costuras de la pelota van en rojo oscuro para no cortar las letras que pasan por encima.

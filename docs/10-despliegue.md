@@ -166,6 +166,7 @@ Las demás variables ya están en el archivo: `DEBUG=0`, `SECRET_KEY` (Render la
    | Variable | Valor |
    |---|---|
    | `VITE_API_URL` | `https://<nombre>.onrender.com/api/v1` (la dirección del paso 3, **con** `/api/v1`) |
+   | `VITE_CONTACT_WHATSAPP` | Opcional: tu WhatsApp con código de país, sin `+` ni espacios (por ejemplo `51987654321`). Es a donde escribe quien quiere su negocio en Separa. Con `VITE_CONTACT_EMAIL` puedes poner un correo en su lugar. Sin ninguno, ese botón no aparece |
 
    No debería hacer falta `NODE_VERSION`: según la documentación, la imagen de construcción trae Node 22 (22.23.4) por defecto. Si la construcción fallara por la versión de Node, agrega `NODE_VERSION` con valor `22`.
 6. Pulsa **Save and Deploy**. Cuando termine tendrás una dirección **`https://<proyecto>.pages.dev`**. Anótala.
