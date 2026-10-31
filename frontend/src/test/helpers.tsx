@@ -47,6 +47,9 @@ export function slotAt(index: number, hour: number): Slot {
 export function bookingDetails(overrides: Partial<BookingDetails> = {}): BookingDetails {
   const slot = slotAt(1, 17);
   return {
+    code: "K7M42X",
+    payment_status: "unpaid",
+    payment_instructions: "",
     status: "pending",
     starts_at: slot.starts_at,
     ends_at: slot.ends_at,
@@ -130,6 +133,7 @@ export const PANEL_BUSINESS: PanelBusiness = {
   timezone: TZ,
   status: "active",
   listed: false,
+  payment_instructions: "",
   subscription: null,
   support: null,
   settings: {},
@@ -144,7 +148,14 @@ export function panelBooking(overrides: Partial<PanelBooking> = {}): PanelBookin
   const id = overrides.id ?? nextId++;
   return {
     id,
+    code: "K7M42X",
     status: "pending",
+    payment_status: "unpaid",
+    amount_paid: "0.00",
+    payment_method: "",
+    balance: "60.00",
+    arrived_at: null,
+    internal_note: "",
     starts_at: slot.starts_at,
     ends_at: slot.ends_at,
     expires_at: null,

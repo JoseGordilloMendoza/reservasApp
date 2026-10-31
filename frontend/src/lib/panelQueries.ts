@@ -6,6 +6,7 @@ import { panelApi } from "./panelApi";
 import type {
   BookingAction,
   BookingFilters,
+  BookingRecordChanges,
   BusinessChanges,
   CustomerDetail,
   CustomerFilters,
@@ -79,6 +80,20 @@ export function useBookingDetail(id: number) {
     queryKey: ["panel", scope, "booking", id],
     queryFn: () => panelApi.booking(id),
     enabled: scope !== "" && Number.isFinite(id),
+  });
+}
+
+/** Payment, arrival or a private note; the booking and every list are refreshed afterwards. */
+export function useRecordBooking(id: number) {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (changes: BookingRecordChanges) => panelApi.record(id, changes),
+    onSuccess: (updated: PanelBookingDetail) => {
+      queryClient.setQueryData(["panel", scope, "booking", updated.id], updated);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["panel", scope, "bookings"] }),
   });
 }
 

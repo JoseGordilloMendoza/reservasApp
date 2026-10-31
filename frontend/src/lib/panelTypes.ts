@@ -42,6 +42,8 @@ export interface PanelBusiness {
   accent: Accent;
   /** Whether the home page search may show this business. */
   listed: boolean;
+  /** How a customer pays this business; it goes on their booking. */
+  payment_instructions: string;
   business_type: string;
   timezone: string;
   status: "active" | "suspended";
@@ -88,9 +90,21 @@ export interface CustomerFilters {
   blocked?: boolean;
 }
 
+export type PaymentStatus = "unpaid" | "deposit" | "paid";
+export type PaymentMethod = "yape" | "plin" | "transfer" | "cash" | "other";
+
 export interface PanelBooking {
   id: number;
+  /** What the customer shows at the business: six characters, ABC-DEF when written. */
+  code: string;
   status: BookingStatus;
+  payment_status: PaymentStatus;
+  amount_paid: string;
+  payment_method: PaymentMethod | "";
+  /** What is still owed; null when the service has no price. */
+  balance: string | null;
+  arrived_at: string | null;
+  internal_note: string;
   starts_at: string;
   ends_at: string;
   expires_at: string | null;
@@ -171,6 +185,7 @@ export interface BusinessChanges {
   whatsapp?: string;
   accent?: Accent;
   listed?: boolean;
+  payment_instructions?: string;
   /** Only the options to change; the server keeps the rest. */
   settings?: Record<string, number | string>;
 }
@@ -201,7 +216,18 @@ export interface Page<T> {
 
 export type BookingAction = "confirm" | "reject" | "cancel" | "complete" | "no-show";
 
+/** What the owner writes down about a booking; only what is sent changes. */
+export interface BookingRecordChanges {
+  payment_status?: PaymentStatus;
+  amount_paid?: string;
+  payment_method?: PaymentMethod | "";
+  internal_note?: string;
+  arrived?: boolean;
+}
+
 export interface BookingFilters {
+  /** Only what still stands or was attended and is not fully paid. */
+  balance?: boolean;
   status?: BookingStatus[];
   dateFrom?: string;
   dateTo?: string;

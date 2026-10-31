@@ -63,6 +63,10 @@ export interface Availability {
 }
 
 export interface BookingDetails {
+  /** What to show at the business: six characters, ABC-DEF when written. */
+  code: string;
+  payment_status: "unpaid" | "deposit" | "paid";
+  payment_instructions: string;
   status: BookingStatus;
   starts_at: string;
   ends_at: string;

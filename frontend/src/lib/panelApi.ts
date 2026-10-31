@@ -2,6 +2,7 @@ import { ApiError, request } from "./http";
 import type {
   BookingAction,
   BookingFilters,
+  BookingRecordChanges,
   BusinessChanges,
   CustomerDetail,
   CustomerFilters,
@@ -62,6 +63,7 @@ function bookingQuery(filters: BookingFilters, page: number): string {
   if (filters.dateFrom) params.set("date_from", filters.dateFrom);
   if (filters.dateTo) params.set("date_to", filters.dateTo);
   if (filters.q?.trim()) params.set("q", filters.q.trim());
+  if (filters.balance) params.set("balance", "true");
   if (filters.ordering) params.set("ordering", filters.ordering);
   if (page > 1) params.set("page", String(page));
   const query = params.toString();
@@ -106,6 +108,9 @@ export const panelApi = {
     authed<Page<PanelBooking>>(`/panel/bookings/${bookingQuery(filters, page)}`),
 
   booking: (id: number) => authed<PanelBookingDetail>(`/panel/bookings/${id}/`),
+
+  record: (id: number, changes: BookingRecordChanges) =>
+    authed<PanelBookingDetail>(`/panel/bookings/${id}/`, { method: "PATCH", body: JSON.stringify(changes) }),
 
   act: (id: number, action: BookingAction) =>
     authed<PanelBookingDetail>(`/panel/bookings/${id}/${action}/`, { method: "POST" }),
