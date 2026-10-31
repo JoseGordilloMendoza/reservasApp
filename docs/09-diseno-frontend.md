@@ -157,7 +157,7 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 
 - **Un bloque azul al final del inicio** con la pelota recortada, el titular "¿Tienes un negocio con citas?" y sus botones: "Escríbenos por WhatsApp" (rojo), "Escríbenos por correo" (blanco) y "Ya tengo cuenta" (blanco). Cada contacto aparece solo si está configurado; sin ninguno, queda solo "Entrar a mi panel".
 - **Un enlace discreto en el pie** ("Soy un negocio"), para quien busca dónde entrar y no llegó al final de la página.
-- El contacto se configura al compilar el frontend: `VITE_CONTACT_WHATSAPP` (un celular peruano de 9 dígitos se completa con el 51) y/o `VITE_CONTACT_EMAIL`. Ambos mensajes salen con el pedido ya escrito.
+- El contacto se configura al compilar el frontend: `VITE_CONTACT_WHATSAPP` (un celular peruano de 9 dígitos se completa con el 51) y/o `VITE_CONTACT_EMAIL`. Ambos mensajes salen con el pedido ya escrito. El correo es solo un borrador que la persona envía: no usa claves ni permisos. En el celular abre su app de correo; en una computadora, que casi nunca tiene una configurada, abre Gmail en la web, y debajo se muestra la dirección por si usa otro correo.
 
 ### La composición del inicio
 
