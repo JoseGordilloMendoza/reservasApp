@@ -124,9 +124,9 @@ export function Ticket({ booking, timeZone }: Props) {
       <div className="grid gap-4 p-5 pt-6">
         <div className="flex items-center justify-between gap-4">
           <Barcode code={booking.code} />
-          <p className="text-right">
+          <p className="shrink-0 text-right">
             <span className="block text-xs font-bold uppercase tracking-wide text-muted">Tu código</span>
-            <span className="font-mono text-2xl font-bold tracking-widest">{formatCode(booking.code)}</span>
+            <span className="whitespace-nowrap font-mono text-xl font-bold tracking-widest">{formatCode(booking.code)}</span>
           </p>
         </div>
         <p className="text-sm text-muted">Al llegar, muestra este código o di tu nombre. No reemplaza un comprobante de pago.</p>
