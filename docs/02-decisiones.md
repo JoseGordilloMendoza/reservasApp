@@ -88,6 +88,8 @@ Cada decisión indica su estado: **Tomada**, **Propuesta** (pendiente de confirm
 | D80 | El inicio de la aplicación ofrece un **buscador por nombre**, solo de los negocios que lo activan en sus ajustes (apagado por defecto), con un mínimo de 2 letras, hasta 8 resultados y límite de solicitudes. No hay lista completa | Tomada | Cierra el callejón de quien llega sin link sin volver la plataforma un marketplace ni exponer negocios que no lo pidieron. Matiza D2: el link propio sigue siendo la entrada principal |
 | D81 | El titular del inicio es genérico ("Separa tu hora. Sin llamadas.", con "Canchas, consultorios y más") | Tomada | La plataforma no es solo de canchas |
 | D82 | Despliegue: **Cloudflare Pages** (frontend), **Render de pago** (backend, para que no se duerma) y **Neon** (base de datos, con `btree_gist` confirmado en su documentación) | Tomada | Un cliente que abre el link desde WhatsApp no puede esperar un minuto a que despierte el servidor. Concreta D24. Los precios y límites se confirman en las páginas oficiales antes de contratar |
+| D83 | El correo sale por el puerto 2587 de Resend (STARTTLS), no por el 587 | Tomada | Render gratis bloquea los puertos 25, 465 y 587. Si 2587 tampoco sale desde Render, el plan B es enviar por la API HTTPS de Resend (puerto 443) |
+| D84 | La base de datos usa la cadena **directa** de Neon (sin pooler) y Django comprueba que cada conexión siga viva antes de reutilizarla | Tomada | Neon suspende la base tras 5 minutos de inactividad; el pooler (PgBouncer en modo transacción) no admite varias cosas de sesión y su propia documentación recomienda conexión directa para migraciones |
 
 ## Preguntas abiertas
 
