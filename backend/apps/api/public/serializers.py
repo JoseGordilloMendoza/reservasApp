@@ -109,6 +109,15 @@ class CreateBookingSerializer(serializers.Serializer):
     starts_at = serializers.DateTimeField(help_text="Start of a slot returned by availability.")
     customer = CustomerInputSerializer()
     accepted_terms = serializers.BooleanField()
+    google_credential = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        write_only=True,
+        help_text=(
+            "The ID token Google gave the customer, when they signed in with it. The server verifies it; "
+            "the booking is then made by a verified customer."
+        ),
+    )
 
     def validate_accepted_terms(self, value):
         if not value:

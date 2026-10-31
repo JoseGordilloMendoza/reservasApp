@@ -10,6 +10,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from apps.api.errors import error_response
+from apps.accounts.google import GoogleSignInError, GoogleEmailNotVerified, verify_google_credential
 from apps.availability.slots import get_available_slots
 from apps.billing.services import is_operational
 from apps.businesses.search import normalize_for_search
@@ -127,6 +128,16 @@ class CreateBookingView(PublicAPIView):
         service = get_object_or_404(
             Service, pk=data["service"], business=business, is_active=True
         )
+
+        identity = None
+        if data.get("google_credential"):
+            try:
+                identity = verify_google_credential(data["google_credential"])
+                if identity.get("email_verified") is not True:
+                    raise GoogleEmailNotVerified()
+            except GoogleSignInError as error:
+                return Response({"code": error.code, "detail": error.message}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             booking, token = services.create_booking(
                 business=business,
@@ -135,6 +146,7 @@ class CreateBookingView(PublicAPIView):
                 customer_name=data["customer"]["name"],
                 customer_phone=data["customer"]["phone"],
                 customer_email=data["customer"]["email"],
+                google_identity=identity,
             )
         except services.BookingError as error:
             return error_response(error)
