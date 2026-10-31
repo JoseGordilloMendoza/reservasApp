@@ -128,3 +128,41 @@ describe("finding a business by name", () => {
     expect(screen.queryByRole("link", { name: /Consultorio Lucía Quispe/ })).not.toBeInTheDocument();
   });
 });
+
+describe("the businesses shown on the home page", () => {
+  const ANDES = {
+    name: "Canchas Los Andes",
+    slug: "canchas-los-andes",
+    business_type: "court",
+    accent: "lime" as const,
+    address: "Av. Ejército 123, Cayma",
+    description: "Grass sintético y luces LED.",
+  };
+
+  it("shows each business as a card that leads to its page", async () => {
+    mockApi({ "GET /public/directory/": { status: 200, body: { results: [ANDES, { ...LUCIA, description: "" }] } } });
+    renderApp("/");
+
+    const card = await screen.findByRole("link", { name: /Canchas Los Andes/ });
+    expect(card).toHaveAttribute("href", "/canchas-los-andes");
+    expect(card).toHaveTextContent("Cancha deportiva");
+    expect(card).toHaveTextContent("Grass sintético y luces LED.");
+    expect(screen.getByRole("link", { name: /Consultorio Lucía Quispe/ })).toHaveAttribute("href", "/consultorio-lucia");
+  });
+
+  it("leaves the section out when no business has chosen to appear", async () => {
+    mockApi({ "GET /public/directory/": { status: 200, body: { results: [] } } });
+    renderApp("/");
+
+    await screen.findByRole("heading", { name: "Encuentra tu negocio" });
+    await waitFor(() => expect(screen.queryByRole("heading", { name: /Reserva en/ })).not.toBeInTheDocument());
+  });
+
+  it("still shows the rest of the page when the list cannot be loaded", async () => {
+    mockApi({ "GET /public/directory/": { status: 500, body: { detail: "Error" } } });
+    renderApp("/");
+
+    expect(await screen.findByRole("heading", { name: "Encuentra tu negocio" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /Reserva en/ })).not.toBeInTheDocument();
+  });
+});
