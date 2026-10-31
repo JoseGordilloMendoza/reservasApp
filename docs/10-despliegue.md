@@ -1,152 +1,288 @@
 # 10 - Despliegue de prueba (todo gratis)
 
-> Para probar el flujo completo en internet sin gastar. **No es para clientes reales**: el servidor gratuito se duerme y los correos solo llegan a una dirección. Las decisiones están en [D82](02-decisiones.md) y las razones en [07 - Arquitectura](07-arquitectura.md), sección 7.
+> Guía para montar el sistema en internet sin gastar y recorrer el flujo completo. **No es para clientes reales**: el servidor gratuito se duerme y los correos solo llegan a una dirección.
+>
+> Cada dato de esta guía se contrastó con la documentación oficial de cada servicio el **31 de octubre de 2026** (fuentes al final). Donde la documentación no responde, lo digo con la marca **(sin confirmar)** y explico cómo comprobarlo. Las decisiones están en [D82](02-decisiones.md).
 
-## Qué se monta
+## Resumen
 
-| Pieza | Servicio | Costo en la prueba |
-|---|---|---|
-| Base de datos | **Neon** (PostgreSQL) | Gratis |
-| API (Django) | **Render**, servicio web | Gratis |
-| Aplicación (React) | **Cloudflare Pages** | Gratis |
-| Correo | **Resend** (ya tienes la clave) | Gratis |
+| Orden | Qué haces | Dónde | Tiempo aprox. |
+|---|---|---|---|
+| 1 | Crear la clave de correo del servidor | Resend | 3 min |
+| 2 | Crear la base de datos | Neon | 10 min |
+| 3 | Publicar la API | Render | 15 min (la primera construcción tarda) |
+| 4 | Publicar la aplicación | Cloudflare Pages | 10 min |
+| 5 | Unir la API con la aplicación | Render | 5 min |
+| 6 | Recorrer el flujo | tu navegador | 30 min |
 
 ```
- Cliente / dueño / equipo ──► Cloudflare Pages (la aplicación)
+ Cliente / dueño / equipo ──► Cloudflare Pages (la aplicación, archivos estáticos)
                                       │  llama a
                                       ▼
-                              Render (la API) ──► Neon (la base de datos)
+                              Render (la API, Django)  ──► Neon (PostgreSQL, São Paulo)
                                       │
-                                      └──► Resend (correos)
+                                      └──► Resend (correos, puerto 2587)
 ```
 
-## Lo que debes esperar de la prueba
+## Lo que debes saber antes (y que cambió respecto a lo que pensaba)
 
-- **El primer clic tras 15 minutos sin visitas tarda cerca de un minuto** (Render gratis se duerme). Es lo que justifica pasar a un plan de pago para clientes reales. La aplicación mostrará "Cargando" y funcionará sola cuando despierte.
-- **Los correos solo llegan al correo con el que creaste tu cuenta de Resend**, porque aún no hay dominio. Para ver el flujo completo, usa ese mismo correo como dueño de prueba.
-- **La base de datos de ejemplo no existe aquí** (`seed_demo` solo corre en desarrollo). Los negocios se crean desde el panel del equipo, que además es la mejor prueba del alta.
-- **El acceso con Google probablemente no funcione todavía**: Google puede no aceptar una dirección `.pages.dev` como origen autorizado. Se prueba al final; si falla, se resuelve con el dominio propio.
+1. **Render gratis no puede enviar correo por los puertos 25, 465 ni 587** (su documentación lo dice: *"Free web services can't send outbound network traffic on ports 25, 465, or 587"*). Por eso la configuración usa el **puerto 2587** de Resend, que no está en esa lista. **(sin confirmar que funcione desde Render)**: la primera comprobación del paso 6 lo verifica. Si falla, hay un plan B (ver "Problemas comunes").
+2. **La región de Neon no se puede cambiar después** (*"You cannot change the region for an existing project"*). Elige **São Paulo** desde el principio.
+3. **El servidor de Render se duerme tras 15 minutos sin visitas y tarda cerca de un minuto en despertar** (*"This process takes about one minute"*). Además *"Render might restart a Free web service at any time"*.
+4. **La base de Neon también se duerme (a los 5 minutos)**, pero despierta en *"a few hundred milliseconds"*. Ya está contemplado en la configuración: se comprueba que cada conexión siga viva antes de reutilizarla.
+5. **Cloudflare ahora recomienda Workers para proyectos nuevos**, pero Pages sigue funcionando y documentado. Para esta prueba usamos Pages porque es lo más simple; abajo explico la diferencia.
+
+## Qué esperar de la prueba
+
+- El primer clic tras 15 minutos tarda cerca de un minuto. Es lo que justifica el plan de pago para clientes reales.
+- Los correos **solo llegan al correo con el que creaste tu cuenta de Resend**, porque aún no hay dominio. Usa ese mismo correo como dueño de prueba.
+- El servidor empieza **vacío**. `seed_demo` solo corre en desarrollo, así que los negocios se crean desde el panel del equipo (que además es la mejor prueba del alta).
+- El acceso con Google probablemente no funcione todavía (Google puede no aceptar una dirección `.pages.dev`). Se prueba al final.
+- La CPU del plan gratuito es muy pequeña (0.1 CPU y 512 MB), así que todo irá lento al principio.
 
 ## Antes de empezar
 
-1. Tener a mano **tu correo de Resend** y **la clave de API** (la que usamos en `.env`). Como la pegaste en un chat, genera una nueva en Resend para el servidor, y apunta cuál es el correo de tu cuenta.
-2. Haber subido el repositorio a GitHub (ya está en `JoseGordilloMendoza/reservasApp`).
-3. Elegir una **contraseña larga** para el primer miembro del equipo (12 caracteres o más, no solo números): será `PLATFORM_ADMIN_PASSWORD`.
+Ten a mano:
 
-## Paso 1: la base de datos en Neon
+- [ ] Una cuenta de **GitHub** con el repositorio (`JoseGordilloMendoza/reservasApp`, ya subido, rama `main`).
+- [ ] Cuentas en **Resend**, **Neon**, **Render** y **Cloudflare**.
+- [ ] El **correo con el que creaste tu cuenta de Resend** (importa mucho: es el único que recibirá correos).
+- [ ] Una **contraseña larga** para ti como equipo de la plataforma (12 caracteres o más, que no sea solo números ni una palabra común). Será `PLATFORM_ADMIN_PASSWORD`.
+- [ ] Un lugar seguro (gestor de contraseñas) donde ir guardando: la clave de Resend, la cadena de Neon y la dirección de Render. **No las pegues en chats ni las subas al repositorio.**
 
-1. Entra a [neon.com](https://neon.com) y crea un proyecto.
-2. Elige la **región más cercana a Perú** que ofrezca (probablemente São Paulo; no lo he verificado, mira las opciones). La latencia entre la API y la base importa más que el resto.
-3. Copia la **cadena de conexión** (`postgresql://usuario:clave@...`). Recomiendo la **directa** (la que no dice `-pooler` en el nombre del servidor), porque Django mantiene sus propias conexiones; es una recomendación mía, no verificada hoy en la documentación de Neon.
-4. Asegúrate de que termine en `?sslmode=require`. Si no la trae, agrégalo.
+---
 
-Guarda la cadena: la pedirá Render como `DATABASE_URL`.
+## Paso 1: la clave de correo en Resend
 
-> La primera vez que arranque la API se crea la extensión `btree_gist` y la restricción que impide reservas solapadas. Neon dice soportarla (documentación oficial), pero **es lo primero que hay que verificar de verdad**: si falla, el registro del despliegue lo dirá con claridad.
+La clave que usé en el desarrollo quedó en un chat. Crea **una nueva** para el servidor.
 
-## Paso 2: la API en Render
+1. En el panel de Resend, entra a **API keys** y pulsa **Create API Key**.
+2. **Nombre**: por ejemplo `separa-render` (hasta 50 caracteres).
+3. **Permission**: elige **Sending access** (solo enviar correos). La documentación permite además limitarla a un dominio; todavía no tienes uno.
+4. Crea la clave y **cópiala ahora**: *"you can only view the API Key once"*. Si la pierdes, creas otra.
 
-1. En [render.com](https://render.com): **New → Blueprint**, conecta tu cuenta de GitHub y elige el repositorio `reservasApp`.
-2. Render lee `render.yaml` y te pide los valores que no están escritos en el archivo:
+Esa clave será `EMAIL_HOST_PASSWORD` en Render. (Después puedes borrar la clave anterior desde la misma pantalla.)
 
-   | Variable | Qué poner |
-   |---|---|
-   | `DATABASE_URL` | La cadena de Neon del paso 1 |
-   | `PLATFORM_ADMIN_EMAIL` | Tu correo (será el miembro del equipo) |
-   | `PLATFORM_ADMIN_PASSWORD` | La contraseña larga que elegiste |
-   | `EMAIL_HOST_PASSWORD` | La clave de API de Resend |
-   | `CORS_ALLOWED_ORIGINS` | Por ahora cualquier valor temporal, como `https://ejemplo.pages.dev`; se corrige en el paso 4 |
-   | `FRONTEND_URL` | Lo mismo: temporal hasta el paso 4 |
-   | `GOOGLE_CLIENT_ID` | Déjalo vacío por ahora |
+> **(sin confirmar)** La documentación no dice si "Sending access" basta para SMTP, pero no hay razón para que no lo haga. Si el envío falla con un error de autenticación, vuelve a crear la clave con acceso completo.
 
-3. Pulsa **Apply**. Render construye la imagen y la inicia. El primer arranque tarda unos minutos.
-4. Cuando termine verás la dirección del servicio, algo como `https://separa-api-xxxx.onrender.com`. Ábrela con `/api/health/` al final: debe responder `{"status":"ok","database":"ok"}`.
+## Paso 2: la base de datos en Neon
 
-**Si algo falla**, el registro (pestaña *Logs* del servicio) lo dice. Lo más probable:
-- `SECRET_KEY is required...`: no debería pasar, Render la genera.
-- Error al conectar a la base: revisa `DATABASE_URL` y el `?sslmode=require`.
-- `PLATFORM_ADMIN_PASSWORD is not acceptable`: la contraseña es débil o corta.
-- Error al crear `btree_gist`: Neon no la permitió; avísame con el mensaje.
+1. Entra a la consola: **console.neon.tech**.
+2. Pulsa **New Project**.
+3. **Project name**: `separa` (hasta 64 caracteres).
+4. **Region**: **AWS South America (São Paulo) — `aws-sa-east-1`**. Es la más cercana a Perú de las disponibles. **No se puede cambiar después.**
+5. **Postgres version**: expande la sección *Postgres database* y elige la **17** (la misma que usamos en desarrollo). La documentación no dice cuál es la versión por defecto.
+6. Pulsa **Create project**. Neon crea una base llamada `neondb` y un rol `neondb_owner`.
 
-## Paso 3: la aplicación en Cloudflare Pages
+### Asegurar la extensión que impide los solapes
 
-1. En el panel de Cloudflare: **Workers & Pages → Create → Pages → Connect to Git**, y elige el repositorio.
-2. Configura la construcción:
+La primera migración de la API ejecuta `CREATE EXTENSION btree_gist` con el rol de la cadena de conexión. La documentación lista `btree_gist` como compatible (versión 1.7 en PostgreSQL 15 a 17), pero **no dice que el rol por defecto tenga permiso para crearla (sin confirmar)**. Lo más seguro es crearla tú antes:
+
+1. En Neon, abre el **SQL Editor**.
+2. Ejecuta: `CREATE EXTENSION IF NOT EXISTS btree_gist;`
+3. Debe responder sin error. Si ya existe, la migración de la API no necesitará ningún permiso.
+
+### La cadena de conexión
+
+1. Pulsa el botón **Connect** de la consola.
+2. Elige la rama (`main`), la base (`neondb`) y el rol (`neondb_owner`).
+3. **Desactiva el interruptor "Connection pooling"** (viene activado por defecto) para obtener la cadena **directa**, la que **no** lleva `-pooler` en el nombre del servidor.
+4. Copia la cadena **tal como viene** (la documentación dice que *"The connection string you copy from the Connect modal is your DATABASE_URL. Assign it as-is."*). Se parece a:
+
+   ```
+   postgresql://neondb_owner:LA_CLAVE@ep-algo-1234.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+   ```
+
+   Ya trae `sslmode=require` y `channel_binding=require`. No la modifiques.
+
+**Por qué la directa y no la del pooler:** la del pooler usa PgBouncer en modo transacción, que no admite varias cosas de sesión (`SET`, `LISTEN`, sentencias `PREPARE`...). La propia documentación de Neon recomienda la conexión directa para migraciones. Nuestra API abre pocas conexiones (un proceso con 4 hilos), así que no necesita el pooler. Esta es mi decisión, razonada con la documentación, pero la documentación **no menciona Django ni psycopg 3 (sin confirmar)**.
+
+Guarda la cadena: será `DATABASE_URL` en Render.
+
+---
+
+## Paso 3: la API en Render
+
+### 3.1 Conectar GitHub y crear el Blueprint
+
+1. Entra a **dashboard.render.com**.
+2. Pulsa **New → Blueprint**.
+3. Si es la primera vez, te pedirá **conectar tu cuenta de GitHub**; autoriza el acceso al repositorio `reservasApp` (sirve para públicos y privados).
+4. Pulsa **Connect** junto al repositorio. Render usa por defecto el `render.yaml` de la raíz, que ya está preparado.
+5. Ponle un nombre al Blueprint (por ejemplo `separa`) y elige la rama **`main`**.
+6. Revisa la lista de cambios: debe mostrar **un servicio web `separa-api`** en el plan gratuito.
+
+### 3.2 Los valores secretos
+
+Render te pide un valor por cada variable marcada `sync: false`. **Solo lo pregunta esta vez**: *"Render prompts you for these values only during the initial Blueprint creation"*. Después se cambian desde el servicio → **Environment**.
+
+| Variable | Qué poner |
+|---|---|
+| `DATABASE_URL` | La cadena **directa** de Neon (paso 2) |
+| `PLATFORM_ADMIN_EMAIL` | Tu correo de Resend (será tu usuario de equipo) |
+| `PLATFORM_ADMIN_PASSWORD` | La contraseña larga que elegiste |
+| `EMAIL_HOST_PASSWORD` | La clave de API de Resend del paso 1 |
+| `CORS_ALLOWED_ORIGINS` | Temporal: `https://ejemplo.pages.dev` (se corrige en el paso 5) |
+| `FRONTEND_URL` | Temporal: `https://ejemplo.pages.dev` (se corrige en el paso 5) |
+| `GOOGLE_CLIENT_ID` | Déjalo vacío por ahora |
+
+Las demás variables ya están en el archivo: `DEBUG=0`, `SECRET_KEY` (Render la **genera**, 256 bits), `NUM_PROXIES=1`, `WEB_CONCURRENCY=1`, `EMAIL_HOST=smtp.resend.com`, `EMAIL_PORT=2587`, `EMAIL_HOST_USER=resend` y `DEFAULT_FROM_EMAIL`.
+
+### 3.3 Desplegar y vigilar
+
+1. Pulsa **Deploy Blueprint**. Render construye la imagen Docker y la inicia.
+2. Abre el servicio `separa-api`. En la pestaña **Deploys** ves el avance y en **Logs** la salida (el registro se conserva 7 días en un plan Hobby).
+3. En el registro del arranque debes ver, en este orden:
+   - las migraciones (`Applying ... OK`),
+   - `tu@correo: created as a platform admin.`,
+   - `Starting gunicorn` y `Listening at: http://0.0.0.0:10000`.
+4. Render muestra la dirección pública del servicio, **`https://<nombre>.onrender.com`** (el panel la muestra junto al nombre; no sé si lleva un sufijo aleatorio). Anótala.
+5. Abre `https://<nombre>.onrender.com/api/health/`. Debe responder `{"status":"ok","database":"ok"}`.
+
+> La primera respuesta tras el despliegue puede tardar: el plan gratuito arranca despacio.
+
+---
+
+## Paso 4: la aplicación en Cloudflare Pages
+
+> **Nota sobre Pages y Workers.** La documentación de Cloudflare (agosto de 2026) abre diciendo: *"Workers supports most Pages use cases ... Start new projects with Workers."* Pages **no está retirado** y sigue documentado. Para la prueba usamos **Pages**, que es más simple y cuyo comportamiento para aplicaciones de una sola página está confirmado. Workers (con "static assets") es el camino que Cloudflare impulsa y tiene sus propias reglas, entre ellas que un dominio propio exige que sus servidores de nombres los gestione Cloudflare. Se decide más adelante, con el dominio.
+
+1. En el panel de Cloudflare: **Workers & Pages**.
+2. **Create application → Pages → Connect to Git**.
+3. Elige **GitHub**, autoriza y selecciona el repositorio. Pulsa **Install & Authorize** y luego **Begin setup**.
+4. En *Set up builds and deployments* completa:
 
    | Campo | Valor |
    |---|---|
-   | Root directory | `frontend` |
+   | Project name | `separa` (será parte de la dirección; si está tomado, usa otro) |
+   | Production branch | `main` |
+   | Framework preset | *React (Vite)* o ninguno |
    | Build command | `npm run build` |
    | Build output directory | `dist` |
+   | Root directory (advanced) → Path | `frontend` |
 
-3. En *Environment variables* agrega:
+5. En **Environment variables** agrega:
 
    | Variable | Valor |
    |---|---|
-   | `VITE_API_URL` | `https://separa-api-xxxx.onrender.com/api/v1` (la dirección del paso 2, con `/api/v1`) |
-   | `NODE_VERSION` | `22` |
+   | `VITE_API_URL` | `https://<nombre>.onrender.com/api/v1` (la dirección del paso 3, **con** `/api/v1`) |
 
-4. Guarda y despliega. Obtendrás una dirección como `https://separa-xxx.pages.dev`.
+   No debería hacer falta `NODE_VERSION`: según la documentación, la imagen de construcción trae Node 22 (22.23.4) por defecto. Si la construcción fallara por la versión de Node, agrega `NODE_VERSION` con valor `22`.
+6. Pulsa **Save and Deploy**. Cuando termine tendrás una dirección **`https://<proyecto>.pages.dev`**. Anótala.
 
-> Cloudflare Pages sirve `index.html` para cualquier ruta si el proyecto no tiene un `404.html` (así lo describe su documentación, pero **no lo he comprobado**). Si al abrir `…/panel/entrar` directamente ves un error 404, es lo primero que hay que revisar.
+**Datos de la documentación que conviene saber:**
+- *"If you deploy using the Git integration, you cannot switch to Direct Upload later."*
+- Sin un `404.html` en el proyecto, Pages *"assumes that you are deploying a single-page application"* y entrega `index.html` para cualquier ruta, así que no hace falta ninguna regla de redirección. **No agregues `/* /index.html 200` en `_redirects`**: sería contraproducente.
+- El archivo `_headers` (ya incluido en `frontend/public/`) usa el formato correcto y se copia al resultado de la construcción. Admite hasta 100 reglas y los comodines como `/assets/*`.
+- Plan gratuito: 500 construcciones al mes, de una en una, 20 minutos como máximo cada una; hasta 20 000 archivos de 25 MiB. Cada rama y cada solicitud de cambios en GitHub genera además una dirección de vista previa (que no funcionará con la API por el permiso de CORS; no importa).
+- **(sin confirmar)**: si Cloudflare pide tarjeta de crédito, y el ancho de banda incluido.
 
-## Paso 4: unir las dos partes
+---
 
-Vuelve a Render → el servicio → **Environment** y cambia:
+## Paso 5: unir la API con la aplicación
 
-| Variable | Valor |
-|---|---|
-| `CORS_ALLOWED_ORIGINS` | La dirección de Cloudflare, sin barra final: `https://separa-xxx.pages.dev` |
-| `FRONTEND_URL` | La misma dirección |
+Hay que decirle a la API cuál es la dirección de la aplicación, o el navegador bloqueará las llamadas (CORS) y los enlaces de los correos apuntarán mal.
 
-Guarda: Render reinicia el servicio. Sin esto el navegador bloquea las llamadas a la API y los enlaces de los correos apuntarían mal.
+1. En Render, abre el servicio `separa-api` → **Environment**.
+2. Cambia estas dos variables a la dirección de Cloudflare, **sin barra final**:
 
-## Paso 5: probar el flujo completo
+   | Variable | Valor |
+   |---|---|
+   | `CORS_ALLOWED_ORIGINS` | `https://<proyecto>.pages.dev` |
+   | `FRONTEND_URL` | `https://<proyecto>.pages.dev` |
 
-Marca cada punto; lo que falle me lo cuentas con el mensaje que veas.
+3. Al guardar, elige **Save and deploy** (o *Save, rebuild, and deploy*). **No uses "Save only"**: no se aplicaría hasta el siguiente despliegue, y un simple *Restart service* **no** incorpora los cambios de variables.
 
-**Como equipo de la plataforma**
-- [ ] Abrir `https://separa-xxx.pages.dev/panel/entrar` y entrar con `PLATFORM_ADMIN_EMAIL` y su contraseña → llega a **Plataforma**.
+---
+
+## Paso 6: recorrer el flujo
+
+### 6.0 Las tres comprobaciones rápidas (hazlas primero)
+
+1. [ ] `https://<nombre>.onrender.com/api/health/` responde `ok` (ya lo viste).
+2. [ ] `https://<proyecto>.pages.dev/` abre el inicio. Luego abre **directamente** `https://<proyecto>.pages.dev/panel/entrar` (escribiendo la dirección, no navegando): debe mostrar la pantalla de entrada. Si da 404, mira "Problemas comunes".
+3. [ ] **Correo**: en la pantalla de entrada pulsa **¿Olvidaste tu contraseña?**, escribe el correo de tu cuenta de Resend y envía. Luego, en Render → **Logs**, busca la línea:
+   - `email event=password_reset sent=1 of=1` → el correo salió bien. Revisa tu bandeja (y el spam).
+   - `email failed event=password_reset` seguido de un error → el correo no salió; mira "Problemas comunes".
+
+### 6.1 Como equipo de la plataforma
+
+- [ ] Entrar con `PLATFORM_ADMIN_EMAIL` y su contraseña en `/panel/entrar` → llegas a **Plataforma**.
 - [ ] **Nuevo negocio**: crear uno con *tu correo de Resend* como dueño, tipo cancha, 30 días de prueba.
-- [ ] Llega un **correo de bienvenida** a ese correo, con el enlace para elegir contraseña.
+- [ ] Llega el **correo de bienvenida** con el enlace para elegir contraseña (vale una hora).
 
-**Como dueño del negocio**
-- [ ] Elegir la contraseña con el enlace del correo y entrar al panel. (Mismo correo que el equipo: pueden ser la misma persona si usas dos navegadores o pestañas privadas.)
-- [ ] En **Ajustes → Espacios y horarios**: crear una cancha y su horario semanal.
-- [ ] En **Ajustes → Servicios**: crear un servicio con duración y precio.
-- [ ] En **Ajustes → Mi página**: activar "Aparecer en el buscador" y guardar.
+### 6.2 Como dueño del negocio
 
-**Como cliente**
-- [ ] En el inicio (`/`), **buscar el negocio por nombre** y entrar a su página.
-- [ ] Reservar un horario con un nombre y un celular (y tu correo, para recibir el aviso).
-- [ ] Llega el **correo de recibo** con el enlace del boleto, y el panel del dueño muestra la reserva **por confirmar**.
+> Si el dueño usa el mismo correo que el equipo, ya tendrás contraseña: el sistema avisa que ya tenías cuenta y no la cambia. Entra con la misma.
+
+- [ ] Entrar al panel del negocio.
+- [ ] **Ajustes → Espacios y horarios**: crear una cancha y su horario semanal.
+- [ ] **Ajustes → Servicios**: crear un servicio con duración y precio.
+- [ ] **Ajustes → Mi página**: activar **"Aparecer en el buscador"** y guardar.
+
+### 6.3 Como cliente (abre una ventana privada)
+
+- [ ] En `/` **buscar el negocio por nombre** y entrar a su página.
+- [ ] Reservar un horario con nombre, celular y tu correo.
+- [ ] **Mide cuánto tarda la reserva.** Si tarda 10 segundos o más, el correo está intentando salir por un puerto bloqueado (ver "Problemas comunes").
+- [ ] Llega el correo de recibo con el enlace del boleto, y el panel del dueño muestra la reserva **por confirmar**.
 - [ ] Confirmarla desde el panel y ver el boleto cambiar de estado.
 
-**Otras comprobaciones**
-- [ ] **Olvidé mi contraseña** desde la pantalla de entrada: llega el correo y el enlace funciona.
-- [ ] En **Plataforma → el negocio → Suscripción**: registrar un pago y ver la vigencia avanzar.
-- [ ] **Entrar como soporte** al panel del negocio y terminarlo; mirar **Actividad**.
-- [ ] Instalar la aplicación en el celular (menú del navegador → "Añadir a pantalla de inicio").
+### 6.4 Otras comprobaciones
+
+- [ ] **Plataforma → el negocio → Suscripción**: registrar un pago y ver la vigencia avanzar.
+- [ ] **Entrar como soporte** al negocio y terminarlo; ver **Actividad**.
+- [ ] Instalar la aplicación en el celular (menú del navegador → *Añadir a pantalla de inicio*).
 - [ ] Dejar la API 20 minutos sin visitas y medir cuánto tarda en abrir.
+
+---
+
+## Problemas comunes
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| El registro de Render dice error al conectar a la base | `DATABASE_URL` mal copiada, o se usó la del pooler | Copia de nuevo la cadena **directa** (interruptor de pooling apagado) y vuelve a desplegar |
+| Error al crear `btree_gist` en la migración | El rol de Neon no tiene permiso | En Neon → SQL Editor: `CREATE EXTENSION IF NOT EXISTS btree_gist;` y redespliega |
+| `PLATFORM_ADMIN_PASSWORD is not acceptable` | Contraseña corta o común | Elige otra más larga en *Environment* y redespliega |
+| `/api/health/` responde 400 "DisallowedHost" | La dirección no está entre los hosts permitidos | Render agrega su propia dirección sola. Si usas un dominio propio, ponlo en `ALLOWED_HOSTS` |
+| El navegador muestra errores de CORS | `CORS_ALLOWED_ORIGINS` no coincide exactamente con la dirección de Cloudflare | Debe ser idéntica, con `https://` y **sin barra final**; guarda con *Save and deploy* |
+| Los enlaces de los correos van a `localhost:5173` | `FRONTEND_URL` sin cambiar | Cámbiala (paso 5) |
+| Abrir `…/panel/entrar` directamente da 404 | Cloudflare no está sirviendo `index.html` para esa ruta | Revisa que el proyecto no tenga un `404.html`; avísame y lo vemos |
+| La API tarda un minuto en responder | Render gratis despierta tras 15 minutos | Es lo esperado; con el plan de pago desaparece |
+| `email failed ...` con *timed out* o *Network is unreachable* | El puerto 2587 también está bloqueado desde Render gratis | **Plan B**: cambiar el envío a la API HTTPS de Resend (puerto 443, que no se bloquea). Pídemelo y lo implemento |
+| Error de autenticación al enviar | La clave de Resend es la equivocada o no basta "Sending access" | Crea otra con acceso completo y actualiza `EMAIL_HOST_PASSWORD` |
+| `Error 403 ... You can only send testing emails to your own email address` | Intentas enviar a un correo que no es el de tu cuenta de Resend | Es el límite sin dominio; usa tu correo de Resend |
+| Cada reserva tarda 10-20 segundos | El correo se envía dentro de la petición y su puerto está bloqueado (agota el tiempo) | Mismo plan B |
+
+**Dónde mirar siempre:** Render → servicio → **Logs** (salida de la aplicación) y **Deploys** (construcción). Los correos que fallan quedan registrados con `email failed event=...`.
 
 ## Después de la prueba
 
-- **Quitar la contraseña de las variables:** tras el primer ingreso, cambia tu contraseña con "Olvidé mi contraseña" y puedes borrar `PLATFORM_ADMIN_PASSWORD` de Render. El sistema nunca la vuelve a aplicar sobre una cuenta que ya existe.
-- **Revisar los registros:** el servicio imprime en la consola cada correo que falla y cada error.
-- **Cuando llegue el dominio:** verificarlo en Resend (SPF y DKIM), cambiar `DEFAULT_FROM_EMAIL`, agregar el dominio a `CORS_ALLOWED_ORIGINS`, `FRONTEND_URL` y `ALLOWED_HOSTS`, y autorizarlo en Google. Subir `HSTS_SECONDS` solo cuando todo funcione por HTTPS.
-- **Para clientes reales:** pasar el servicio de Render a un plan de pago para que no se duerma. El precio actual se confirma en su página.
+- **Quitar la contraseña de las variables:** tras entrar por primera vez, cambia tu contraseña con "Olvidé mi contraseña" y borra `PLATFORM_ADMIN_PASSWORD` de Render. El sistema nunca la aplica sobre una cuenta que ya existe.
+- **Cuando tengas dominio:**
+  1. En Resend → **Domains → Add Domain**. Recomiendan un **subdominio** (por ejemplo `avisos.tudominio.pe`) en vez del dominio raíz. Elige la región más cercana a tus destinatarios.
+  2. Copia al DNS los registros que te muestra (SPF y DKIM, de tipo TXT y MX o CNAME). **No actives el "proxy" (nube naranja de Cloudflare) en los CNAME de Resend.**
+  3. La verificación suele tardar unos 15 minutos y puede tardar hasta 72 horas. DMARC se agrega después de verificar.
+  4. Cambia `DEFAULT_FROM_EMAIL` a una dirección de ese dominio, y agrega el dominio a `CORS_ALLOWED_ORIGINS`, `FRONTEND_URL` y `ALLOWED_HOSTS`.
+  5. Autorízalo en Google Cloud Console y sube `HSTS_SECONDS` solo cuando todo funcione por HTTPS.
+- **Para clientes reales:** cambiar el servicio de Render a un plan de pago que no se duerma. **El precio actual no pude confirmarlo en la documentación** (la página de precios no mostró la tabla); mírala en render.com/pricing. Con un plan de pago desaparecen también el bloqueo de puertos de correo para el plan gratuito y el límite de 15 minutos.
+- **Límites que vigilar en el plan gratuito:**
+  - Render: 750 horas al mes por cuenta (un servicio encendido todo el mes cabe), y ancho de banda y minutos de construcción limitados (no pude ver la cantidad de ancho de banda).
+  - Neon: 1 GB por proyecto y 100 horas de cómputo por proyecto al mes. Si se agotan, el cómputo se suspende hasta el mes siguiente; *"None of these limits delete your data"*. La página de regiones menciona que los proyectos gratuitos inactivos 90 días o más pueden eliminarse, sin dejar claro si aplica a todos: **usa tu proyecto con cierta regularidad**.
+  - Resend: 100 correos al día y 3000 al mes, y 3 dominios. Los recibidos también cuentan. **(sin confirmar)** qué pasa en el plan gratuito al pasarse.
 
 ## Lo que se verificó antes de escribir esto
 
-En una imagen idéntica a la que construye Render, ejecutada contra una base de datos vacía con variables de producción:
+En una imagen idéntica a la que construye Render, ejecutada contra una base de datos vacía con variables de producción: arranca (migra, crea al administrador y levanta gunicorn); `check --deploy` de Django no da advertencias; el HTTP se manda a HTTPS salvo la revisión de salud; detrás del proxy responde con HSTS y cookies seguras; el admin carga con estilos; el administrador puede iniciar sesión; solo el frontend configurado puede llamar a la API; y la documentación interactiva queda oculta. Además, una cadena de conexión con el formato de Neon (con `sslmode` y `channel_binding`) es entendida por las librerías, y una prueba exige que el correo no use un puerto que Render bloquea.
 
-- Arranca: migra la base, crea al administrador y levanta gunicorn.
-- La revisión de seguridad de Django (`check --deploy`) no da ninguna advertencia.
-- Una visita en HTTP se manda a HTTPS, salvo la revisión de salud (que Render hace).
-- Detrás del proxy responde con normalidad, con HSTS y cookies seguras.
-- El admin de Django carga con sus estilos.
-- El administrador creado puede iniciar sesión.
-- Solo el frontend configurado puede llamar a la API desde un navegador.
-- La documentación de la API (`/api/docs/`) queda oculta.
+Lo que **no** se puede verificar sin tus cuentas: que Neon acepte `btree_gist` con el rol por defecto, que el puerto 2587 salga desde Render gratis, que Render construya desde el repositorio, que Cloudflare resuelva las rutas, y la entrega de los correos.
 
-Lo que **no** se pudo verificar sin las cuentas reales: que Neon acepte `btree_gist` en la práctica, que Render construya desde el repositorio, que Cloudflare resuelva las rutas, y los correos hacia afuera.
+## Fuentes consultadas (31 de octubre de 2026)
+
+**Render:** [Blueprints](https://render.com/docs/infrastructure-as-code) · [Especificación del Blueprint](https://render.com/docs/blueprint-spec) · [Servicios gratuitos](https://render.com/docs/free) · [Variables de entorno](https://render.com/docs/environment-variables) · [Cambiar variables](https://render.com/docs/configure-environment-variables) · [Despliegues](https://render.com/docs/deploys) · [Registros](https://render.com/docs/logging) · [Servicios web](https://render.com/docs/web-services) · [Planes de cómputo](https://render.com/docs/compute-plans)
+
+**Neon:** [Proyectos](https://neon.com/docs/manage/projects) · [Conectar desde cualquier aplicación](https://neon.com/docs/connect/connect-from-any-app) · [Pooling de conexiones](https://neon.com/docs/connect/connection-pooling) · [Regiones](https://neon.com/docs/introduction/regions) · [Escalar a cero](https://neon.com/docs/introduction/scale-to-zero) · [Planes](https://neon.com/docs/introduction/plans) · [Extensiones](https://neon.com/docs/extensions/pg-extensions) · [btree_gist](https://neon.com/docs/extensions/btree_gist) · [Roles](https://neon.com/docs/manage/roles)
+
+**Cloudflare:** [Pages: integración con Git](https://developers.cloudflare.com/pages/get-started/git-integration/) · [Configuración de construcción](https://developers.cloudflare.com/pages/configuration/build-configuration/) · [Imagen de construcción](https://developers.cloudflare.com/pages/configuration/build-image/) · [Cómo se sirven las páginas](https://developers.cloudflare.com/pages/configuration/serving-pages/) · [Encabezados](https://developers.cloudflare.com/pages/configuration/headers/) · [Límites](https://developers.cloudflare.com/pages/platform/limits/) · [Vistas previas](https://developers.cloudflare.com/pages/configuration/preview-deployments/) · [Workers: static assets](https://developers.cloudflare.com/workers/static-assets/) · [Migrar de Pages a Workers](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/)
+
+**Resend:** [Enviar por SMTP](https://resend.com/docs/send-with-smtp) · [Crear una clave de API](https://resend.com/docs/create-an-api-key) · [Claves de API](https://resend.com/docs/dashboard/api-keys/introduction) · [Agregar un dominio](https://resend.com/docs/add-a-domain) · [Error 403 de resend.dev](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain) · [Cuotas y límites](https://resend.com/docs/knowledge-base/account-quotas-and-limits)
