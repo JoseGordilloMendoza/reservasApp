@@ -83,6 +83,8 @@ class Booking(models.Model):
     amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     payment_method = models.CharField(max_length=10, choices=PaymentMethod.choices, blank=True)
     arrived_at = models.DateTimeField(null=True, blank=True)
+    # Whether the customer proved who they are with Google when they made this booking.
+    verified = models.BooleanField(default=False)
     internal_note = models.CharField(max_length=500, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
