@@ -37,7 +37,7 @@
 - El primer clic tras 15 minutos tarda cerca de un minuto. Es lo que justifica el plan de pago para clientes reales.
 - Los correos **solo llegan al correo con el que creaste tu cuenta de Resend**, porque aún no hay dominio. Usa ese mismo correo como dueño de prueba.
 - El servidor empieza **vacío**. `seed_demo` solo corre en desarrollo, así que los negocios se crean desde el panel del equipo (que además es la mejor prueba del alta).
-- El acceso con Google probablemente no funcione todavía (Google puede no aceptar una dirección `.pages.dev`). Se prueba al final.
+- El botón de Google **no aparece mientras no esté configurado** (ver "Entrar con Google" más abajo). Mientras tanto, el equipo puede dar acceso con una **contraseña temporal** que se muestra al crear la cuenta y se envía por WhatsApp.
 - La CPU del plan gratuito es muy pequeña (0.1 CPU y 512 MB), así que todo irá lento al principio.
 
 ## Antes de empezar
@@ -236,6 +236,21 @@ Hay que decirle a la API cuál es la dirección de la aplicación, o el navegado
 - [ ] Dejar la API 20 minutos sin visitas y medir cuánto tarda en abrir.
 
 ---
+
+## Entrar con Google
+
+Google **no crea cuentas**: solo deja entrar a quien ya existe con ese mismo correo (D36 y D94). Para tu socio: el equipo crea su cuenta con su correo de Gmail y él entra con el botón, sin contraseña.
+
+El botón no aparece mientras falte el identificador de cliente. Para activarlo:
+
+1. En Google Cloud Console crea un proyecto y abre **APIs y servicios, Credenciales**.
+2. Configura la **pantalla de consentimiento** (tipo externo). Para entrar solo con nombre y correo, la ayuda de Google dice que los usuarios no necesitan estar en la lista de prueba; si aun así ves un bloqueo, agrega el Gmail de tu socio como **usuario de prueba** (el modo de prueba admite hasta 100).
+3. En Credenciales crea un **ID de cliente de OAuth** de tipo **Aplicación web**.
+4. En **Orígenes de JavaScript autorizados** agrega solo el origen del frontend, sin ruta ni barra final: `https://separa.sjbalonzo201c.workers.dev`. Si falla con `origin_mismatch`, ese origen no está en la lista; los cambios pueden tardar unos minutos.
+5. Copia el ID y ponlo en **dos** sitios: en Render como `GOOGLE_CLIENT_ID` (el servidor comprueba que el token fue emitido para él) y en Cloudflare como variable de compilación `VITE_GOOGLE_CLIENT_ID` (se lee al compilar: hay que volver a desplegar el frontend).
+6. Entra a `/panel/entrar`: debe aparecer el botón.
+
+Fuentes: [obtener el ID de cliente](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid) y [la ayuda de la pantalla de consentimiento](https://support.google.com/cloud/answer/15549945). El detalle de los usuarios de prueba viene de un resumen de búsqueda de esa ayuda; confírmalo en la pantalla de consentimiento.
 
 ## Problemas comunes
 

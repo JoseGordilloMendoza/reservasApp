@@ -60,6 +60,15 @@
 - **RN-27.** El teléfono de un cliente identifica a la persona en ese negocio y no se puede cambiar; sí su nombre y correo, y se puede bloquear.
 - **RN-39.** Quien olvidó su contraseña pide un enlace por correo. La respuesta es la misma y llega igual de rápido exista o no la cuenta, para no revelar quién está registrado. El enlace sirve una sola vez y vale una hora; al usarlo se cierran las sesiones abiertas. Una cuenta que solo entra con Google también puede fijar una contraseña así. Los pedidos están limitados por dirección y por correo.
 
+## Contraseña temporal
+
+- **RN-60.** Al abrir un negocio o agregar a alguien, el equipo elige entre enviar un correo o entregar una contraseña temporal. Una persona que ya tenía cuenta conserva su contraseña con cualquiera de las dos, y con la temporal no se envía ningún correo.
+- **RN-61.** La contraseña temporal tiene 12 caracteres en tres grupos (por ejemplo `k7mq-4xpd-9tzw`) sin caracteres que se confundan, se muestra una sola vez y no se guarda ni se escribe en el registro de actividad.
+- **RN-62.** Mientras tenga una temporal, la cuenta solo puede ver quién es, cambiar su contraseña o salir; el panel y el área del equipo responden `password_change_required`.
+- **RN-63.** Cambiar la contraseña pide la actual, exige que sea distinta y que pase las reglas de contraseñas, y cierra todas las demás sesiones. Elegirla desde el enlace del correo también deja de pedir el cambio.
+- **RN-64.** El equipo puede dar una contraseña temporal nueva a cualquier persona de un negocio: se cierran sus sesiones y debe elegir otra al entrar. Queda en el registro de actividad quién la dio y a quién.
+- **RN-65.** Entrar con Google a una cuenta con temporal la deja sin contraseña y sin cambio pendiente.
+
 ## Avisos por correo
 
 - **RN-34.** Cuando un cliente reserva en línea, todos los usuarios activos del negocio reciben un correo con los datos de la reserva y, si está pendiente, hasta cuándo se mantiene el horario. Cuando el cliente cancela, también se les avisa.
