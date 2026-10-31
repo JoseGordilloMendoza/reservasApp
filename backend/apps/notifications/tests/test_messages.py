@@ -125,3 +125,28 @@ class TestToTheBusiness:
         _, body = messages.business_new_booking(booking)
 
         assert "Ana Pérez · +51987654321\n" in body
+
+
+class TestCodeAndHowToPay:
+    def test_the_code_is_in_every_message_that_describes_the_booking(self, booking):
+        pretty = f"{booking.code[:3]}-{booking.code[3:]}"
+
+        assert f"Código de reserva: {pretty}" in messages.customer_received(booking, "tok123")[1]
+        assert f"Código de reserva: {pretty}" in messages.business_new_booking(booking)[1]
+
+    def test_a_received_or_confirmed_booking_says_what_to_show_at_the_business(self, booking):
+        assert "muestra tu código o di tu nombre" in messages.customer_received(booking, "tok123")[1]
+        assert "muestra tu código o di tu nombre" in messages.customer_confirmed(booking)[1]
+
+    def test_how_to_pay_appears_only_when_the_business_wrote_it(self, booking):
+        assert "Cómo pagar" not in messages.customer_received(booking, "tok123")[1]
+
+        booking.business.payment_instructions = "Yape al 987 654 321 a nombre de Rosa"
+        body = messages.customer_confirmed(booking)[1]
+
+        assert "Cómo pagar:\nYape al 987 654 321 a nombre de Rosa" in body
+
+    def test_a_cancelled_booking_does_not_ask_for_payment(self, booking):
+        booking.business.payment_instructions = "Yape al 987 654 321"
+
+        assert "Cómo pagar" not in messages.customer_cancelled_by_business(booking)[1]

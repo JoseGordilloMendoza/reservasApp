@@ -7,6 +7,8 @@ from zoneinfo import ZoneInfo
 
 from django.conf import settings
 
+from apps.bookings.codes import pretty
+
 WEEKDAYS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
 MONTHS = [
     "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -41,6 +43,7 @@ def _details(booking):
     lines = [
         f"{booking.service.name} · {booking.resource.name}",
         when(booking.starts_at, business),
+        f"Código de reserva: {pretty(booking.code)}",
     ]
     if booking.price_snapshot is not None:
         lines.append(f"Precio de referencia: {_soles(booking.price_snapshot)}")
@@ -60,9 +63,13 @@ def _contact(business):
     return "\n".join(lines)
 
 
-def _customer_mail(booking, intro, *, token=None, closing=""):
+def _customer_mail(booking, intro, *, token=None, closing="", payment=False):
     business = booking.business
     parts = [f"Hola {booking.customer.name},", intro, _details(booking)]
+    if payment:
+        parts.append("Al llegar, muestra tu código o di tu nombre.")
+        if business.payment_instructions:
+            parts.append(f"Cómo pagar:\n{business.payment_instructions}")
     if token:
         parts.append(
             "Aquí puedes ver tu reserva o cancelarla (guarda este correo, el enlace no se envía otra vez):\n"
@@ -96,6 +103,7 @@ def customer_received(booking, token):
             "Recibimos tu reserva y está pendiente de confirmación.",
             token=token,
             closing=hold,
+            payment=True,
         ),
     )
 
@@ -108,7 +116,7 @@ def customer_confirmed(booking, token=None):
     business = booking.business
     return (
         f"Tu reserva en {business.name} está confirmada",
-        _customer_mail(booking, "Tu reserva está confirmada. Te esperamos.", token=token),
+        _customer_mail(booking, "Tu reserva está confirmada. Te esperamos.", token=token, payment=True),
     )
 
 
