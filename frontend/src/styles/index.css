@@ -39,31 +39,38 @@
  */
 :root,
 [data-accent="poppy"] {
+  /* The platform's own look is pure butter; the other accents leave a faint trace on the background. */
+  --tint-strength: 0%;
   --accent: #c9242f;
   --accent-deep: #a3171f;
   --on-accent: #fff3b0;
 }
 [data-accent="tangerine"] {
+  --tint-strength: 14%;
   --accent: #f2872c;
   --accent-deep: #a14a00;
   --on-accent: #1b2a78;
 }
 [data-accent="sunflower"] {
+  --tint-strength: 14%;
   --accent: #f5bd1f;
   --accent-deep: #7a5a00;
   --on-accent: #1b2a78;
 }
 [data-accent="mint"] {
+  --tint-strength: 14%;
   --accent: #2fb98f;
   --accent-deep: #0b6a50;
   --on-accent: #1b2a78;
 }
 [data-accent="sky"] {
+  --tint-strength: 14%;
   --accent: #5fb4f0;
   --accent-deep: #14649c;
   --on-accent: #1b2a78;
 }
 [data-accent="rose"] {
+  --tint-strength: 14%;
   --accent: #f27ba4;
   --accent-deep: #a8164a;
   --on-accent: #1b2a78;
@@ -71,7 +78,7 @@
 
 /* Light: the page takes the tint of the business accent. */
 :root {
-  --tint: color-mix(in srgb, var(--accent) 12%, #fff3b0);
+  --tint: color-mix(in srgb, var(--accent) var(--tint-strength), #fff3b0);
   --paper: var(--tint);
   --surface: #ffffff;
   --text: #1b2a78;
