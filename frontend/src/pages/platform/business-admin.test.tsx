@@ -178,7 +178,7 @@ describe("entering as support", () => {
   const SESSION = { id: 7, business: "canchas-los-andes", reason: "Ayuda con los horarios", started_at: "2030-01-01T00:00:00Z", expires_at: new Date(Date.now() + 7_200_000).toISOString() };
 
   const panelRoutes = {
-    "GET /panel/business/": { status: 200, body: { name: "Canchas Los Andes", slug: "canchas-los-andes", timezone: "America/Lima", accent: "lime", status: "active", subscription: null, support: null } },
+    "GET /panel/business/": { status: 200, body: { name: "Canchas Los Andes", slug: "canchas-los-andes", timezone: "America/Lima", accent: "poppy", status: "active", subscription: null, support: null } },
     "GET /panel/bookings/": { status: 200, body: page([]) },
   };
 

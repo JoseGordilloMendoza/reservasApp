@@ -1,6 +1,6 @@
 // Shapes of the public API (see /api/docs/ on the backend).
 
-export type Accent = "lime" | "tangerine" | "cobalt" | "rose" | "mint";
+export type Accent = "poppy" | "tangerine" | "sunflower" | "mint" | "sky" | "rose";
 
 export type BookingStatus =
   | "pending"

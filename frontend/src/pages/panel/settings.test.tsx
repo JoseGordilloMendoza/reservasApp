@@ -39,12 +39,12 @@ describe("the business page settings", () => {
 
     expect(await screen.findByLabelText("Nombre")).toHaveValue(PANEL_BUSINESS.name);
     expect(screen.getByLabelText("Descripción")).toHaveValue(PANEL_BUSINESS.description);
-    expect(screen.getByRole("radio", { name: "Lima" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Amapola" })).toBeChecked();
   });
 
   it("saves the changes and says so", async () => {
     const api = signedInRoutes({
-      "PATCH /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, name: "Canchas El Sol", accent: "cobalt" } },
+      "PATCH /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, name: "Canchas El Sol", accent: "sky" } },
     });
     const user = userEvent.setup();
     renderApp(PATH);
@@ -52,11 +52,11 @@ describe("the business page settings", () => {
     const name = await screen.findByLabelText("Nombre");
     await user.clear(name);
     await user.type(name, "  Canchas El Sol ");
-    await user.click(screen.getByRole("radio", { name: "Cobalto" }));
+    await user.click(screen.getByRole("radio", { name: "Cielo" }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     await waitFor(() => {
-      expect(api.calls.find((call) => call.method === "PATCH")?.body).toMatchObject({ name: "Canchas El Sol", accent: "cobalt" });
+      expect(api.calls.find((call) => call.method === "PATCH")?.body).toMatchObject({ name: "Canchas El Sol", accent: "sky" });
     });
     expect(await screen.findByRole("status")).toHaveTextContent("Cambios guardados");
   });

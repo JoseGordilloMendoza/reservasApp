@@ -15,7 +15,7 @@ const EMPTY = { status: 200, body: page([]) };
 
 /** What the panel asks for as soon as it opens. */
 const PANEL = {
-  "GET /panel/business/": { status: 200, body: { name: "Canchas Los Andes", slug: "canchas-los-andes", timezone: "America/Lima", accent: "lime", status: "active" } },
+  "GET /panel/business/": { status: 200, body: { name: "Canchas Los Andes", slug: "canchas-los-andes", timezone: "America/Lima", accent: "poppy", status: "active" } },
   "GET /panel/bookings/": EMPTY,
 };
 

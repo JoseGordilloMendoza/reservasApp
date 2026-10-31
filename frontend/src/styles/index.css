@@ -30,52 +30,48 @@
 }
 
 /*
- * The platform's own palette: ink blue, poppy red and butter yellow, flat like a screen print.
- * It is what the home page and the platform area use; a business that picks an accent below
- * keeps its own look on its page.
+ * The platform's own palette: ink blue, butter yellow, and one accent. Ink and butter are the same for
+ * every business, so everything stays readable and Separa stays recognizable; only the accent (about a
+ * tenth of the page) is the business's choice. The page background takes a faint trace of it.
+ *
+ * Each accent lists the text color that reads on it (at least 4.5:1) and a deeper shade for small text
+ * on the butter background (at least 4.5:1). Poppy is the platform's own and the default.
  */
 :root,
-[data-accent="separa"] {
-  --accent: #d92e3a;
-  --tint: #fff3b0;
-  --accent-deep: #a5192a;
+[data-accent="poppy"] {
+  --accent: #c9242f;
+  --accent-deep: #a3171f;
   --on-accent: #fff3b0;
 }
-
-/* Accent palettes. Text on the block is dark, except on cobalt. */
-[data-accent="lime"] {
-  --accent: #c8f23c;
-  --tint: #f2f9d0;
-  --accent-deep: #546f00;
-  --on-accent: #0e0f12;
-}
 [data-accent="tangerine"] {
-  --accent: #ff8a3d;
-  --tint: #ffe9d6;
-  --accent-deep: #a84300;
-  --on-accent: #0e0f12;
+  --accent: #f2872c;
+  --accent-deep: #a14a00;
+  --on-accent: #1b2a78;
 }
-[data-accent="cobalt"] {
-  --accent: #2f55f5;
-  --tint: #e3e9ff;
-  --accent-deep: #1630a8;
-  --on-accent: #ffffff;
-}
-[data-accent="rose"] {
-  --accent: #ff5c93;
-  --tint: #ffe3ec;
-  --accent-deep: #a8103f;
-  --on-accent: #0e0f12;
+[data-accent="sunflower"] {
+  --accent: #f5bd1f;
+  --accent-deep: #7a5a00;
+  --on-accent: #1b2a78;
 }
 [data-accent="mint"] {
-  --accent: #2ee6a6;
-  --tint: #d9f8ec;
-  --accent-deep: #0b6f4d;
-  --on-accent: #0e0f12;
+  --accent: #2fb98f;
+  --accent-deep: #0b6a50;
+  --on-accent: #1b2a78;
+}
+[data-accent="sky"] {
+  --accent: #5fb4f0;
+  --accent-deep: #14649c;
+  --on-accent: #1b2a78;
+}
+[data-accent="rose"] {
+  --accent: #f27ba4;
+  --accent-deep: #a8164a;
+  --on-accent: #1b2a78;
 }
 
 /* Light: the page takes the tint of the business accent. */
 :root {
+  --tint: color-mix(in srgb, var(--accent) 12%, #fff3b0);
   --paper: var(--tint);
   --surface: #ffffff;
   --text: #1b2a78;
@@ -98,7 +94,7 @@
   --line: #fff3b0;
   --shadow-color: var(--accent);
   --danger: #ff7a8a;
-  --accent-deep: #ff9aa2;
+  --accent-deep: color-mix(in srgb, var(--accent) 55%, #ffffff);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -109,7 +105,7 @@
     --line: #fff3b0;
     --shadow-color: var(--accent);
     --danger: #ff7a8a;
-    --accent-deep: #ff9aa2;
+    --accent-deep: color-mix(in srgb, var(--accent) 55%, #ffffff);
   }
 }
 

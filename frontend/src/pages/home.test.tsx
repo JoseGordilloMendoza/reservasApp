@@ -13,7 +13,7 @@ const LUCIA: SearchResult = {
   name: "Consultorio Lucía Quispe",
   slug: "consultorio-lucia",
   business_type: "psychologist",
-  accent: "cobalt",
+  accent: "sky",
   address: "Calle Mercaderes 100, Cercado",
 };
 
@@ -134,7 +134,7 @@ describe("the businesses shown on the home page", () => {
     name: "Canchas Los Andes",
     slug: "canchas-los-andes",
     business_type: "court",
-    accent: "lime" as const,
+    accent: "poppy" as const,
     address: "Av. Ejército 123, Cayma",
     description: "Grass sintético y luces LED.",
   };

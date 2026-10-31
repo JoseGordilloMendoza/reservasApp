@@ -158,13 +158,13 @@ describe("the panel home", () => {
 
   it("paints the panel with the business accent", async () => {
     signedInRoutes({
-      "GET /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, accent: "cobalt" } },
+      "GET /panel/business/": { status: 200, body: { ...PANEL_BUSINESS, accent: "sky" } },
       "GET /panel/bookings/": bookingsFor([], []),
     });
     renderApp("/panel");
 
     await screen.findByRole("heading", { level: 1, name: /Hola/ });
-    await waitFor(() => expect(document.documentElement.dataset.accent).toBe("cobalt"));
+    await waitFor(() => expect(document.documentElement.dataset.accent).toBe("sky"));
   });
 
   it("offers the main actions in the navigation", async () => {

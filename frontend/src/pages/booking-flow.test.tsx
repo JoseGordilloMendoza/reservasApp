@@ -81,7 +81,7 @@ describe("the business page", () => {
     renderApp(PATH);
 
     await screen.findByRole("heading", { level: 1 });
-    expect(document.documentElement.dataset.accent).toBe("lime");
+    expect(document.documentElement.dataset.accent).toBe("poppy");
   });
 
   it("says so when the business does not exist", async () => {

@@ -3,11 +3,12 @@ import { Check } from "@phosphor-icons/react";
 import type { Accent } from "../../lib/types";
 
 const ACCENTS: { id: Accent; label: string }[] = [
-  { id: "lime", label: "Lima" },
+  { id: "poppy", label: "Amapola" },
   { id: "tangerine", label: "Mandarina" },
-  { id: "cobalt", label: "Cobalto" },
-  { id: "rose", label: "Rosa" },
+  { id: "sunflower", label: "Girasol" },
   { id: "mint", label: "Menta" },
+  { id: "sky", label: "Cielo" },
+  { id: "rose", label: "Rosa" },
 ];
 
 interface Props {
@@ -16,12 +17,12 @@ interface Props {
 }
 
 /**
- * The five colors a business can wear. Each swatch carries its own data-accent, so it paints
+ * The six colors a business can wear. Each swatch carries its own data-accent, so it paints
  * itself with that color whatever the page is using.
  */
 export function AccentPicker({ value, onChange }: Props) {
   return (
-    <div role="radiogroup" aria-label="Color de tu página" className="grid grid-cols-5 gap-3">
+    <div role="radiogroup" aria-label="Color de tu página" className="grid grid-cols-3 gap-3 sm:grid-cols-6">
       {ACCENTS.map(({ id, label }) => {
         const active = id === value;
         return (

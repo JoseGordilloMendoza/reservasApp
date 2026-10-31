@@ -17,7 +17,7 @@ const created = (overrides: Partial<CreatedBusiness> = {}): CreatedBusiness => (
   subscription: null,
   suspended_reason: "",
   timezone: "America/Lima",
-  accent: "lime",
+  accent: "poppy",
   description: "",
   address: "",
   phone: "",
