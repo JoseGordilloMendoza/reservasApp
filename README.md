@@ -38,6 +38,7 @@ No necesita cuenta, instalar nada ni esperar respuesta. Entra por el enlace del 
 - Los horarios se calculan contra lo ya reservado, los bloqueos y las reglas del negocio. Un horario ocupado no aparece.
 - Si el negocio confirma a mano, la reserva queda **pendiente** y el horario se mantiene un tiempo limitado; si nadie responde, se libera sola.
 - La segunda visita es casi instantánea: el inicio y la página de cada negocio se muestran con lo último que se vio mientras se actualizan por detrás.
+- El día antes puede avisar que va con un solo toque desde su boleto.
 - El boleto se guarda en el celular (**Mis reservas**), se puede cancelar desde ahí dentro del plazo del negocio, y la aplicación se instala como cualquier otra.
 - Un correo opcional avisa cuando la reserva se confirma, se rechaza o vence.
 
@@ -61,6 +62,7 @@ El panel abre con lo urgente: lo que falta confirmar y lo de hoy.
 - **Verificar una reserva:** el cliente muestra su código (`K7M-42X`) o dice su nombre; el dueño lo busca y marca "Llegó".
 - **Cobros sin pasarela:** cada reserva registra qué se pagó, cómo y cuánto falta. La pestaña **Con saldo** lista lo pendiente. El texto de "Cómo te pagan" (por ejemplo, el número de Yape) sale en el correo y el boleto del cliente.
 - **Contra las bromas:** cada reserva pendiente muestra quién es (verificado con Google, cliente conocido, primera vez, con faltas) y el botón **"Era una broma"** la descarta y bloquea al cliente. Se puede elegir confirmar solas solo las reservas de clientes de confianza, y quien falta dos veces se bloquea solo.
+- **Menos plantones:** el día antes, el cliente toca "Confirmo que voy" en su boleto y el dueño ve quién avisó y a quién escribirle. Cada reserva trae mensajes de WhatsApp ya escritos (recordar, cómo pagar, no pude confirmar) que se abren con un toque.
 - **Reservas por teléfono:** se anotan en el momento y el cliente recibe su enlace.
 - **Clientes, bloqueos, horarios, servicios y reglas** (anticipación, cancelación, confirmación automática o manual) se configuran desde el celular.
 - **Su propio color.** Cada negocio elige el acento de su página; el azul y el amarillo de Separa se mantienen para que todo se lea bien.

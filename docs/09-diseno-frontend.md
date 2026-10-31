@@ -173,6 +173,12 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **"Era una broma"** es un botón al final de cada reserva pendiente, con confirmación porque bloquea al cliente. En las listas solo se marca a quien tiene faltas.
 - En Reglas hay tres maneras de confirmar: a mano, solo clientes de confianza, o todas solas; y los límites de quien aún no es de confianza.
 
+### Los dos lados de una reserva, sin agobiar
+
+- **En el boleto del cliente:** el día antes aparece un botón "Confirmo que voy". Al tocarlo, el boleto dice "Avisaste que vas. El negocio te espera a las 22:00" y el botón desaparece. No pide nada más.
+- **En el panel del dueño:** la reserva dice "Avisó que va (17:37)", o en rojo "Todavía no avisa que va". En las listas se marca "Confirmó que va" o "Sin confirmar" solo para lo que ocurre en las próximas 24 horas, para no llenar de avisos lo demás.
+- **"Escribirle por WhatsApp":** debajo de las acciones de la reserva, uno a tres botones según la situación (recordar, cómo pagar, no pude confirmar). Cada uno abre el chat con el mensaje listo, y una línea aclara que no se envía hasta que lo mande el dueño.
+
 ### Rapidez en los primeros segundos
 
 - **La segunda visita no espera al servidor.** La lista del inicio y la página de un negocio aparecen al instante con lo último que se vio, y se actualizan solas cuando llega la respuesta nueva (D96). Nada de esto se nota salvo que el servidor esté dormido.

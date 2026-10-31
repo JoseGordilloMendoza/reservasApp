@@ -76,6 +76,14 @@ Antes lo único que impedía una reserva falsa era que el dueño no la confirmar
 - **RN-76.** Un celular enlazado a una cuenta de Google solo es de confianza cuando quien reserva vuelve a entrar con esa misma cuenta. Quien escribe ese número sin Google, o con otra cuenta, queda como cliente nuevo y no hereda el buen nombre.
 - **RN-74.** Al reservar sin verificar se pasa un chequeo anti-robots. Quien entró con Google no lo ve. Si el servicio del chequeo falla, la reserva sigue sin él, para no cerrar el negocio.
 
+## Avisar que va
+
+- **RN-77.** El cliente puede avisar que va a ir desde su boleto, solo si la reserva está **confirmada** y faltan **24 horas o menos** para que empiece. Antes, o una vez empezada, la respuesta explica por qué no.
+- **RN-78.** Avisar es solo informar al negocio: no cambia el estado de la reserva, no la libera ni la asegura, no avisa por correo y no cambia lo que el cliente puede hacer (cancelar sigue sujeto a su plazo).
+- **RN-79.** Avisarlo otra vez no cambia nada y conserva la hora del primer aviso.
+- **RN-80.** El dueño ve en la reserva si el cliente avisó y a qué hora, y en la lista, para las reservas confirmadas de las próximas 24 horas, quién avisó y quién no. Esa marca desaparece cuando el cliente llega.
+- **RN-81.** Los mensajes de WhatsApp ya escritos dependen de la reserva: una pendiente puede recibir "no pude confirmar"; una pendiente o confirmada sin pagar puede recibir "cómo pagar" si el negocio escribió su texto de cobro; una confirmada que aún no llegó puede recibir un recordatorio, que pide confirmar solo si el cliente no lo ha hecho. A una reserva terminada o rechazada no se le ofrece ninguno.
+
 ## Contraseña temporal
 
 - **RN-60.** Al abrir un negocio o agregar a alguien, el equipo elige entre enviar un correo o entregar una contraseña temporal. Una persona que ya tenía cuenta conserva su contraseña con cualquiera de las dos, y con la temporal no se envía ningún correo.
