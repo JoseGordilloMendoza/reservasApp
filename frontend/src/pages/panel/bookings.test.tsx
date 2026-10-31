@@ -106,10 +106,44 @@ describe("the bookings page", () => {
     const user = userEvent.setup();
 
     await screen.findByText("No hay reservas próximas.");
-    await user.type(screen.getByRole("searchbox", { name: "Buscar por nombre o celular" }), "Rosa");
+    await user.type(screen.getByRole("searchbox", { name: "Buscar por nombre, celular o código" }), "Rosa");
 
     await waitFor(() => expect(searches).toContain("Rosa"));
     expect(await screen.findByText("Nada coincide con tu búsqueda.")).toBeInTheDocument();
+  });
+
+  it("lists what customers still owe, with the code and how much is missing", async () => {
+    const asked: (string | null)[] = [];
+    signedInRoutes({
+      "GET /panel/bookings/": (_init, query) => {
+        asked.push(query.get("balance"));
+        return {
+          status: 200,
+          body: query.get("balance")
+            ? page([panelBooking({ id: 3, status: "confirmed", payment_status: "deposit", amount_paid: "20.00", balance: "40.00" })])
+            : page([]),
+        };
+      },
+    });
+    renderApp("/panel/reservas");
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole("tab", { name: "Con saldo" }));
+
+    const row = await screen.findByRole("link", { name: /Ana Pérez/ });
+    expect(asked).toContain("true");
+    expect(row).toHaveTextContent("K7M-42X");
+    expect(row).toHaveTextContent("Falta S/ 40");
+  });
+
+  it("says when nobody owes anything", async () => {
+    signedInRoutes({ "GET /panel/bookings/": { status: 200, body: page([]) } });
+    renderApp("/panel/reservas");
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole("tab", { name: "Con saldo" }));
+
+    expect(await screen.findByText("Nadie debe nada. Todo al día.")).toBeInTheDocument();
   });
 
   it("loads more when there are more pages", async () => {

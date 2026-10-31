@@ -9,11 +9,12 @@ import { addDays, dateKey, relativeDay, todayKey } from "../../lib/dates";
 import type { BookingFilters, PanelBooking } from "../../lib/panelTypes";
 import { useBookingList, usePanelBusiness } from "../../lib/panelQueries";
 
-type TabId = "upcoming" | "pending" | "past" | "cancelled";
+type TabId = "upcoming" | "pending" | "balance" | "past" | "cancelled";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "upcoming", label: "Próximas" },
   { id: "pending", label: "Por confirmar" },
+  { id: "balance", label: "Con saldo" },
   { id: "past", label: "Pasadas" },
   { id: "cancelled", label: "Canceladas" },
 ];
@@ -24,6 +25,8 @@ function filtersFor(tab: TabId, q: string, today: string): BookingFilters {
       return { status: ["pending", "confirmed"], dateFrom: today, ordering: "starts_at", q };
     case "pending":
       return { status: ["pending"], ordering: "starts_at", q };
+    case "balance":
+      return { balance: true, ordering: "-starts_at", q };
     case "past":
       return { status: ["confirmed", "completed", "no_show"], dateTo: addDays(today, -1), ordering: "-starts_at", q };
     case "cancelled":
@@ -46,6 +49,7 @@ function byDay(bookings: PanelBooking[], timeZone: string) {
 const EMPTY: Record<TabId, string> = {
   upcoming: "No hay reservas próximas.",
   pending: "No hay reservas por confirmar.",
+  balance: "Nadie debe nada. Todo al día.",
   past: "Todavía no hay reservas pasadas.",
   cancelled: "No hay reservas canceladas.",
 };
@@ -86,13 +90,13 @@ export function BookingsPage() {
       </div>
 
       <label className="relative block">
-        <span className="sr-only">Buscar por nombre o celular</span>
+        <span className="sr-only">Buscar por nombre, celular o código</span>
         <MagnifyingGlass aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
         <input
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Buscar por nombre o celular"
+          placeholder="Nombre, celular o código"
           className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-surface pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:shadow-hard focus:outline-none"
         />
       </label>
