@@ -3,6 +3,8 @@ from django.contrib.postgres.fields import DateTimeRangeField, RangeBoundary, Ra
 from django.db import models
 from django.db.models import F, Func, Q
 
+from .codes import new_code
+
 
 class BookingStatus(models.TextChoices):
     PENDING = "pending", "Pending"
@@ -19,6 +21,20 @@ SLOT_RELEASING_STATUSES = (BookingStatus.CANCELLED, BookingStatus.EXPIRED)
 
 # Statuses of a booking the customer still intends to attend.
 ACTIVE_STATUSES = (BookingStatus.PENDING, BookingStatus.CONFIRMED)
+
+
+class PaymentStatus(models.TextChoices):
+    UNPAID = "unpaid", "Unpaid"
+    DEPOSIT = "deposit", "Deposit"
+    PAID = "paid", "Paid"
+
+
+class PaymentMethod(models.TextChoices):
+    YAPE = "yape", "Yape"
+    PLIN = "plin", "Plin"
+    TRANSFER = "transfer", "Transfer"
+    CASH = "cash", "Cash"
+    OTHER = "other", "Other"
 
 
 class TsTzRange(Func):
@@ -58,7 +74,25 @@ class Booking(models.Model):
     )
     series_id = models.UUIDField(null=True, blank=True)
     manage_token_hash = models.CharField(max_length=64, null=True, blank=True, unique=True)
+    # What the customer shows at the business, and what the owner writes down about it. The platform
+    # does not charge anything: these only record what happened between the two of them.
+    code = models.CharField(max_length=6, blank=True)
+    payment_status = models.CharField(
+        max_length=10, choices=PaymentStatus.choices, default=PaymentStatus.UNPAID
+    )
+    amount_paid = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    payment_method = models.CharField(max_length=10, choices=PaymentMethod.choices, blank=True)
+    arrived_at = models.DateTimeField(null=True, blank=True)
+    internal_note = models.CharField(max_length=500, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            taken = set(
+                Booking.objects.filter(business_id=self.business_id).values_list("code", flat=True)
+            )
+            self.code = new_code(taken)
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["starts_at"]
@@ -66,6 +100,7 @@ class Booking(models.Model):
             models.Index(fields=["business", "starts_at"], name="booking_business_start_idx"),
         ]
         constraints = [
+            models.UniqueConstraint(fields=["business", "code"], name="booking_code_per_business"),
             models.CheckConstraint(
                 condition=Q(ends_at__gt=F("starts_at")),
                 name="booking_ends_after_start",
