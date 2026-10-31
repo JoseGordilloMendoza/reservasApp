@@ -90,7 +90,7 @@
 }
 
 /*
- * Dark: near black, off-white lines, and the hard shadow takes the accent.
+ * Dark: deep blue, butter lines, and the hard shadow is a darker blue (a red one next to butter lines vibrates).
  * It follows the system, and <html data-theme="light|dark"> forces either one.
  */
 :root[data-theme="dark"] {
@@ -99,7 +99,7 @@
   --text: #fff3b0;
   --muted: #cfcba3;
   --line: #fff3b0;
-  --shadow-color: var(--accent);
+  --shadow-color: #040824;
   --danger: #ff7a8a;
   --accent-deep: color-mix(in srgb, var(--accent) 55%, #ffffff);
 }
@@ -110,7 +110,7 @@
     --text: #fff3b0;
     --muted: #cfcba3;
     --line: #fff3b0;
-    --shadow-color: var(--accent);
+    --shadow-color: #040824;
     --danger: #ff7a8a;
     --accent-deep: color-mix(in srgb, var(--accent) 55%, #ffffff);
   }
