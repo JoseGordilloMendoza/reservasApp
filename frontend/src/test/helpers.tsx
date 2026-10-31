@@ -164,6 +164,7 @@ export function panelBooking(overrides: Partial<PanelBooking> = {}): PanelBookin
     resource: { id: 1, name: "Cancha 1" },
     service: { id: 11, name: "Alquiler 1 hora" },
     customer: { id: 5, name: "Ana Pérez", phone: "+51987654321", email: "", is_blocked: false },
+    customer_trust: { level: "new", completed: 0, no_shows: 0 },
     price: "60.00",
     duration_minutes: 60,
     created_at: slotAt(0, 10).starts_at,

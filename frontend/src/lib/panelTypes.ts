@@ -92,6 +92,17 @@ export interface CustomerFilters {
   blocked?: boolean;
 }
 
+/** How far a business can trust who booked: proved who they are with Google, attended before, a stranger, or with faults. */
+export type TrustLevel = "verified" | "known" | "new" | "flagged";
+
+export interface CustomerTrust {
+  level: TrustLevel;
+  /** Bookings of this customer that were attended in this business. */
+  completed: number;
+  /** Bookings of this customer they did not show up for in this business. */
+  no_shows: number;
+}
+
 export type PaymentStatus = "unpaid" | "deposit" | "paid";
 export type PaymentMethod = "yape" | "plin" | "transfer" | "cash" | "other";
 
@@ -114,6 +125,7 @@ export interface PanelBooking {
   resource: { id: number; name: string };
   service: { id: number; name: string };
   customer: PanelCustomer;
+  customer_trust: CustomerTrust;
   price: string | null;
   duration_minutes: number;
   created_at: string;
@@ -216,7 +228,7 @@ export interface Page<T> {
   results: T[];
 }
 
-export type BookingAction = "confirm" | "reject" | "cancel" | "complete" | "no-show";
+export type BookingAction = "confirm" | "reject" | "dismiss" | "cancel" | "complete" | "no-show";
 
 /** What the owner writes down about a booking; only what is sent changes. */
 export interface BookingRecordChanges {

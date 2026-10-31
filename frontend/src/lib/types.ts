@@ -86,6 +86,8 @@ export interface CreatedBooking extends BookingDetails {
 }
 
 export interface NewBooking {
+  /** The ID token Google gave the customer who signed in with it; the server verifies it. */
+  google_credential?: string;
   service: number;
   starts_at: string;
   customer: { name: string; phone: string; email: string };
