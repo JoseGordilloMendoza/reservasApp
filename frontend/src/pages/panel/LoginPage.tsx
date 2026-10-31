@@ -46,9 +46,18 @@ export function LoginPage() {
 
   return (
     <div className="mx-auto grid min-h-dvh max-w-[28rem] content-center gap-6 px-4 py-10">
-      <header className="rounded-box border-[3px] border-line bg-accent p-6 pb-8 text-on-accent shadow-hard">
-        <p className="font-display text-lg font-extrabold uppercase tracking-tight">{BRAND}</p>
-        <h1 className="mt-3 font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
+      <header className="relative overflow-hidden rounded-box border-[3px] border-line bg-line p-6 pb-8 text-paper shadow-hard">
+        <svg
+          viewBox="0 0 200 200"
+          aria-hidden="true"
+          focusable="false"
+          className="pointer-events-none absolute -right-20 -top-20 w-44"
+        >
+          <circle cx="100" cy="100" r="92" fill="var(--accent)" stroke="var(--paper)" strokeWidth="4" />
+          <path d="M22 70 C62 104 138 104 178 66" fill="none" stroke="var(--paper)" strokeWidth="4" strokeLinecap="round" />
+        </svg>
+        <p className="relative font-display text-lg font-extrabold uppercase tracking-tight">{BRAND}</p>
+        <h1 className="relative mt-3 font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
           Entra a tu panel
         </h1>
       </header>

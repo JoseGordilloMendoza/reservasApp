@@ -65,7 +65,7 @@ export function GoogleSignInButton({ onCredential, onError, clientId = googleCli
         });
         google.renderButton(slot.current, {
           type: "standard",
-          theme: "filled_black",
+          theme: "outline",
           size: "large",
           text: "continue_with",
           shape: "rectangular",
