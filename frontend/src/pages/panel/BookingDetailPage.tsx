@@ -6,6 +6,7 @@ import { ConfirmAction } from "../../components/ConfirmAction";
 import { ContactLinks } from "../../components/ContactLinks";
 import { greeting } from "../../components/panel/BookingCards";
 import { PaymentCard } from "../../components/panel/PaymentCard";
+import { QuickMessages } from "../../components/panel/QuickMessages";
 import { TrustBadge } from "../../components/panel/TrustBadge";
 import { Skeleton } from "../../components/Skeleton";
 import { StatusBadge } from "../../components/StatusBadge";
@@ -13,6 +14,7 @@ import { ApiError } from "../../lib/http";
 import { formatLongDate, formatTime } from "../../lib/dates";
 import { formatDuration, formatPrice } from "../../lib/format";
 import { formatCode } from "../../lib/payment";
+import { attendanceIsDue } from "../../lib/quickMessages";
 import type { BookingEvent, PanelBookingDetail } from "../../lib/panelTypes";
 import { useBookingAction, useBookingDetail, usePanelBusiness } from "../../lib/panelQueries";
 import { STATUS_LABEL } from "../../lib/status";
@@ -188,10 +190,26 @@ export function BookingDetailPage() {
           )}
         </dl>
 
+        {booking.customer_confirmed_at ? (
+          <p role="status" className="flex items-center gap-2 font-semibold">
+            <Check aria-hidden="true" />
+            Avisó que va ({formatTime(booking.customer_confirmed_at, timeZone)})
+          </p>
+        ) : (
+          attendanceIsDue(booking) && <p className="font-semibold text-danger">Todavía no avisa que va</p>
+        )}
+
         <ContactLinks phone={booking.customer.phone} message={greeting(booking, business.data.name, timeZone)} />
       </article>
 
       <Actions key={booking.status} booking={booking} />
+
+      <QuickMessages
+        booking={booking}
+        business={business.data.name}
+        timeZone={timeZone}
+        paymentInstructions={business.data.payment_instructions}
+      />
 
       <PaymentCard key={`${booking.payment_status}-${booking.arrived_at}-${booking.internal_note}`} booking={booking} timeZone={timeZone} />
 

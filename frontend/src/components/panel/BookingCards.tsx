@@ -5,6 +5,7 @@ import { clockLabel, formatTime, relativeDay } from "../../lib/dates";
 import { formatPrice } from "../../lib/format";
 import type { PanelBooking } from "../../lib/panelTypes";
 import { formatCode, owesSomething } from "../../lib/payment";
+import { attendanceIsDue } from "../../lib/quickMessages";
 import { useBookingAction } from "../../lib/panelQueries";
 import { Button } from "../Button";
 import { ConfirmAction } from "../ConfirmAction";
@@ -111,6 +112,7 @@ export function BookingRow({ booking, timeZone, showDay = false }: { booking: Pa
           <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs font-bold">
             <span className="font-mono tracking-wider">{formatCode(booking.code)}</span>
             {booking.arrived_at && <span>Llegó</span>}
+            {attendanceIsDue(booking) && (booking.customer_confirmed_at ? <span>Confirmó que va</span> : <span className="text-danger">Sin confirmar</span>)}
             {owesSomething(booking) && <span className="text-danger">Falta S/ {Number(booking.balance)}</span>}
             {booking.customer_trust.level === "flagged" && <span className="text-danger">Con faltas</span>}
           </span>
