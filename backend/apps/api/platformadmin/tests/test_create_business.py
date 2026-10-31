@@ -51,7 +51,7 @@ def test_opens_a_business_with_its_owner_and_subscription(team, db, create):
 
     data = response.json()
     assert data["slug"] == "canchas-el-sol"
-    assert data["owner"] == {"email": "rosa@example.com", "account_created": True}
+    assert data["owner"] == {"email": "rosa@example.com", "account_created": True, "temporary_password": None}
     assert data["standing"]["state"] == "active"
     assert data["standing"]["days_left"] == 30
 

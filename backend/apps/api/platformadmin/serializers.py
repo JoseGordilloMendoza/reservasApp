@@ -174,6 +174,13 @@ class SubscriptionInputSerializer(serializers.Serializer):
         return attrs
 
 
+DELIVERY_CHOICES = [("email", "Por correo"), ("credentials", "Con contraseña temporal")]
+DELIVERY_HELP = (
+    "How a new account gets in: an email to choose a password, or a temporary password returned once "
+    "in the response, for the team to hand over. An existing account keeps its own password either way."
+)
+
+
 class BusinessCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=120)
     slug = serializers.SlugField(
@@ -186,6 +193,7 @@ class BusinessCreateSerializer(serializers.Serializer):
     timezone = serializers.CharField(max_length=64, default="America/Lima", validators=[check_timezone])
     owner = OwnerInputSerializer()
     subscription = SubscriptionInputSerializer()
+    delivery = serializers.ChoiceField(choices=DELIVERY_CHOICES, default="email", help_text=DELIVERY_HELP)
 
 
 class SuspendSerializer(serializers.Serializer):
@@ -237,6 +245,7 @@ class MemberCreateSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=150, required=False, allow_blank=True, default="")
     last_name = serializers.CharField(max_length=150, required=False, allow_blank=True, default="")
     role = serializers.ChoiceField(choices=Membership.Role.choices, default=Membership.Role.STAFF)
+    delivery = serializers.ChoiceField(choices=DELIVERY_CHOICES, default="email", help_text=DELIVERY_HELP)
 
 
 class MemberUpdateSerializer(serializers.Serializer):

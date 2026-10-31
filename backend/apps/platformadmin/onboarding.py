@@ -48,11 +48,12 @@ def send_access_email(user, business):
     send_email([user.email], subject, body, event="access_email")
 
 
-def add_member(*, actor, business, email, first_name="", last_name="", role=Membership.Role.STAFF):
+def add_member(*, actor, business, email, first_name="", last_name="", role=Membership.Role.STAFF, notify=True):
     """Give someone a place in the business, creating their account when they have none.
 
     A new account has no password: the access email lets them choose one. An existing account
-    keeps everything it had. Returns (membership, account_created).
+    keeps everything it had. Returns (membership, account_created). With notify=False no email is
+    sent: the team hands over a temporary password instead.
     """
     email = User.objects.normalize_email(email)
     with transaction.atomic():
@@ -62,11 +63,14 @@ def add_member(*, actor, business, email, first_name="", last_name="", role=Memb
             user = User.objects.create_user(email, None, first_name=first_name, last_name=last_name)
         membership, _ = Membership.objects.get_or_create(user=user, business=business, defaults={"role": role})
         activity.record(actor, activity.USER_ADDED, business, email=email, role=membership.role, account_created=created)
-        _notify_after_commit(send_access_email, user, business)
+        if notify:
+            _notify_after_commit(send_access_email, user, business)
     return membership, created
 
 
-def create_business(*, actor, name, owner, subscription, slug=None, business_type="generic", timezone="America/Lima"):
+def create_business(
+    *, actor, name, owner, subscription, slug=None, business_type="generic", timezone="America/Lima", notify=True
+):
     """Open a business: the business, its owner, and its subscription, in one go.
 
     `owner` is {email, first_name, last_name}; `subscription` is {price, valid_until, plan_name}.
@@ -86,6 +90,7 @@ def create_business(*, actor, name, owner, subscription, slug=None, business_typ
             first_name=owner.get("first_name", ""),
             last_name=owner.get("last_name", ""),
             role=Membership.Role.OWNER,
+            notify=notify,
         )
         billing.start_subscription(business=business, **subscription)
         activity.record(

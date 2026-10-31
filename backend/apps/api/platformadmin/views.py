@@ -3,13 +3,14 @@ from datetime import timedelta
 from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema, inline_serializer
 from rest_framework import generics, status
 from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.accounts.credentials import issue_temporary_password
 from apps.accounts.models import Membership
 from apps.billing import services as billing
 from apps.billing.models import Subscription, SubscriptionPayment
@@ -188,12 +189,19 @@ class BusinessListView(generics.ListAPIView):
                 timezone=data["timezone"],
                 owner=dict(data["owner"]),
                 subscription=subscription,
+                notify=data["delivery"] == "email",
             )
         except onboarding.SlugTaken:
             raise serializers.ValidationError({"slug": "Ese link ya está en uso."})
 
         result = s.BusinessDetailSerializer(business_or_404(business.slug)).data
-        result["owner"] = {"email": owner.email, "account_created": account_created}
+        result["owner"] = {
+            "email": owner.email,
+            "account_created": account_created,
+            "temporary_password": hand_over_password(request.user, business, owner)
+            if account_created and data["delivery"] == "credentials"
+            else None,
+        }
         return Response(result, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
@@ -459,9 +467,15 @@ class MemberListView(PlatformAPIView):
             first_name=data["first_name"],
             last_name=data["last_name"],
             role=data["role"],
+            notify=data["delivery"] == "email",
         )
         result = s.MemberSerializer(members_of(business).get(pk=membership.pk)).data
         result["account_created"] = created
+        result["temporary_password"] = (
+            hand_over_password(request.user, business, membership.user)
+            if created and data["delivery"] == "credentials"
+            else None
+        )
         return Response(result, status=status.HTTP_201_CREATED)
 
 
@@ -506,6 +520,29 @@ class MemberDetailView(PlatformAPIView):
         membership.delete()
         activity.record(request.user, activity.USER_REMOVED, business, email=email)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def hand_over_password(actor, business, user):
+    """A new temporary password for the user, written to the log (never the password itself)."""
+    password = issue_temporary_password(user)
+    activity.record(actor, activity.USER_PASSWORD_ISSUED, business, email=user.email)
+    return password
+
+
+class MemberTemporaryPasswordView(PlatformAPIView):
+    @extend_schema(
+        summary="Give someone a new temporary password",
+        description=(
+            "For whoever lost their way in and cannot get the email. The password is returned once; "
+            "their sessions are closed and they must choose their own at the next sign-in."
+        ),
+        request=None,
+        responses={200: inline_serializer("TemporaryPassword", {"temporary_password": serializers.CharField()})},
+    )
+    def post(self, request, slug, pk):
+        business = business_or_404(slug)
+        membership = member_or_404(business, pk)
+        return Response({"temporary_password": hand_over_password(request.user, business, membership.user)})
 
 
 class MemberSendLinkView(PlatformAPIView):

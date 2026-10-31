@@ -27,6 +27,11 @@ urlpatterns = [
         name="platform-user-link",
     ),
     path(
+        "businesses/<slug:slug>/users/<int:pk>/temporary-password/",
+        views.MemberTemporaryPasswordView.as_view(),
+        name="platform-user-password",
+    ),
+    path(
         "businesses/<slug:slug>/support-session/",
         views.SupportStartView.as_view(),
         name="platform-support-start",
