@@ -10,6 +10,8 @@ import { validateCustomer } from "../lib/customer";
 import type { CustomerErrors, CustomerValues } from "../lib/customer";
 import { formatShortDate, formatTime, groupSlotsByDay, upcomingDays } from "../lib/dates";
 import { formatPrice } from "../lib/format";
+import { readGoogleProfile } from "../lib/google";
+import type { GoogleProfile } from "../lib/google";
 import { useAvailability } from "../lib/queries";
 import { saveBooking } from "../lib/storage";
 import type { PublicBusiness } from "../lib/types";
@@ -18,6 +20,7 @@ import { Box } from "./Box";
 import { Button, ButtonLink } from "./Button";
 import { DateStrip } from "./DateStrip";
 import { CheckField, Field } from "./Field";
+import { GoogleSignInButton, googleClientId } from "./GoogleSignInButton";
 import { ServicePicker, bookableOptions, optionId } from "./ServicePicker";
 import { Skeleton } from "./Skeleton";
 import { SlotGrid } from "./SlotGrid";
@@ -89,6 +92,8 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
         : nearest;
 
   const [form, setForm] = useState<CustomerValues>(EMPTY_FORM);
+  // Set when the customer signs in with Google: the server verifies the token, so the booking counts as verified.
+  const [google, setGoogle] = useState<{ credential: string; profile: GoogleProfile | null } | null>(null);
   const [errors, setErrors] = useState<CustomerErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -109,6 +114,7 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
   const create = useMutation({
     mutationFn: () =>
       api.createBooking(business.slug, {
+        ...(google ? { google_credential: google.credential } : {}),
         service: option!.service.id,
         starts_at: slot!,
         customer: { name: form.name.trim(), phone: form.phone.trim(), email: form.email.trim() },
@@ -140,6 +146,8 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
         return;
       }
       setFormError(error.message);
+      // A token Google or the server did not accept is dropped, so the customer can try again or book without it.
+      if (error.code.includes("google")) setGoogle(null);
       if (error.code === "slot_unavailable") {
         // Someone else took it: forget the choice and show what is free now.
         setPickedSlot(null);
@@ -250,6 +258,32 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 200, damping: 24 }}>
             <Step number={options.length > 1 ? 3 : 2} title="¿A nombre de quién?">
               <div className="grid gap-5">
+                {googleClientId() && (
+                  <div className="grid gap-3 rounded-box border-[3px] border-dashed border-line p-4">
+                    {google ? (
+                      <>
+                        <p role="status" className="font-semibold">
+                          Entraste con Google{google.profile ? ` como ${google.profile.email}` : ""}. Tu reserva queda verificada.
+                        </p>
+                        <Button variant="plain" onClick={() => setGoogle(null)}>
+                          Quitar
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <GoogleSignInButton
+                          onCredential={(credential) => {
+                            const profile = readGoogleProfile(credential);
+                            setGoogle({ credential, profile });
+                            if (profile) setForm((current) => ({ ...current, name: current.name || profile.name, email: profile.email }));
+                          }}
+                          onError={setFormError}
+                        />
+                        <p className="text-sm text-muted">Opcional. Con Google, el negocio sabe que eres tú y puede confirmarte más rápido.</p>
+                      </>
+                    )}
+                  </div>
+                )}
                 <Field
                   label="Tu nombre"
                   autoComplete="name"
@@ -275,6 +309,8 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
                   autoComplete="email"
                   value={form.email}
                   error={errors.email}
+                  readOnly={Boolean(google?.profile)}
+                  hint={google?.profile ? "Es el de tu cuenta de Google." : undefined}
                   onChange={(event) => setForm({ ...form, email: event.target.value })}
                 />
                 <CheckField
