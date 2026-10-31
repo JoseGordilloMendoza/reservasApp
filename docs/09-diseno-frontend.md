@@ -155,9 +155,9 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 
 ### El camino de los negocios
 
-- **Un bloque azul al final del inicio** con la pelota recortada, el titular "¿Tienes un negocio con citas?" y dos botones: pedir su cuenta (rojo, con el ícono de WhatsApp o de correo) y "Ya tengo cuenta" (blanco). Si no hay contacto configurado, queda solo "Entrar a mi panel".
+- **Un bloque azul al final del inicio** con la pelota recortada, el titular "¿Tienes un negocio con citas?" y sus botones: "Escríbenos por WhatsApp" (rojo), "Escríbenos por correo" (blanco) y "Ya tengo cuenta" (blanco). Cada contacto aparece solo si está configurado; sin ninguno, queda solo "Entrar a mi panel".
 - **Un enlace discreto en el pie** ("Soy un negocio"), para quien busca dónde entrar y no llegó al final de la página.
-- El contacto se configura al compilar el frontend: `VITE_CONTACT_WHATSAPP` (con código de país, por ejemplo `51987654321`) o `VITE_CONTACT_EMAIL`.
+- El contacto se configura al compilar el frontend: `VITE_CONTACT_WHATSAPP` (un celular peruano de 9 dígitos se completa con el 51) y/o `VITE_CONTACT_EMAIL`. Ambos mensajes salen con el pedido ya escrito.
 
 ### La composición del inicio
 
@@ -165,6 +165,11 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **Titular con tres tamaños.** "Separa" enorme, "tu hora." y "Sin llamadas." más chicos. La tarjeta de búsqueda queda más abajo para romper la rejilla.
 - **Lista de negocios** como tarjetas con un dibujo plano por rubro (pelota, hojas o boleto), que alternan color y sentido. Se oculta sola si no hay ninguno.
 - **"Así de fácil":** tres boletos con muescas, ligeramente inclinados: elige, separa, llega.
+
+### Rapidez en los primeros segundos
+
+- **La segunda visita no espera al servidor.** La lista del inicio y la página de un negocio aparecen al instante con lo último que se vio, y se actualizan solas cuando llega la respuesta nueva (D96). Nada de esto se nota salvo que el servidor esté dormido.
+- **Lo que cambia con el minuto no se guarda:** horarios libres, reservas y todo el panel se piden siempre al servidor.
 
 ## 12. Pendiente de decidir
 

@@ -37,6 +37,7 @@ No necesita cuenta, instalar nada ni esperar respuesta. Entra por el enlace del 
 
 - Los horarios se calculan contra lo ya reservado, los bloqueos y las reglas del negocio. Un horario ocupado no aparece.
 - Si el negocio confirma a mano, la reserva queda **pendiente** y el horario se mantiene un tiempo limitado; si nadie responde, se libera sola.
+- La segunda visita es casi instantánea: el inicio y la página de cada negocio se muestran con lo último que se vio mientras se actualizan por detrás.
 - El boleto se guarda en el celular (**Mis reservas**), se puede cancelar desde ahí dentro del plazo del negocio, y la aplicación se instala como cualquier otra.
 - Un correo opcional avisa cuando la reserva se confirma, se rechaza o vence.
 
@@ -155,7 +156,7 @@ Copia `.env.example` a `.env` (Git lo ignora). Todo es opcional en desarrollo.
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | Servidor SMTP. Con `EMAIL_HOST` vacío, los correos se imprimen en la consola del backend |
 | `DEFAULT_FROM_EMAIL` | Remitente de los correos |
 | `FRONTEND_URL` | Dirección de la aplicación, para los enlaces dentro de los correos |
-| `CONTACT_WHATSAPP`, `CONTACT_EMAIL` | A dónde escribe quien quiere su negocio en Separa (botón del inicio). Vacíos, el botón no aparece |
+| `CONTACT_WHATSAPP`, `CONTACT_EMAIL` | A dónde escribe quien quiere su negocio en Separa: cada uno muestra su botón en el inicio y queda visible para todos. Vacíos, no aparece ninguno |
 
 Comprueba el envío de correos sin esperar a una reserva: `docker compose run --rm backend python manage.py send_test_email tu@correo.com`. Los proveedores, puertos y límites están en [10 - Despliegue de prueba](docs/10-despliegue.md).
 
