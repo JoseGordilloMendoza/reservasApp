@@ -129,3 +129,34 @@ class TestDevelopmentIsLeftAlone:
 def test_what_production_needs_is_in_the_requirements(name):
     assert name in (BACKEND / "requirements.txt").read_text()
     assert f"\n{name}==" in "\n" + (BACKEND / "requirements.lock.txt").read_text().lower()
+
+
+class TestTheDatabaseConnection:
+    # The string Neon's console gives: encrypted, with channel binding, behind a host that sleeps.
+    NEON = (
+        "postgresql://neondb_owner:AbC123dEf@ep-cool-darkness-a1b2c3d4.sa-east-1.aws.neon.tech/neondb"
+        "?sslmode=require&channel_binding=require"
+    )
+
+    def test_a_neon_connection_string_is_understood_as_it_comes(self):
+        database = setting("DATABASES", DATABASE_URL=self.NEON)["default"]
+
+        assert database["HOST"] == "ep-cool-darkness-a1b2c3d4.sa-east-1.aws.neon.tech"
+        assert database["NAME"] == "neondb"
+        assert database["OPTIONS"] == {"sslmode": "require", "channel_binding": "require"}
+
+    def test_the_driver_accepts_those_options(self):
+        # libpq rejects a keyword it does not know, so this fails before any connection is tried.
+        import psycopg
+
+        parsed = psycopg.conninfo.conninfo_to_dict("host=h dbname=d sslmode=require channel_binding=require")
+
+        assert parsed["sslmode"] == "require"
+        assert parsed["channel_binding"] == "require"
+
+    def test_a_connection_is_checked_before_it_is_reused(self):
+        # Neon suspends an idle database after five minutes; a reused connection would then be dead.
+        database = setting("DATABASES", DATABASE_URL=self.NEON)["default"]
+
+        assert database["CONN_HEALTH_CHECKS"] is True
+        assert database["CONN_MAX_AGE"] == 60

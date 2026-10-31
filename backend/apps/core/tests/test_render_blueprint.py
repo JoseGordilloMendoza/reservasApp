@@ -81,8 +81,14 @@ def test_every_value_is_text_as_the_environment_only_has_text(variables):
 
 def test_email_goes_through_the_provider_chosen(variables):
     assert variables["EMAIL_HOST"]["value"] == "smtp.resend.com"
-    assert variables["EMAIL_PORT"]["value"] == "587"
     assert variables["EMAIL_HOST_USER"]["value"] == "resend"
+
+
+def test_email_does_not_use_a_port_that_render_blocks_on_free_services(variables):
+    # Render's documentation: free web services cannot send traffic on ports 25, 465 or 587.
+    assert variables["EMAIL_PORT"]["value"] not in {"25", "465", "587"}
+    # Resend accepts STARTTLS on 2587 and implicit SSL on 2465; the default here is STARTTLS.
+    assert variables["EMAIL_PORT"]["value"] == "2587"
 
 
 def test_the_start_script_does_what_the_deploy_relies_on():
