@@ -304,6 +304,13 @@ Lo que se verificó en las páginas oficiales (octubre de 2026):
 - **Supabase** pausa los proyectos gratuitos tras una semana sin uso y no pude confirmar `btree_gist`; por eso se descartó.
 - **Railway y Fly.io** ya no tienen un plan gratuito real, según blogs.
 
+**Hallazgos de la documentación oficial del 31 de octubre de 2026** (detalle y fuentes en [10 - Despliegue de prueba](10-despliegue.md)):
+
+- **Render gratis bloquea el correo saliente** por los puertos 25, 465 y 587. Se usa el 2587 de Resend (D83); si no sale, plan B: la API HTTPS de Resend.
+- **Render gratis no tiene pre-despliegue ni disco persistente**, por eso las migraciones corren al arrancar (`start.sh`). Puede reiniciar el servicio en cualquier momento.
+- **Neon** ofrece São Paulo (`aws-sa-east-1`), que no se puede cambiar después; suspende el cómputo a los 5 minutos sin uso y despierta en unos cientos de milisegundos. Por eso `CONN_HEALTH_CHECKS` está activo (D84).
+- **Cloudflare** ahora recomienda Workers para proyectos nuevos; Pages sigue vigente y entrega `index.html` en cualquier ruta si no hay un `404.html`.
+
 **Pendiente de confirmar antes de contratar:** el precio actual del servicio de pago de Render (los blogs hablan de unos 7 dólares al mes), la región más cercana a Perú de Render y de Neon (para no sumar latencia), que Cloudflare Pages resuelva cualquier ruta con `index.html`, y que la restricción de exclusión funcione de verdad creándola en una base de prueba de Neon.
 
 **Riesgo principal:** un sistema de reservas que tarda un minuto en abrir pierde clientes del negocio. Por eso el backend va en un plan que no se duerme.
