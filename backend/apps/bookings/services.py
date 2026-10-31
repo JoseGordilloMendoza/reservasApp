@@ -389,6 +389,27 @@ def _change_status(
     return booking
 
 
+# Statuses in which the customer can be marked as arrived: the booking still stands, or was attended.
+ARRIVAL_STATUSES = (BookingStatus.PENDING, BookingStatus.CONFIRMED, BookingStatus.COMPLETED)
+
+
+def update_record(booking, *, arrived=None, now=None, **fields):
+    """What the owner writes down about a booking: payment, a private note, and whether they arrived.
+
+    None of it changes the status or the slot. `fields` are payment_status, amount_paid,
+    payment_method and internal_note, already checked by the serializer.
+    """
+    if arrived is not None and arrived != (booking.arrived_at is not None):
+        if arrived and booking.status not in ARRIVAL_STATUSES:
+            raise InvalidTransition("Esta reserva ya no está vigente, no se puede marcar la llegada.")
+        booking.arrived_at = (now or timezone.now()) if arrived else None
+        fields["arrived_at"] = booking.arrived_at
+    for name, value in fields.items():
+        setattr(booking, name, value)
+    booking.save(update_fields=list(fields))
+    return booking
+
+
 def refresh_if_stale(booking, now=None):
     """Expire a pending booking whose hold ran out, so readers never see it as pending."""
     now = now or timezone.now()

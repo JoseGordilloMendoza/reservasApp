@@ -16,7 +16,8 @@ from rest_framework.views import APIView
 from apps.api.errors import error_response
 from apps.availability.models import AvailabilityRule, Block
 from apps.bookings import services
-from apps.bookings.models import ACTIVE_STATUSES, Booking
+from apps.bookings import codes
+from apps.bookings.models import ACTIVE_STATUSES, Booking, BookingStatus, PaymentStatus
 from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
 
@@ -152,11 +153,21 @@ class BookingListView(generics.ListAPIView):
             bookings = bookings.filter(starts_at__lt=local_day_start(after, business))
         if params.get("q"):
             bookings = bookings.filter(self._search(params["q"]))
+        if params.get("balance"):
+            bookings = bookings.filter(
+                status__in=[BookingStatus.PENDING, BookingStatus.CONFIRMED, BookingStatus.COMPLETED]
+            ).exclude(payment_status=PaymentStatus.PAID)
         return bookings.order_by(params["ordering"], "id")
 
     @staticmethod
     def _search(text):
         match = Q(customer__name__icontains=text)
+        if codes.looks_like_code(text):
+            match |= Q(code=codes.compact(text))
+            # A code with letters has digits too, which must not be taken for part of a phone number.
+            # One made only of digits could be either, so it is looked up as both.
+            if re.search(r"[A-Za-z]", text):
+                return match
         digits = re.sub(r"\D", "", text)
         if digits:
             match |= Q(customer__phone__contains=digits)
@@ -168,6 +179,26 @@ class BookingDetailView(PanelAPIView):
     def get(self, request, pk):
         booking = get_object_or_404(bookings_of(request.business), pk=pk)
         services.refresh_if_stale(booking)
+        return Response(s.PanelBookingDetailSerializer(booking).data)
+
+    @extend_schema(
+        summary="Write down payment, arrival or a note",
+        description=(
+            "Records what happened between the business and its customer: nothing is charged here. "
+            "Only what is sent changes. Marking arrival needs a booking that still stands or was attended."
+        ),
+        request=s.BookingRecordSerializer,
+        responses={200: s.PanelBookingDetailSerializer, 409: s.ErrorSerializer},
+    )
+    def patch(self, request, pk):
+        booking = get_object_or_404(bookings_of(request.business), pk=pk)
+        record = s.BookingRecordSerializer(data=request.data, context={"booking": booking})
+        record.is_valid(raise_exception=True)
+        try:
+            services.update_record(booking, **record.validated_data)
+        except services.BookingError as error:
+            return error_response(error)
+        booking = get_object_or_404(bookings_of(request.business), pk=pk)
         return Response(s.PanelBookingDetailSerializer(booking).data)
 
 

@@ -149,6 +149,8 @@ SPECTACULAR_SETTINGS = {
     "ENUM_NAME_OVERRIDES": {
         "BookingStatusEnum": "apps.bookings.models.BookingStatus",
         "BusinessStatusEnum": "apps.businesses.models.Business.Status",
+        "BookingPaymentStatusEnum": "apps.bookings.models.PaymentStatus",
+        "PaymentMethodEnum": "apps.bookings.models.PaymentMethod",
     },
 }
 

@@ -148,10 +148,14 @@ class BookingPublicSerializer(serializers.ModelSerializer):
     duration_minutes = serializers.IntegerField(source="duration_snapshot")
     can_cancel = serializers.SerializerMethodField()
     cancel_deadline = serializers.SerializerMethodField()
+    payment_instructions = serializers.CharField(source="business.payment_instructions")
 
     class Meta:
         model = Booking
         fields = [
+            "code",
+            "payment_status",
+            "payment_instructions",
             "status",
             "starts_at",
             "ends_at",

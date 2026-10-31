@@ -1,4 +1,5 @@
 from datetime import time
+from decimal import Decimal
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from drf_spectacular.utils import extend_schema_field
@@ -12,7 +13,7 @@ from apps.api.public.serializers import (
 )
 from apps.availability.models import AvailabilityRule, Block
 from apps.billing.services import standing
-from apps.bookings.models import Booking, BookingEvent, BookingStatus
+from apps.bookings.models import Booking, BookingEvent, BookingStatus, PaymentMethod, PaymentStatus
 from apps.bookings.phone import InvalidPhone, normalize_phone
 from apps.businesses.models import Business
 from apps.businesses.presets import preset_for
@@ -39,6 +40,7 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
             "whatsapp",
             "accent",
             "listed",
+            "payment_instructions",
             "business_type",
             "timezone",
             "status",
@@ -106,7 +108,17 @@ class BusinessUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Business
-        fields = ["name", "description", "address", "phone", "whatsapp", "accent", "listed", "settings"]
+        fields = [
+            "name",
+            "description",
+            "address",
+            "phone",
+            "whatsapp",
+            "accent",
+            "listed",
+            "payment_instructions",
+            "settings",
+        ]
 
     def validate_phone(self, value):
         return _optional_phone(value)
@@ -147,12 +159,20 @@ class PanelBookingSerializer(serializers.ModelSerializer):
         source="price_snapshot", max_digits=8, decimal_places=2, allow_null=True
     )
     duration_minutes = serializers.IntegerField(source="duration_snapshot")
+    balance = serializers.SerializerMethodField(help_text="What is still owed; null when there is no price.")
 
     class Meta:
         model = Booking
         fields = [
             "id",
+            "code",
             "status",
+            "payment_status",
+            "amount_paid",
+            "payment_method",
+            "balance",
+            "arrived_at",
+            "internal_note",
             "starts_at",
             "ends_at",
             "expires_at",
@@ -164,6 +184,56 @@ class PanelBookingSerializer(serializers.ModelSerializer):
             "duration_minutes",
             "created_at",
         ]
+
+
+    @extend_schema_field(serializers.DecimalField(max_digits=8, decimal_places=2, allow_null=True))
+    def get_balance(self, booking):
+        balance = balance_of(booking)
+        # A string with two decimals, like the other amounts of the API.
+        return None if balance is None else f"{balance:.2f}"
+
+
+def balance_of(booking):
+    """What the customer still owes, or None when the booking has no price. Never negative."""
+    if booking.price_snapshot is None:
+        return None
+    return max(booking.price_snapshot - booking.amount_paid, Decimal("0.00"))
+
+
+class BookingRecordSerializer(serializers.Serializer):
+    """What the owner may write down about a booking. Everything is optional; only what comes is changed."""
+
+    payment_status = serializers.ChoiceField(choices=PaymentStatus.choices, required=False)
+    amount_paid = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=0, required=False)
+    payment_method = serializers.ChoiceField(choices=PaymentMethod.choices, required=False, allow_blank=True)
+    internal_note = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    arrived = serializers.BooleanField(required=False)
+
+    def validate(self, attrs):
+        booking = self.context["booking"]
+        status = attrs.get("payment_status", booking.payment_status)
+        if "payment_status" not in attrs and "amount_paid" not in attrs:
+            return attrs
+
+        amount = attrs.get("amount_paid", booking.amount_paid)
+        price = booking.price_snapshot
+        if status == PaymentStatus.UNPAID:
+            attrs["amount_paid"] = Decimal("0.00")
+            attrs["payment_method"] = ""
+        elif status == PaymentStatus.PAID:
+            # Paid in full is the price, unless the owner says another amount (a discount).
+            if "amount_paid" not in attrs:
+                attrs["amount_paid"] = price if price is not None else amount
+            if attrs["amount_paid"] <= 0:
+                raise serializers.ValidationError({"amount_paid": "Indica cuánto pagó."})
+        else:
+            if amount <= 0:
+                raise serializers.ValidationError({"amount_paid": "Indica cuánto adelantó."})
+            if price is not None and amount >= price:
+                raise serializers.ValidationError(
+                    {"amount_paid": "Si pagó todo, márcala como pagada."}
+                )
+        return attrs
 
 
 class PanelBookingDetailSerializer(PanelBookingSerializer):
@@ -396,7 +466,10 @@ class BookingFilterSerializer(serializers.Serializer):
     resource = serializers.IntegerField(required=False)
     date_from = serializers.DateField(required=False, help_text="Local date, inclusive.")
     date_to = serializers.DateField(required=False, help_text="Local date, inclusive.")
-    q = serializers.CharField(required=False, help_text="Customer name or phone.")
+    q = serializers.CharField(required=False, help_text="Customer name or phone, or the booking code.")
+    balance = serializers.BooleanField(
+        required=False, help_text="Only bookings that still stand or were attended and are not fully paid."
+    )
     ordering = serializers.ChoiceField(
         choices=["starts_at", "-starts_at"], required=False, default="starts_at"
     )
