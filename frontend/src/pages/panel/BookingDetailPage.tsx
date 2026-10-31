@@ -5,11 +5,13 @@ import { Button } from "../../components/Button";
 import { ConfirmAction } from "../../components/ConfirmAction";
 import { ContactLinks } from "../../components/ContactLinks";
 import { greeting } from "../../components/panel/BookingCards";
+import { PaymentCard } from "../../components/panel/PaymentCard";
 import { Skeleton } from "../../components/Skeleton";
 import { StatusBadge } from "../../components/StatusBadge";
 import { ApiError } from "../../lib/http";
 import { formatLongDate, formatTime } from "../../lib/dates";
 import { formatDuration, formatPrice } from "../../lib/format";
+import { formatCode } from "../../lib/payment";
 import type { BookingEvent, PanelBookingDetail } from "../../lib/panelTypes";
 import { useBookingAction, useBookingDetail, usePanelBusiness } from "../../lib/panelQueries";
 import { STATUS_LABEL } from "../../lib/status";
@@ -136,6 +138,11 @@ export function BookingDetailPage() {
           <StatusBadge status={booking.status} />
         </header>
 
+        <p className="w-fit rounded-box border-[3px] border-line bg-paper px-3 py-1 font-mono text-xl font-bold tracking-widest">
+          <span className="sr-only">Código de reserva </span>
+          {formatCode(booking.code)}
+        </p>
+
         <div>
           <p className="font-display text-xl font-bold first-letter:uppercase">{formatLongDate(booking.starts_at, timeZone)}</p>
           <p className="mt-1 font-mono text-5xl font-bold leading-none">
@@ -175,6 +182,8 @@ export function BookingDetailPage() {
       </article>
 
       <Actions key={booking.status} booking={booking} />
+
+      <PaymentCard key={`${booking.payment_status}-${booking.arrived_at}-${booking.internal_note}`} booking={booking} timeZone={timeZone} />
 
       <section aria-labelledby="historial" className="grid gap-2">
         <h2 id="historial" className="font-display text-2xl font-extrabold">
