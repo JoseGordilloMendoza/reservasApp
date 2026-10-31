@@ -11,11 +11,16 @@ import type { PanelBusiness } from "../../lib/panelTypes";
 import { usePanelBusiness, useUpdateBusiness } from "../../lib/panelQueries";
 import { RULES, describeValue, ruleError } from "../../lib/rules";
 
-type Mode = "manual" | "automatic";
+type Mode = "manual" | "automatic" | "trusted";
 
 const MODES: { id: Mode; label: string; hint: string }[] = [
   { id: "manual", label: "Yo confirmo cada reserva", hint: "Llega como pendiente y tú decides." },
-  { id: "automatic", label: "Se confirman solas", hint: "Quedan listas al instante, sin que hagas nada." },
+  {
+    id: "trusted",
+    label: "Solo se confirman solas las de clientes de confianza",
+    hint: "Quien entra con Google o ya vino antes queda listo al instante. Los demás llegan pendientes para que decidas.",
+  },
+  { id: "automatic", label: "Se confirman todas solas", hint: "Quedan listas al instante, sin que hagas nada. Cualquiera puede reservar." },
 ];
 
 const textOf = (business: PanelBusiness) =>
@@ -23,14 +28,18 @@ const textOf = (business: PanelBusiness) =>
 
 function RulesForm({ business }: { business: PanelBusiness }) {
   const update = useUpdateBusiness();
-  const [mode, setMode] = useState<Mode>(business.settings.confirmation_mode === "automatic" ? "automatic" : "manual");
+  const [mode, setMode] = useState<Mode>(
+    business.settings.confirmation_mode === "automatic" || business.settings.confirmation_mode === "trusted"
+      ? business.settings.confirmation_mode
+      : "manual",
+  );
   const [texts, setTexts] = useState(() => textOf(business));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  // The hold only matters when the owner confirms by hand, so it is not asked otherwise.
-  const shown = RULES.filter((rule) => !rule.manualOnly || mode === "manual");
+  // The hold only matters when some bookings wait for the owner, so it is not asked when all are confirmed alone.
+  const shown = RULES.filter((rule) => !rule.manualOnly || mode !== "automatic");
 
   function submit(event: FormEvent) {
     event.preventDefault();

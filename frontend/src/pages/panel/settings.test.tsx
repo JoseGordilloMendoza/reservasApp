@@ -137,6 +137,9 @@ describe("the booking rules", () => {
     slot_interval_minutes: 60,
     buffer_minutes: 0,
     max_active_bookings_per_customer: 3,
+    unverified_hold_minutes: 30,
+    max_active_bookings_unverified: 1,
+    auto_block_no_shows: 2,
   };
   const business = (settings: Record<string, number | string> = {}) => ({
     ...PANEL_BUSINESS,
@@ -146,6 +149,57 @@ describe("the booking rules", () => {
   function open(settings: Record<string, number | string> = {}, extra: Parameters<typeof signedInRoutes>[0] = {}) {
     return signedInRoutes({ "GET /panel/business/": { status: 200, body: business(settings) }, ...extra });
   }
+
+  it("offers three ways to confirm, and the one in use is chosen", async () => {
+    open({ confirmation_mode: "trusted" });
+    renderApp(PATH);
+
+    expect(await screen.findByRole("radio", { name: /Solo se confirman solas las de clientes de confianza/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /Yo confirmo cada reserva/ })).not.toBeChecked();
+    expect(screen.getByRole("radio", { name: /Se confirman todas solas/ })).not.toBeChecked();
+  });
+
+  it("still asks how long to hold a booking when only some are confirmed alone, because the rest wait", async () => {
+    open({ confirmation_mode: "trusted" });
+    renderApp(PATH);
+
+    expect(await screen.findByLabelText("Tiempo para confirmar")).toBeInTheDocument();
+    expect(screen.getByLabelText("Tiempo para confirmar a un cliente nuevo")).toHaveValue("30");
+  });
+
+  it("does not ask about the wait of a new customer when everyone is confirmed alone", async () => {
+    open({ confirmation_mode: "automatic" });
+    renderApp(PATH);
+
+    await screen.findByLabelText("Reservas activas por cliente");
+    expect(screen.queryByLabelText("Tiempo para confirmar a un cliente nuevo")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Tiempo para confirmar")).not.toBeInTheDocument();
+  });
+
+  it("shows the limits for a customer who is not yet trusted, and when a customer is blocked", async () => {
+    open();
+    renderApp(PATH);
+
+    expect(await screen.findByLabelText("Reservas activas de un cliente nuevo")).toHaveValue("1");
+    expect(screen.getByLabelText("Bloquear a quien falta")).toHaveValue("2");
+    expect(screen.getByText(/^2 faltas\./)).toBeInTheDocument();
+  });
+
+  it("sends the new confirmation mode and the changed limits, and nothing else", async () => {
+    const api = open({}, { "PATCH /panel/business/": { status: 200, body: business({ confirmation_mode: "trusted" }) } });
+    const user = userEvent.setup();
+    renderApp(PATH);
+
+    await user.click(await screen.findByRole("radio", { name: /Solo se confirman solas las de clientes de confianza/ }));
+    const blocks = screen.getByLabelText("Bloquear a quien falta");
+    await user.clear(blocks);
+    await user.type(blocks, "0");
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(api.calls.find((call) => call.method === "PATCH")?.body).toEqual({
+      settings: { confirmation_mode: "trusted", auto_block_no_shows: 0 },
+    }));
+  });
 
   it("shows the current value of every option, with a readable echo", async () => {
     open();
@@ -163,7 +217,7 @@ describe("the booking rules", () => {
 
     await screen.findByLabelText("Anticipación para cancelar");
     expect(screen.queryByLabelText("Tiempo para confirmar")).not.toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: /Se confirman solas/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /Se confirman todas solas/ })).toBeChecked();
   });
 
   it("sends only the options that changed", async () => {
@@ -187,7 +241,7 @@ describe("the booking rules", () => {
     const user = userEvent.setup();
     renderApp(PATH);
 
-    await user.click(await screen.findByRole("radio", { name: /Se confirman solas/ }));
+    await user.click(await screen.findByRole("radio", { name: /Se confirman todas solas/ }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
     await waitFor(() => {

@@ -7,7 +7,10 @@ export type RuleKey =
   | "booking_horizon_days"
   | "slot_interval_minutes"
   | "buffer_minutes"
-  | "max_active_bookings_per_customer";
+  | "max_active_bookings_per_customer"
+  | "unverified_hold_minutes"
+  | "max_active_bookings_unverified"
+  | "auto_block_no_shows";
 
 export interface Rule {
   key: RuleKey;
@@ -16,6 +19,8 @@ export interface Rule {
   min: number;
   max: number;
   unit: "minutes" | "days" | "count";
+  /** What is counted, in singular and plural, when it is not bookings. */
+  noun?: [string, string];
   /** Only meaningful when the owner confirms each booking by hand. */
   manualOnly?: boolean;
 }
@@ -25,6 +30,15 @@ export const RULES: Rule[] = [
     key: "pending_hold_minutes",
     label: "Tiempo para confirmar",
     hint: "Si no respondes en este tiempo, el horario se libera solo.",
+    min: 5,
+    max: 10080,
+    unit: "minutes",
+    manualOnly: true,
+  },
+  {
+    key: "unverified_hold_minutes",
+    label: "Tiempo para confirmar a un cliente nuevo",
+    hint: "Cuánto guarda el horario una reserva de alguien que aún no es de confianza. Más corto evita que una broma lo bloquee.",
     min: 5,
     max: 10080,
     unit: "minutes",
@@ -78,6 +92,23 @@ export const RULES: Rule[] = [
     max: 50,
     unit: "count",
   },
+  {
+    key: "max_active_bookings_unverified",
+    label: "Reservas activas de un cliente nuevo",
+    hint: "Lo mismo, para alguien que aún no es de confianza: una primera reserva, o quien ya faltó una vez.",
+    min: 1,
+    max: 50,
+    unit: "count",
+  },
+  {
+    key: "auto_block_no_shows",
+    label: "Bloquear a quien falta",
+    hint: "Cuántas veces puede no presentarse un cliente antes de que se bloquee solo. Con 0 no se bloquea a nadie.",
+    min: 0,
+    max: 20,
+    unit: "count",
+    noun: ["falta", "faltas"],
+  },
 ];
 
 /** 90 -> "1 h 30 min", 1440 -> "1 día", 4320 -> "3 días". */
@@ -98,7 +129,8 @@ export function describeValue(rule: Rule, text: string): string {
   const value = Number(text);
   if (rule.unit === "minutes") return describeMinutes(value);
   if (rule.unit === "days") return value === 1 ? "1 día" : `${value} días`;
-  return value === 1 ? "1 reserva" : `${value} reservas`;
+  const [one, many] = rule.noun ?? ["reserva", "reservas"];
+  return value === 1 ? `1 ${one}` : `${value} ${many}`;
 }
 
 /** The complaint about a typed value, or null when it is fine. */
