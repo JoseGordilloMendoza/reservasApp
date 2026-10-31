@@ -1,8 +1,8 @@
 from django.urls import reverse
 
 
-def test_a_business_starts_out_of_the_search(panel):
-    assert panel.get(reverse("panel-business")).json()["listed"] is False
+def test_a_business_starts_out_in_the_search(panel):
+    assert panel.get(reverse("panel-business")).json()["listed"] is True
 
 
 def test_the_owner_can_ask_to_appear_and_to_stop_appearing(panel, business):

@@ -50,5 +50,5 @@ def test_saving_something_else_leaves_it_alone(db):
     assert business.search_name == "consultorio lucia"
 
 
-def test_a_business_is_not_listed_until_it_asks(db):
-    assert Business.objects.create(slug="lucia", name="Lucía").listed is False
+def test_a_business_is_listed_unless_it_asks_not_to_be(db):
+    assert Business.objects.create(slug="lucia", name="Lucía").listed is True

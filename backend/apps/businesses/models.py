@@ -41,8 +41,8 @@ class Business(models.Model):
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.ACTIVE
     )
-    # Whether the home page search may show it. Off until its owner asks for it (D80).
-    listed = models.BooleanField(default=False)
+    # Whether the home page may show it, in the search and in the directory. On unless its owner turns it off.
+    listed = models.BooleanField(default=True)
     # The name as the search compares it: lowercase, no accents. Kept up to date by save().
     search_name = models.CharField(max_length=120, blank=True, editable=False, db_index=True)
     # Why and when the platform team suspended it; cleared on reactivation.
