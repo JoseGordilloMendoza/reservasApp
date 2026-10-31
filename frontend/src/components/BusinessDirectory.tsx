@@ -42,7 +42,7 @@ export function BusinessDirectory() {
                 className="press grid h-full grid-cols-1 overflow-hidden rounded-box border-[3px] border-line bg-surface text-text shadow-hard"
               >
                 <span className={`grid place-items-center border-b-[3px] border-line px-6 py-4 ${tone.panel}`}>
-                  <BusinessShape kind={business.business_type} tone={tone} className="h-32 w-full max-w-[220px]" />
+                  <BusinessShape kind={business.business_type} tone={tone} className={`h-32 w-full max-w-[220px] ${index % 2 ? "-scale-x-100" : ""}`} />
                 </span>
                 <span className="grid content-start gap-1 p-4">
                   <span className="text-sm font-bold uppercase tracking-wide text-accent-deep">

@@ -166,3 +166,14 @@ describe("the businesses shown on the home page", () => {
     expect(screen.queryByRole("heading", { name: /Reserva en/ })).not.toBeInTheDocument();
   });
 });
+
+describe("how it works", () => {
+  it("explains the three steps, ending with showing the ticket at the business", async () => {
+    mockApi({});
+    renderApp("/");
+
+    expect(await screen.findByRole("heading", { name: "Así de fácil" })).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(3);
+    expect(screen.getByText(/Muestra tu boleto en el local/)).toBeInTheDocument();
+  });
+});
