@@ -13,6 +13,7 @@ from apps.billing.services import is_operational
 from apps.businesses.models import Business
 from apps.businesses.settings_schema import effective_settings
 from apps.catalog.models import Resource
+from apps.customers import trust
 from apps.customers.models import Customer
 from apps.notifications import events
 
@@ -130,12 +131,37 @@ def record_event(booking, from_status, to_status, actor):
     )
 
 
+def _prove_identity(customer, identity, now):
+    """Whether this booking is backed by the Google account of the person, linking it the first time.
+
+    `identity` holds the claims of an ID token the server already verified, or is None.
+    """
+    if not identity:
+        return False
+    sub = identity["sub"]
+    if customer.google_sub and customer.google_sub != sub:
+        return False
+
+    changed = []
+    if not customer.google_sub:
+        customer.google_sub, customer.verified_at = sub, now
+        changed += ["google_sub", "verified_at"]
+    email = identity.get("email")
+    if email and customer.email != email:
+        customer.email = email
+        changed.append("email")
+    if changed:
+        customer.save(update_fields=changed)
+    return True
+
+
 def create_booking(
-    *, business, service, starts_at, customer_name, customer_phone, customer_email="", now=None
+    *, business, service, starts_at, customer_name, customer_phone, customer_email="", google_identity=None, now=None
 ):
     """Create a booking for a slot that is currently offered. Returns (booking, token).
 
-    The raw token is only available here; the database keeps its hash.
+    The raw token is only available here; the database keeps its hash. `google_identity` is the verified
+    claims of the Google account the customer signed in with, when they did.
     """
     if service.business_id != business.id:
         raise ValueError("The service does not belong to the business")
@@ -160,10 +186,29 @@ def create_booking(
 
         if customer.is_blocked:
             raise BookingNotAllowed()
+
+        proven = _prove_identity(customer, google_identity, now)
+        completed, no_shows = trust.history(customer)
+        level = trust.level_for_booking(
+            blocked=False,
+            no_shows=no_shows,
+            completed=completed,
+            linked_to_google=bool(customer.google_sub),
+            proven_now=proven,
+        )
+        trusted = level in trust.TRUSTED
+
+        # One Google account counts as one person, whatever numbers it books with.
+        same_person = Q(customer=customer)
+        if proven:
+            same_person |= Q(customer__google_sub=customer.google_sub)
         active = Booking.objects.filter(
-            customer=customer, status__in=ACTIVE_STATUSES, ends_at__gt=now
+            same_person, business=business, status__in=ACTIVE_STATUSES, ends_at__gt=now
         ).count()
-        if active >= config["max_active_bookings_per_customer"]:
+        cap = config["max_active_bookings_per_customer"]
+        if not trusted:
+            cap = min(cap, config["max_active_bookings_unverified"])
+        if active >= cap:
             raise TooManyActiveBookings()
 
         ends_at = starts_at + timedelta(minutes=service.duration_minutes)
@@ -174,11 +219,14 @@ def create_booking(
         if starts_at not in offered:
             raise SlotUnavailable()
 
-        if config["confirmation_mode"] == "automatic":
+        mode = config["confirmation_mode"]
+        if mode == "automatic" or (mode == "trusted" and trusted):
             status, expires_at = BookingStatus.CONFIRMED, None
         else:
-            hold = timedelta(minutes=config["pending_hold_minutes"])
-            status, expires_at = BookingStatus.PENDING, pending_expiry(now, starts_at, hold)
+            minutes = config["pending_hold_minutes"]
+            if not trusted:
+                minutes = min(minutes, config["unverified_hold_minutes"])
+            status, expires_at = BookingStatus.PENDING, pending_expiry(now, starts_at, timedelta(minutes=minutes))
 
         booking = _insert_booking(
             business=business,
@@ -192,6 +240,7 @@ def create_booking(
             source=Booking.Source.CUSTOMER,
             token=token,
             actor=BookingEvent.Actor.CUSTOMER,
+            verified=proven,
         )
 
     booking.manage_token = token
@@ -258,7 +307,7 @@ def create_booking_by_business(
 
 
 def _insert_booking(
-    *, business, resource, service, customer, starts_at, ends_at, status, expires_at, source, token, actor
+    *, business, resource, service, customer, starts_at, ends_at, status, expires_at, source, token, actor, verified=False
 ):
     try:
         with transaction.atomic():
@@ -275,6 +324,7 @@ def _insert_booking(
                 duration_snapshot=service.duration_minutes,
                 source=source,
                 manage_token_hash=hash_token(token),
+                verified=verified,
             )
     except IntegrityError:
         # The exclusion constraint caught an overlap the checks above missed.
@@ -351,9 +401,31 @@ def complete_booking(booking, now=None):
 
 
 def mark_no_show(booking, now=None):
-    return _change_status(
+    booking = _change_status(
         booking, BookingStatus.NO_SHOW, (BookingStatus.CONFIRMED,), now, require_started=True
     )
+    _block_after_repeated_no_shows(booking)
+    return booking
+
+
+def _block_after_repeated_no_shows(booking):
+    """A customer who keeps not showing up is blocked in that business, unless the owner turned it off."""
+    limit = effective_settings(booking.business, booking.service)["auto_block_no_shows"]
+    if not limit:
+        return
+    missed = Booking.objects.filter(customer_id=booking.customer_id, status=BookingStatus.NO_SHOW).count()
+    if missed >= limit:
+        Customer.objects.filter(pk=booking.customer_id).update(is_blocked=True)
+
+
+def dismiss_as_prank(booking, now=None):
+    """Turn down a pending booking as a joke: the slot is freed and the customer is blocked here.
+
+    The customer is not written to. The owner can undo the block from the customer's page.
+    """
+    booking = _change_status(booking, BookingStatus.CANCELLED, (BookingStatus.PENDING,), now, clear_hold=True)
+    Customer.objects.filter(pk=booking.customer_id).update(is_blocked=True)
+    return booking
 
 
 def _change_status(

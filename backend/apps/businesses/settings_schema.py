@@ -28,14 +28,21 @@ class Setting:
 # Every option a business or service can configure. Adding an option here with
 # a default is enough: existing businesses fall back to the default.
 SETTINGS_SCHEMA = {
-    "confirmation_mode": Setting("manual", choices=("manual", "automatic")),
+    # "trusted": confirmed at once for a customer the business can trust, pending for anyone else.
+    "confirmation_mode": Setting("manual", choices=("manual", "automatic", "trusted")),
     "pending_hold_minutes": Setting(120, min=5, max=10080),
+    # How long a booking from someone not yet trusted holds its slot, if shorter than the one above.
+    "unverified_hold_minutes": Setting(30, min=5, max=10080),
     "cancellation_notice_minutes": Setting(1440, min=0, max=43200),
     "min_booking_notice_minutes": Setting(60, min=0, max=43200),
     "booking_horizon_days": Setting(30, min=1, max=365),
     "slot_interval_minutes": Setting(60, min=5, max=240),
     "buffer_minutes": Setting(0, min=0, max=240),
     "max_active_bookings_per_customer": Setting(3, min=1, max=50),
+    # The same cap for someone not yet trusted (a first booking, or one with a no-show).
+    "max_active_bookings_unverified": Setting(1, min=1, max=50),
+    # No-shows after which the customer is blocked by themselves; 0 turns it off.
+    "auto_block_no_shows": Setting(2, min=0, max=20),
 }
 
 

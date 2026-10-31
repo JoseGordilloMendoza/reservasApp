@@ -6,6 +6,7 @@ from django.test import override_settings
 
 from apps.bookings.models import Booking, BookingStatus
 from apps.businesses.models import Business
+from apps.businesses.presets import preset_settings
 from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
 
@@ -26,9 +27,15 @@ def clear_cache():
     cache.clear()
 
 
+# The rules for customers who are not yet trusted (a shorter wait, one active booking) would get in the way of
+# tests about everything else, so this business treats everyone alike. The tests of those rules start from
+# the platform defaults instead (see apps/bookings/tests/test_trust.py).
+EVERYONE_ALIKE = {"unverified_hold_minutes": 120, "max_active_bookings_unverified": 3}
+
+
 @pytest.fixture
 def business(db):
-    return Business.objects.create(slug="cancha-los-andes", name="Cancha Los Andes")
+    return Business.objects.create(slug="cancha-los-andes", name="Cancha Los Andes", settings={**preset_settings("generic"), **EVERYONE_ALIKE})
 
 
 @pytest.fixture
