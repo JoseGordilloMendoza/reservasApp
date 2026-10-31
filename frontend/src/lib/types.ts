@@ -79,6 +79,10 @@ export interface BookingDetails {
   duration_minutes: number;
   can_cancel: boolean;
   cancel_deadline: string;
+  /** Whether the customer already said they are coming. */
+  attendance_confirmed: boolean;
+  /** Whether they can say it now: a confirmed booking, in the day before it starts. */
+  can_confirm_attendance: boolean;
 }
 
 export interface CreatedBooking extends BookingDetails {

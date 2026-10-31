@@ -117,6 +117,8 @@ export interface PanelBooking {
   /** What is still owed; null when the service has no price. */
   balance: string | null;
   arrived_at: string | null;
+  /** When the customer said, from their ticket, that they are coming. */
+  customer_confirmed_at: string | null;
   internal_note: string;
   starts_at: string;
   ends_at: string;

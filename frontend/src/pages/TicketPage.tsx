@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock, WarningCircle, WhatsappLogo } from "@phosphor-icons/react";
+import { ArrowLeft, CheckCircle, Clock, WarningCircle, WhatsappLogo } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -58,6 +58,13 @@ export function TicketPage() {
       timeZone: business.data?.timezone,
     });
   }, [booking.data, business.data?.timezone, token]);
+
+  // "I am coming": it only tells the business, so it needs no question first.
+  const attend = useMutation({
+    mutationFn: () => api.confirmAttendance(token),
+    onSuccess: (updated) => queryClient.setQueryData(["booking", token], updated),
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ["booking", token] }),
+  });
 
   const [confirming, setConfirming] = useState(false);
   const cancel = useMutation({
@@ -127,7 +134,21 @@ export function TicketPage() {
         {note}
       </p>
 
+      {data.status === "confirmed" && data.attendance_confirmed && (
+        <p role="status" className="flex items-start gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-lg font-semibold">
+          <CheckCircle aria-hidden="true" className="mt-0.5 shrink-0" size={24} weight="bold" />
+          Avisaste que vas. {data.business.name} te espera a las {formatTime(data.starts_at, timeZone)}.
+        </p>
+      )}
+
       <div className="grid gap-3">
+        {data.can_confirm_attendance && !data.attendance_confirmed && (
+          <Button onClick={() => attend.mutate()} disabled={attend.isPending}>
+            <CheckCircle aria-hidden="true" />
+            {attend.isPending ? "Avisando" : "Confirmo que voy"}
+          </Button>
+        )}
+
         {chat && (
           <ButtonLink href={chat} target="_blank" rel="noreferrer" variant={data.status === "pending" ? "primary" : "plain"}>
             <WhatsappLogo aria-hidden="true" />
@@ -167,6 +188,13 @@ export function TicketPage() {
             </Button>
           </div>
         </Box>
+      )}
+
+      {attend.error && (
+        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+          <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
+          {attend.error.message}
+        </p>
       )}
 
       {cancelError && (

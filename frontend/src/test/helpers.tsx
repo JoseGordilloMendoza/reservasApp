@@ -62,6 +62,8 @@ export function bookingDetails(overrides: Partial<BookingDetails> = {}): Booking
     duration_minutes: 60,
     can_cancel: true,
     cancel_deadline: slot.starts_at,
+    attendance_confirmed: false,
+    can_confirm_attendance: false,
     ...overrides,
   };
 }
@@ -156,6 +158,7 @@ export function panelBooking(overrides: Partial<PanelBooking> = {}): PanelBookin
     payment_method: "",
     balance: "60.00",
     arrived_at: null,
+    customer_confirmed_at: null,
     internal_note: "",
     starts_at: slot.starts_at,
     ends_at: slot.ends_at,

@@ -34,6 +34,9 @@ export const api = {
 
   booking: (token: string) => request<BookingDetails>(`/public/bookings/${encodeURIComponent(token)}/`),
 
+  confirmAttendance: (token: string) =>
+    request<BookingDetails>(`/public/bookings/${encodeURIComponent(token)}/attendance/`, { method: "POST" }),
+
   cancelBooking: (token: string) =>
     request<BookingDetails>(`/public/bookings/${encodeURIComponent(token)}/cancel/`, {
       method: "POST",
