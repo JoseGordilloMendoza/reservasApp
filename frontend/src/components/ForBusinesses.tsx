@@ -7,13 +7,19 @@ import { buttonClass } from "./Button";
 
 const ASK = `Hola, quiero tener mi negocio en ${BRAND}. ¿Me ayudan a crear mi cuenta?`;
 
-/** Where someone who wants their business on the platform can reach the team, or null when none is set up. */
-export function contactHref(): string | null {
-  const chat = whatsappLink(contactWhatsapp(), ASK);
-  if (chat) return chat;
-  const email = contactEmail();
-  if (email) return `mailto:${email}?subject=${encodeURIComponent(`Quiero mi negocio en ${BRAND}`)}&body=${encodeURIComponent(ASK)}`;
-  return null;
+/** A Peruvian mobile written without the country code (914 659 295) still opens the right chat. */
+function withCountryCode(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  return digits.length === 9 ? `51${digits}` : digits;
+}
+
+/** The ways to reach the team that are set up: a WhatsApp chat and an email, each with the request already written. */
+export function contactLinks(): { whatsapp: string | null; email: string | null } {
+  const address = contactEmail().trim();
+  return {
+    whatsapp: whatsappLink(withCountryCode(contactWhatsapp()), ASK),
+    email: address ? `mailto:${address}?subject=${encodeURIComponent(`Quiero mi negocio en ${BRAND}`)}&body=${encodeURIComponent(ASK)}` : null,
+  };
 }
 
 /**
@@ -21,7 +27,8 @@ export function contactHref(): string | null {
  * open an account. Businesses do not register themselves (the team opens each one), so this is the way in.
  */
 export function ForBusinesses() {
-  const contact = contactHref();
+  const { whatsapp, email } = contactLinks();
+  const canAsk = Boolean(whatsapp || email);
 
   return (
     <section aria-labelledby="para-negocios" className="relative mt-20 overflow-hidden rounded-box border-[3px] border-line bg-line p-6 text-paper shadow-hard md:p-10">
@@ -38,19 +45,20 @@ export function ForBusinesses() {
         </p>
 
         <div className="mt-2 flex flex-wrap gap-3">
-          {contact && (
-            <a
-              href={contact}
-              target={contact.startsWith("http") ? "_blank" : undefined}
-              rel="noreferrer"
-              className={buttonClass("primary", "w-full border-paper sm:w-auto")}
-            >
-              {contact.startsWith("http") ? <WhatsappLogo aria-hidden="true" /> : <EnvelopeSimple aria-hidden="true" />}
-              Quiero mi negocio en {BRAND}
+          {whatsapp && (
+            <a href={whatsapp} target="_blank" rel="noreferrer" className={buttonClass("primary", "w-full border-paper sm:w-auto")}>
+              <WhatsappLogo aria-hidden="true" />
+              Escríbenos por WhatsApp
+            </a>
+          )}
+          {email && (
+            <a href={email} className={buttonClass(whatsapp ? "plain" : "primary", "w-full border-paper sm:w-auto")}>
+              <EnvelopeSimple aria-hidden="true" />
+              Escríbenos por correo
             </a>
           )}
           <Link to="/panel/entrar" className={buttonClass("plain", "w-full sm:w-auto")}>
-            {contact ? "Ya tengo cuenta" : "Entrar a mi panel"}
+            {canAsk ? "Ya tengo cuenta" : "Entrar a mi panel"}
             <ArrowRight aria-hidden="true" />
           </Link>
         </div>

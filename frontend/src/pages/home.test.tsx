@@ -179,11 +179,18 @@ describe("how it works", () => {
 });
 
 describe("for businesses", () => {
+  // The contact comes from the build, so each test says what is set up instead of trusting the machine's.
+  const contact = (whatsapp: string, email: string) => {
+    vi.stubEnv("VITE_CONTACT_WHATSAPP", whatsapp);
+    vi.stubEnv("VITE_CONTACT_EMAIL", email);
+  };
+
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
   it("leads the owner of a business that is already here to the panel", async () => {
+    contact("", "");
     mockApi({});
     renderApp("/");
 
@@ -194,37 +201,62 @@ describe("for businesses", () => {
   });
 
   it("offers no way to write to the team until one is set up, instead of a button that goes nowhere", async () => {
-    vi.stubEnv("VITE_CONTACT_WHATSAPP", "");
-    vi.stubEnv("VITE_CONTACT_EMAIL", "");
+    contact("", "");
     mockApi({});
     renderApp("/");
 
     const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
 
-    expect(within(band).queryByRole("link", { name: /Quiero mi negocio/ })).not.toBeInTheDocument();
+    expect(within(band).queryByRole("link", { name: /Escríbenos/ })).not.toBeInTheDocument();
   });
 
   it("opens a WhatsApp chat with the team, with the request already written", async () => {
-    vi.stubEnv("VITE_CONTACT_WHATSAPP", "+51 987 654 321");
+    contact("+51 987 654 321", "");
     mockApi({});
     renderApp("/");
 
     const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
-    const ask = within(band).getByRole("link", { name: /Quiero mi negocio en Separa/ });
+    const ask = within(band).getByRole("link", { name: /Escríbenos por WhatsApp/ });
 
     expect(ask.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/51987654321\?text=/);
     expect(decodeURIComponent(ask.getAttribute("href") ?? "")).toContain("quiero tener mi negocio en Separa");
+    expect(within(band).queryByRole("link", { name: /por correo/ })).not.toBeInTheDocument();
     expect(within(band).getByRole("link", { name: /Ya tengo cuenta/ })).toHaveAttribute("href", "/panel/entrar");
   });
 
-  it("falls back to an email when there is no WhatsApp", async () => {
-    vi.stubEnv("VITE_CONTACT_WHATSAPP", "");
-    vi.stubEnv("VITE_CONTACT_EMAIL", "hola@separa.pe");
+  it("adds the country code to a number written the way people say it, with spaces", async () => {
+    contact("914 659 295", "");
     mockApi({});
     renderApp("/");
 
     const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
 
-    expect(within(band).getByRole("link", { name: /Quiero mi negocio/ }).getAttribute("href")).toMatch(/^mailto:hola@separa\.pe\?subject=/);
+    expect(within(band).getByRole("link", { name: /Escríbenos por WhatsApp/ }).getAttribute("href")).toMatch(/wa\.me\/51914659295\?/);
+  });
+
+  it("opens an email to the team when that is all there is", async () => {
+    contact("", "hola@separa.pe");
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+    const ask = within(band).getByRole("link", { name: /Escríbenos por correo/ });
+
+    expect(ask.getAttribute("href")).toMatch(/^mailto:hola@separa\.pe\?subject=/);
+    expect(decodeURIComponent(ask.getAttribute("href") ?? "")).toContain("quiero tener mi negocio en Separa");
+    expect(within(band).queryByRole("link", { name: /WhatsApp/ })).not.toBeInTheDocument();
+  });
+
+  it("offers both when both are set up, so each person uses the one they prefer", async () => {
+    contact("914659295", "hola@separa.pe");
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+
+    // Without the country code, the chat still opens on the Peruvian number.
+    expect(within(band).getByRole("link", { name: /Escríbenos por WhatsApp/ }).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/51914659295\?text=/);
+    expect(within(band).getByRole("link", { name: /Escríbenos por correo/ })).toBeInTheDocument();
+    expect(within(band).getByRole("link", { name: /Ya tengo cuenta/ })).toBeInTheDocument();
   });
 });
