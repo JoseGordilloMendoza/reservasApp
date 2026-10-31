@@ -47,6 +47,8 @@ services:
       API_PROXY_TARGET: http://backend:8000
       # Public id of the Google web client, shown as a button on the panel login.
       VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      VITE_CONTACT_WHATSAPP: ${CONTACT_WHATSAPP:-}
+      VITE_CONTACT_EMAIL: ${CONTACT_EMAIL:-}
     volumes:
       - ./frontend:/app
       # Keep the dependencies installed in the image instead of the host folder.

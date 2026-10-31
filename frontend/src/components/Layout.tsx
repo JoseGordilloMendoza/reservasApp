@@ -39,6 +39,10 @@ export function Layout() {
 
         <footer className="pb-24 pt-6 text-sm text-muted md:pb-8">
           Reservas hechas con <span className="font-bold text-text">{BRAND}</span>
+          {" · "}
+          <Link to="/panel/entrar" className="font-semibold underline decoration-2 underline-offset-4">
+            Soy un negocio
+          </Link>
         </footer>
       </div>
     </IconContext.Provider>

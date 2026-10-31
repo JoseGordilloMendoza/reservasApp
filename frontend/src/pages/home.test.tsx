@@ -177,3 +177,54 @@ describe("how it works", () => {
     expect(screen.getByText(/Muestra tu boleto en el local/)).toBeInTheDocument();
   });
 });
+
+describe("for businesses", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("leads the owner of a business that is already here to the panel", async () => {
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+
+    expect(within(band).getByRole("link", { name: /Entrar a mi panel/ })).toHaveAttribute("href", "/panel/entrar");
+    expect(screen.getByRole("link", { name: "Soy un negocio" })).toHaveAttribute("href", "/panel/entrar");
+  });
+
+  it("offers no way to write to the team until one is set up, instead of a button that goes nowhere", async () => {
+    vi.stubEnv("VITE_CONTACT_WHATSAPP", "");
+    vi.stubEnv("VITE_CONTACT_EMAIL", "");
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+
+    expect(within(band).queryByRole("link", { name: /Quiero mi negocio/ })).not.toBeInTheDocument();
+  });
+
+  it("opens a WhatsApp chat with the team, with the request already written", async () => {
+    vi.stubEnv("VITE_CONTACT_WHATSAPP", "+51 987 654 321");
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+    const ask = within(band).getByRole("link", { name: /Quiero mi negocio en Separa/ });
+
+    expect(ask.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/51987654321\?text=/);
+    expect(decodeURIComponent(ask.getAttribute("href") ?? "")).toContain("quiero tener mi negocio en Separa");
+    expect(within(band).getByRole("link", { name: /Ya tengo cuenta/ })).toHaveAttribute("href", "/panel/entrar");
+  });
+
+  it("falls back to an email when there is no WhatsApp", async () => {
+    vi.stubEnv("VITE_CONTACT_WHATSAPP", "");
+    vi.stubEnv("VITE_CONTACT_EMAIL", "hola@separa.pe");
+    mockApi({});
+    renderApp("/");
+
+    const band = await screen.findByRole("region", { name: "¿Tienes un negocio con citas?" });
+
+    expect(within(band).getByRole("link", { name: /Quiero mi negocio/ }).getAttribute("href")).toMatch(/^mailto:hola@separa\.pe\?subject=/);
+  });
+});
