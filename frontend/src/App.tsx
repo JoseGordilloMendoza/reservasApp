@@ -18,6 +18,7 @@ const BookingsPage = lazy(() => import("./pages/panel/BookingsPage").then((m) =>
 const BusinessSettingsPage = lazy(() => import("./pages/panel/BusinessSettingsPage").then((m) => ({ default: m.BusinessSettingsPage })));
 const CustomerDetailPage = lazy(() => import("./pages/panel/CustomerDetailPage").then((m) => ({ default: m.CustomerDetailPage })));
 const CustomersPage = lazy(() => import("./pages/panel/CustomersPage").then((m) => ({ default: m.CustomersPage })));
+const ChangePasswordPage = lazy(() => import("./pages/panel/ChangePasswordPage").then((m) => ({ default: m.ChangePasswordPage })));
 const MorePage = lazy(() => import("./pages/panel/MorePage").then((m) => ({ default: m.MorePage })));
 const NewPasswordPage = lazy(() => import("./pages/panel/NewPasswordPage").then((m) => ({ default: m.NewPasswordPage })));
 const NewBookingPage = lazy(() => import("./pages/panel/NewBookingPage").then((m) => ({ default: m.NewBookingPage })));
@@ -67,6 +68,7 @@ export function App() {
       </Route>
 
       <Route path="panel/entrar" element={<LoginPage />} />
+      <Route path="panel/cambiar-contrasena" element={<ChangePasswordPage />} />
       <Route path="panel/recuperar" element={<RecoverPasswordPage />} />
       <Route path="panel/nueva-contrasena" element={<NewPasswordPage />} />
       <Route

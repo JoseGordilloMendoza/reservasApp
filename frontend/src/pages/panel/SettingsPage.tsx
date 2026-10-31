@@ -1,4 +1,4 @@
-import { Check, Copy, Palette, SlidersHorizontal, SquaresFour, Tag } from "@phosphor-icons/react";
+import { Check, Copy, Key, Palette, SlidersHorizontal, SquaresFour, Tag } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import { Button } from "../../components/Button";
@@ -11,6 +11,7 @@ const SECTIONS: MenuEntry[] = [
   { to: "/panel/ajustes/reglas", label: "Reglas de reserva", hint: "Confirmación, anticipación y cancelación", icon: SlidersHorizontal },
   { to: "/panel/ajustes/espacios", label: "Espacios y horarios", hint: "Tus canchas o consultorios y cuándo atienden", icon: SquaresFour },
   { to: "/panel/ajustes/servicios", label: "Servicios", hint: "Qué reservan tus clientes, cuánto dura y cuánto cuesta", icon: Tag },
+  { to: "/panel/cambiar-contrasena", label: "Mi contraseña", hint: "Cámbiala cuando quieras", icon: Key },
 ];
 
 /** The link customers use to book. Copying it is the first thing a new business does. */

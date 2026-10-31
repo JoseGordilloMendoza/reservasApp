@@ -13,6 +13,8 @@ export interface SessionUser {
   email: string;
   name: string;
   is_platform_admin: boolean;
+  /** True while the password is a temporary one handed over by the team. */
+  must_change_password: boolean;
   memberships: Membership[];
 }
 

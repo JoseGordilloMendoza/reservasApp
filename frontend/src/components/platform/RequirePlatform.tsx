@@ -23,6 +23,10 @@ export function RequirePlatform({ children }: { children: ReactNode }) {
     return <Navigate to="/panel/entrar" replace state={{ from: location.pathname }} />;
   }
 
+  if (auth.user?.must_change_password) {
+    return <Navigate to="/panel/cambiar-contrasena" replace />;
+  }
+
   if (!auth.user?.is_platform_admin) {
     return (
       <div className="mx-auto grid min-h-dvh max-w-[28rem] content-center gap-4 px-4 py-10">

@@ -30,6 +30,7 @@ interface AuthValue {
   leaveSupport: () => void;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: (credential: string) => Promise<void>;
+  changePassword: (current: string, next: string) => Promise<void>;
   logout: () => Promise<void>;
   selectBusiness: (slug: string) => void;
 }
@@ -127,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       login: async (email, password) => open(await panelApi.login(email, password)),
       loginWithGoogle: async (credential) => open(await panelApi.loginWithGoogle(credential)),
+      changePassword: async (current, next) => open(await panelApi.changePassword(current, next)),
       logout: async () => {
         const refresh = getRefreshToken();
         if (refresh) await panelApi.logout(refresh).catch(() => undefined);

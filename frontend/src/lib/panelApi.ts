@@ -99,6 +99,12 @@ export const panelApi = {
 
   me: () => authed<SessionUser>("/auth/me/"),
 
+  changePassword: (currentPassword: string, newPassword: string) =>
+    authed<Session>("/auth/change-password/", {
+      method: "POST",
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    }),
+
   logout: (refresh: string) =>
     request<unknown>("/auth/logout/", { method: "POST", body: JSON.stringify({ refresh }) }),
 

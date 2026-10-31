@@ -23,6 +23,11 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     return <Navigate to="/panel/entrar" replace state={{ from: location.pathname }} />;
   }
 
+  // A temporary password has to be replaced before anything else.
+  if (auth.user?.must_change_password) {
+    return <Navigate to="/panel/cambiar-contrasena" replace />;
+  }
+
   // The platform team has no business of its own: its home is the team area.
   if (!auth.membership && auth.user?.is_platform_admin) {
     return <Navigate to="/plataforma" replace />;

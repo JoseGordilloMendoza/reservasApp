@@ -118,6 +118,7 @@ export const OWNER: SessionUser = {
   email: "rosa@example.com",
   name: "Rosa Quispe",
   is_platform_admin: false,
+  must_change_password: false,
   memberships: [{ business: { name: BUSINESS.name, slug: BUSINESS.slug, status: "active" }, role: "owner" }],
 };
 
