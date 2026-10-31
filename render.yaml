@@ -37,8 +37,11 @@ services:
       # Email through Resend. Without a verified domain it only delivers to the Resend account's own address.
       - key: EMAIL_HOST
         value: smtp.resend.com
+      # Free web services on Render cannot send on ports 25, 465 or 587 (its documentation says so),
+      # which are the usual SMTP ports. Resend also accepts 2587 (STARTTLS) and 2465 (SSL), which are
+      # not on that list. If it still cannot connect, the fallback is Resend's HTTPS API.
       - key: EMAIL_PORT
-        value: "587"
+        value: "2587"
       - key: EMAIL_HOST_USER
         value: resend
       - key: EMAIL_HOST_PASSWORD
