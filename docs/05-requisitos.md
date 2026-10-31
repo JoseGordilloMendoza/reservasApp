@@ -33,8 +33,8 @@
 | NG-11 | Ver la ficha de un cliente: datos e historial de reservas en ese negocio | MVP |
 | NG-12 | Bloquear a un cliente por número de celular | MVP |
 | NG-13 | Varios usuarios por negocio con roles (dueño, staff) | Después |
-| NG-16 | Elegir el modo "automática para clientes de confianza" y ver en cada reserva pendiente la señal de confianza del cliente | Propuesta (D98, D100) |
-| NG-17 | Descartar una reserva y bloquear al cliente con un toque; bloqueo automático tras faltas repetidas | Propuesta (D100) |
+| NG-16 | Elegir el modo "automática para clientes de confianza" y ver en cada reserva pendiente la señal de confianza del cliente | MVP (D98, D100) |
+| NG-17 | Descartar una reserva y bloquear al cliente con un toque; bloqueo automático tras faltas repetidas | MVP (D100) |
 | NG-18 | Pedir un adelanto a los clientes nuevos | Propuesta, segunda etapa (D101) |
 | NG-14 | Reservas recurrentes (serie semanal) | Después |
 | NG-15 | Reportes de ocupación e ingresos referenciales | Después |
@@ -62,8 +62,9 @@ Cada valor tiene un **valor por defecto de la plataforma**, se ajusta por negoci
 | CL-01 | Ver la página pública del negocio: datos, recursos y servicios | MVP |
 | CL-02 | Ver horarios disponibles por recurso y fecha | MVP |
 | CL-03 | Reservar indicando nombre y celular, sin cuenta | MVP |
-| CL-09 | Entrar con Google al reservar, para ser un cliente verificado (sin contraseña) y recuperar sus reservas en otro dispositivo | Propuesta (D97) |
-| CL-10 | Si no está verificado, reservar con límites más estrictos y un chequeo anti-robots | Propuesta (D99, D102) |
+| CL-09 | Entrar con Google al reservar, para ser un cliente verificado (sin contraseña) | MVP (D97). Recuperar sus reservas en otro dispositivo: después |
+| CL-10 | Si aún no es de confianza, reservar con límites más estrictos (D99) | MVP |
+| CL-11 | Un chequeo anti-robots al reservar sin verificar | Propuesta (D102) |
 | CL-04 | Ver el resultado de la reserva (pendiente o confirmada) y cómo continuar con el negocio | MVP |
 | CL-05 | Consultar y cancelar su reserva mediante un link único | MVP |
 | CL-06 | Contactar al negocio por WhatsApp con un mensaje prellenado | MVP |

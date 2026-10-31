@@ -60,6 +60,7 @@ El panel abre con lo urgente: lo que falta confirmar y lo de hoy.
 
 - **Verificar una reserva:** el cliente muestra su código (`K7M-42X`) o dice su nombre; el dueño lo busca y marca "Llegó".
 - **Cobros sin pasarela:** cada reserva registra qué se pagó, cómo y cuánto falta. La pestaña **Con saldo** lista lo pendiente. El texto de "Cómo te pagan" (por ejemplo, el número de Yape) sale en el correo y el boleto del cliente.
+- **Contra las bromas:** cada reserva pendiente muestra quién es (verificado con Google, cliente conocido, primera vez, con faltas) y el botón **"Era una broma"** la descarta y bloquea al cliente. Se puede elegir confirmar solas solo las reservas de clientes de confianza, y quien falta dos veces se bloquea solo.
 - **Reservas por teléfono:** se anotan en el momento y el cliente recibe su enlace.
 - **Clientes, bloqueos, horarios, servicios y reglas** (anticipación, cancelación, confirmación automática o manual) se configuran desde el celular.
 - **Su propio color.** Cada negocio elige el acento de su página; el azul y el amarillo de Separa se mantienen para que todo se lea bien.

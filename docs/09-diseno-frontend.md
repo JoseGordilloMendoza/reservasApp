@@ -166,6 +166,13 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **Lista de negocios** como tarjetas con un dibujo plano por rubro (pelota, hojas o boleto), que alternan color y sentido. Se oculta sola si no hay ninguno.
 - **"Así de fácil":** tres boletos con muescas, ligeramente inclinados: elige, separa, llega.
 
+### Confianza en quien reserva
+
+- **Para el cliente, opcional y sin presión:** en el paso "¿A nombre de quién?" hay un recuadro punteado con "Continuar con Google" y una línea que explica para qué ("el negocio sabe que eres tú y puede confirmarte más rápido"). Si lo usa, se llenan su nombre y su correo, y el correo queda fijo.
+- **Para el dueño, una señal en cada reserva pendiente:** una etiqueta (verificado con Google, cliente conocido, primera vez o con faltas) y una línea con lo que hizo antes. La de "primera vez" va punteada, la de "con faltas" en el color de aviso.
+- **"Era una broma"** es un botón al final de cada reserva pendiente, con confirmación porque bloquea al cliente. En las listas solo se marca a quien tiene faltas.
+- En Reglas hay tres maneras de confirmar: a mano, solo clientes de confianza, o todas solas; y los límites de quien aún no es de confianza.
+
 ### Rapidez en los primeros segundos
 
 - **La segunda visita no espera al servidor.** La lista del inicio y la página de un negocio aparecen al instante con lo último que se vio, y se actualizan solas cuando llega la respuesta nueva (D96). Nada de esto se nota salvo que el servidor esté dormido.
