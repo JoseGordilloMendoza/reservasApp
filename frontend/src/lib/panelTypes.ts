@@ -46,6 +46,17 @@ export interface PanelBusiness {
   listed: boolean;
   /** How a customer pays this business; it goes on their booking. */
   payment_instructions: string;
+  /** What the place has, from the fixed list of keys; see lib/features.ts. */
+  features: string[];
+  /** Cleaned https links, or empty. */
+  instagram: string;
+  facebook: string;
+  tiktok: string;
+  website: string;
+  /** A Google Maps link to the place; empty means the page searches the address. */
+  maps_url: string;
+  /** One rule per line. */
+  house_rules: string;
   business_type: string;
   timezone: string;
   status: "active" | "suspended";
@@ -202,6 +213,13 @@ export interface BusinessChanges {
   accent?: Accent;
   listed?: boolean;
   payment_instructions?: string;
+  features?: string[];
+  instagram?: string;
+  facebook?: string;
+  tiktok?: string;
+  website?: string;
+  maps_url?: string;
+  house_rules?: string;
   /** Only the options to change; the server keeps the rest. */
   settings?: Record<string, number | string>;
 }

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 
 import { BookingFlow } from "../components/BookingFlow";
 import { ContactLinks } from "../components/ContactLinks";
+import { PlaceDetails } from "../components/PlaceDetails";
 import { Skeleton } from "../components/Skeleton";
 import { formatPrice } from "../lib/format";
 import { ApiError } from "../lib/api";
@@ -139,18 +140,22 @@ export function BusinessPage() {
   const business = query.data;
 
   return (
-    <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-12 md:items-start md:gap-8">
-      <div className="min-w-0 md:col-span-7 md:sticky md:top-6">
+    <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-12 md:items-start md:gap-x-8 md:gap-y-10">
+      <div className="min-w-0 md:col-span-7">
         <Poster business={business} />
       </div>
       <motion.div
-        className="min-w-0 md:col-span-5"
+        className="min-w-0 md:col-span-5 md:row-span-2"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 140, damping: 20, delay: 0.08 }}
       >
         {business.accepting_bookings ? <BookingFlow business={business} /> : <NotAccepting business={business} />}
       </motion.div>
+      {/* After the booking on a phone, so the way to book stays near the top; under the poster on a desk. */}
+      <div className="min-w-0 md:col-span-7">
+        <PlaceDetails business={business} />
+      </div>
     </div>
   );
 }

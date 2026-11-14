@@ -1,6 +1,7 @@
 import { formatLongDate, formatTime } from "../lib/dates";
 import { formatDuration, formatPrice } from "../lib/format";
 import { formatCode } from "../lib/payment";
+import { directionsLink, rulesOf } from "../lib/places";
 import { STATUS_LABEL } from "../lib/status";
 import type { BookingDetails, BookingStatus } from "../lib/types";
 
@@ -70,6 +71,8 @@ interface Props {
 export function Ticket({ booking, timeZone }: Props) {
   const price = formatPrice(booking.price);
   const dead = booking.status === "cancelled" || booking.status === "expired";
+  const directions = directionsLink(booking.business);
+  const rules = rulesOf(booking.business.house_rules);
 
   return (
     <article
@@ -117,6 +120,29 @@ export function Ticket({ booking, timeZone }: Props) {
             </div>
           )}
         </dl>
+
+        {(booking.business.address || directions) && !dead && (
+          <div className="text-sm">
+            <p className="text-muted">Dónde</p>
+            {booking.business.address && <p className="font-semibold">{booking.business.address}</p>}
+            {directions && (
+              <a href={directions} target="_blank" rel="noreferrer" className="mt-1 inline-block min-h-[44px] py-2.5 font-display font-bold underline decoration-2 underline-offset-4">
+                Cómo llegar<span className="sr-only"> (se abre en otra pestaña)</span>
+              </a>
+            )}
+          </div>
+        )}
+
+        {rules.length > 0 && !dead && (
+          <div className="text-sm">
+            <p className="font-display text-base font-bold">Antes de venir</p>
+            <ul className="mt-1 grid list-disc gap-1 pl-5">
+              {rules.map((rule) => (
+                <li key={rule}>{rule}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       <Perforation />

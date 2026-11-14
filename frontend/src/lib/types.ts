@@ -31,6 +31,17 @@ export interface PublicBusiness {
   phone: string;
   whatsapp: string;
   accent: Accent;
+  /** What the place has, from the fixed list of keys; see lib/features.ts. */
+  features: string[];
+  /** Cleaned https links, or empty. */
+  instagram: string;
+  facebook: string;
+  tiktok: string;
+  website: string;
+  /** A Google Maps link to the place; empty means the page searches the address. */
+  maps_url: string;
+  /** One rule per line. */
+  house_rules: string;
   business_type: string;
   timezone: string;
   /** False when the business is suspended or past due: it offers nothing to book. */
@@ -71,7 +82,7 @@ export interface BookingDetails {
   starts_at: string;
   ends_at: string;
   expires_at: string | null;
-  business: { name: string; slug: string };
+  business: { name: string; slug: string; address: string; maps_url: string; house_rules: string };
   resource: { id: number; name: string };
   service: { id: number; name: string };
   customer_name: string;

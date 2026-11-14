@@ -8,12 +8,14 @@ import { CheckField, Field } from "../../components/Field";
 import { AccentPicker } from "../../components/panel/AccentPicker";
 import { Skeleton } from "../../components/Skeleton";
 import { TextAreaField } from "../../components/TextAreaField";
+import { FEATURES } from "../../lib/features";
 import { ApiError } from "../../lib/http";
 import type { PanelBusiness } from "../../lib/panelTypes";
 import { usePanelBusiness, useUpdateBusiness } from "../../lib/panelQueries";
 
 const FIELDS = ["name", "description", "address", "phone", "whatsapp"] as const;
-type Values = Pick<PanelBusiness, (typeof FIELDS)[number] | "accent" | "listed" | "payment_instructions">;
+const DETAILS = ["features", "instagram", "facebook", "tiktok", "website", "maps_url", "house_rules"] as const;
+type Values = Pick<PanelBusiness, (typeof FIELDS)[number] | (typeof DETAILS)[number] | "accent" | "listed" | "payment_instructions">;
 
 const valuesOf = (business: PanelBusiness): Values => ({
   name: business.name,
@@ -24,6 +26,13 @@ const valuesOf = (business: PanelBusiness): Values => ({
   accent: business.accent,
   listed: business.listed,
   payment_instructions: business.payment_instructions,
+  features: business.features,
+  instagram: business.instagram,
+  facebook: business.facebook,
+  tiktok: business.tiktok,
+  website: business.website,
+  maps_url: business.maps_url,
+  house_rules: business.house_rules,
 });
 
 function BusinessForm({ business }: { business: PanelBusiness }) {
@@ -59,6 +68,13 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
         accent: values.accent,
         listed: values.listed,
         payment_instructions: values.payment_instructions.trim(),
+        features: values.features,
+        instagram: values.instagram.trim(),
+        facebook: values.facebook.trim(),
+        tiktok: values.tiktok.trim(),
+        website: values.website.trim(),
+        maps_url: values.maps_url.trim(),
+        house_rules: values.house_rules.trim(),
       },
       {
         onSuccess: (updated) => {
@@ -83,12 +99,23 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
       <Field label="Nombre" autoComplete="off" value={values.name} error={errors.name} onChange={(event) => set({ name: event.target.value })} />
       <TextAreaField
         label="Descripción"
-        hint="Aparece en tu página, bajo el nombre."
+        hint="Es tu mensaje de bienvenida: aparece en tu página, bajo el nombre. Cuenta en pocas palabras qué ofreces."
         value={values.description}
         error={errors.description}
         onChange={(event) => set({ description: event.target.value })}
       />
       <Field label="Dirección" autoComplete="off" value={values.address} error={errors.address} onChange={(event) => set({ address: event.target.value })} />
+      <Field
+        label="Link de Google Maps"
+        type="url"
+        inputMode="url"
+        autoComplete="off"
+        placeholder="https://maps.app.goo.gl/..."
+        hint="Opcional. En Google Maps busca tu local, toca Compartir y copia el link. Así tus clientes llegan con un toque. Si lo dejas vacío, buscamos tu dirección."
+        value={values.maps_url}
+        error={errors.maps_url}
+        onChange={(event) => set({ maps_url: event.target.value })}
+      />
       <Field
         label="Teléfono"
         type="tel"
@@ -118,6 +145,83 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
         maxLength={300}
         value={values.payment_instructions}
         onChange={(event) => set({ payment_instructions: event.target.value })}
+      />
+
+      <fieldset className="grid gap-3">
+        <legend className="font-display text-base font-bold">Qué tiene tu lugar</legend>
+        <p className="text-sm text-muted">Marca lo que tienes. Tus clientes lo ven en tu página.</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {FEATURES.map(({ key, label }) => (
+            <CheckField
+              key={key}
+              label={label}
+              checked={values.features.includes(key)}
+              onChange={(event) =>
+                set({ features: event.target.checked ? [...values.features, key] : values.features.filter((item) => item !== key) })
+              }
+            />
+          ))}
+        </div>
+        {errors.features && (
+          <p role="alert" className="text-sm font-semibold text-danger">
+            {errors.features}
+          </p>
+        )}
+      </fieldset>
+
+      <section aria-labelledby="redes" className="grid gap-6">
+        <div className="grid gap-1">
+          <h2 id="redes" className="font-display text-base font-bold">
+            Tus redes
+          </h2>
+          <p className="text-sm text-muted">Todo es opcional. Puedes escribir tu usuario o pegar el link.</p>
+        </div>
+        <Field
+          label="Instagram"
+          autoComplete="off"
+          autoCapitalize="none"
+          placeholder="@minegocio"
+          value={values.instagram}
+          error={errors.instagram}
+          onChange={(event) => set({ instagram: event.target.value })}
+        />
+        <Field
+          label="Facebook"
+          autoComplete="off"
+          autoCapitalize="none"
+          placeholder="facebook.com/minegocio"
+          value={values.facebook}
+          error={errors.facebook}
+          onChange={(event) => set({ facebook: event.target.value })}
+        />
+        <Field
+          label="TikTok"
+          autoComplete="off"
+          autoCapitalize="none"
+          placeholder="@minegocio"
+          value={values.tiktok}
+          error={errors.tiktok}
+          onChange={(event) => set({ tiktok: event.target.value })}
+        />
+        <Field
+          label="Página web"
+          autoComplete="off"
+          autoCapitalize="none"
+          placeholder="minegocio.pe"
+          value={values.website}
+          error={errors.website}
+          onChange={(event) => set({ website: event.target.value })}
+        />
+      </section>
+
+      <TextAreaField
+        label="Reglas de la casa"
+        placeholder={"Llegar 10 minutos antes\nTraer tus zapatillas\nNo se permite fumar"}
+        hint="Una regla por línea, hasta 8. Tus clientes las ven en tu página y en su reserva."
+        maxLength={600}
+        value={values.house_rules}
+        error={errors.house_rules}
+        onChange={(event) => set({ house_rules: event.target.value })}
       />
 
       <section aria-labelledby="color" className="grid gap-3">
