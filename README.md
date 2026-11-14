@@ -63,6 +63,7 @@ El panel abre con lo urgente: lo que falta confirmar y lo de hoy.
 - **Cobros sin pasarela:** cada reserva registra qué se pagó, cómo y cuánto falta. La pestaña **Con saldo** lista lo pendiente. El texto de "Cómo te pagan" (por ejemplo, el número de Yape) sale en el correo y el boleto del cliente.
 - **Contra las bromas:** cada reserva pendiente muestra quién es (verificado con Google, cliente conocido, primera vez, con faltas) y el botón **"Era una broma"** la descarta y bloquea al cliente. Se puede elegir confirmar solas solo las reservas de clientes de confianza, y quien falta dos veces se bloquea solo.
 - **Menos plantones:** el día antes, el cliente toca "Confirmo que voy" en su boleto y el dueño ve quién avisó y a quién escribirle. Cada reserva trae mensajes de WhatsApp ya escritos (recordar, cómo pagar, no pude confirmar) que se abren con un toque.
+- **Para quien reserva, sin cuenta:** puede guardar sus negocios en **favoritos** y pedir que la app **recuerde su nombre y celular** para la siguiente reserva. Todo queda en su celular, y lo puede borrar cuando quiera.
 - **Reservas por teléfono:** se anotan en el momento y el cliente recibe su enlace.
 - **Clientes, bloqueos, horarios, servicios y reglas** (anticipación, cancelación, confirmación automática o manual) se configuran desde el celular.
 - **Una página que cuenta el lugar.** Desde "Mi página" cada negocio marca lo que tiene (estacionamiento, vestidores, wifi, entrada sin escalones…), pega el link de Google Maps para que lleguen con un toque, escribe sus reglas de la casa y enlaza sus redes. Todo es opcional, y la dirección y las reglas viajan también en el boleto del cliente.
@@ -100,7 +101,7 @@ Los negocios no se registran solos: el equipo los da de alta. Esa área vive en 
 
 ## Estado
 
-El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1178 pruebas del backend** y **653 del frontend**, y el código ya está preparado para producción y probándose en internet.
+El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1178 pruebas del backend** y **676 del frontend**, y el código ya está preparado para producción y probándose en internet.
 
 Lo que sigue es consultar el nombre en **INDECOPI** y poner un **dominio propio** (para enviar correos a cualquier destinatario y activar Google con comodidad), sumar las imágenes de cada negocio y pasar el servidor a un plan que no se duerma. El detalle está en el [plan de construcción](docs/08-plan-de-construccion.md).
 
