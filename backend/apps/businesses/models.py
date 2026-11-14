@@ -19,7 +19,7 @@ class Business(models.Model):
     class Accent(models.TextChoices):
         """Color the business's public page is built around. The frontend defines the shades."""
 
-        POPPY = "poppy", "Poppy"
+        BRAND = "brand", "Brand"
         TANGERINE = "tangerine", "Tangerine"
         SUNFLOWER = "sunflower", "Sunflower"
         MINT = "mint", "Mint"
@@ -33,7 +33,7 @@ class Business(models.Model):
     address = models.CharField(max_length=200, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     whatsapp = models.CharField(max_length=20, blank=True)
-    accent = models.CharField(max_length=20, choices=Accent.choices, default=Accent.POPPY)
+    accent = models.CharField(max_length=20, choices=Accent.choices, default=Accent.BRAND)
     business_type = models.CharField(
         max_length=20, choices=BusinessType.choices, default=BusinessType.GENERIC
     )

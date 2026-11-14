@@ -20,7 +20,7 @@ DEMOS = [
             "slug": "canchas-los-andes",
             "name": "Canchas Los Andes",
             "business_type": Business.BusinessType.COURT,
-            "accent": Business.Accent.POPPY,
+            "accent": Business.Accent.BRAND,
             "description": "Grass sintético y luces LED. Vestidores y estacionamiento.",
             "address": "Av. Ejército 123, Cayma",
             "phone": "+51987654321",
