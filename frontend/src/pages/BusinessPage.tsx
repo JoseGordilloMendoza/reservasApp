@@ -1,11 +1,14 @@
 import { MapPin, Phone, Storefront, WhatsappLogo } from "@phosphor-icons/react";
 import { motion } from "motion/react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { BookingFlow } from "../components/BookingFlow";
 import { ContactLinks } from "../components/ContactLinks";
+import { FavoriteButton } from "../components/FavoriteButton";
 import { PlaceDetails } from "../components/PlaceDetails";
 import { Skeleton } from "../components/Skeleton";
+import { refreshFavorite } from "../lib/favorites";
 import { formatPrice } from "../lib/format";
 import { ApiError } from "../lib/api";
 import { useAccent, useBusiness } from "../lib/queries";
@@ -54,36 +57,36 @@ function Poster({ business }: { business: PublicBusiness }) {
         <p className="mt-5 max-w-[34ch] text-lg font-medium leading-snug">{business.description}</p>
       )}
 
-      {(business.address || phone || chat) && (
-        <ul className="mt-6 flex flex-wrap gap-2">
-          {business.address && (
-            <li className={CHIP}>
-              <MapPin aria-hidden="true" />
-              {business.address}
-            </li>
-          )}
-          {phone && (
-            <li>
-              <a href={phone} className={`${CHIP} press shadow-card-sm`}>
-                <Phone aria-hidden="true" />
-                {displayPhone(business.phone)}
-              </a>
-            </li>
-          )}
-          {chat && (
-            <li>
-              <a href={chat} target="_blank" rel="noreferrer" className={`${CHIP} press shadow-card-sm`}>
-                <WhatsappLogo aria-hidden="true" />
-                WhatsApp
-              </a>
-            </li>
-          )}
-        </ul>
-      )}
+      <ul className="mt-6 flex flex-wrap gap-2">
+        {business.address && (
+          <li className={CHIP}>
+            <MapPin aria-hidden="true" />
+            {business.address}
+          </li>
+        )}
+        {phone && (
+          <li>
+            <a href={phone} className={`${CHIP} press shadow-card-sm`}>
+              <Phone aria-hidden="true" />
+              {displayPhone(business.phone)}
+            </a>
+          </li>
+        )}
+        {chat && (
+          <li>
+            <a href={chat} target="_blank" rel="noreferrer" className={`${CHIP} press shadow-card-sm`}>
+              <WhatsappLogo aria-hidden="true" />
+              WhatsApp
+            </a>
+          </li>
+        )}
+        <li>
+          <FavoriteButton business={business} className={CHIP} />
+        </li>
+      </ul>
 
       {price && (
         <div
-          aria-label={`Desde ${price}`}
           className="absolute -bottom-5 right-5 rotate-[5deg] rounded-box border border-edge bg-surface px-3 py-2 text-center text-text shadow-card-sm md:right-8"
         >
           <span className="block text-[11px] font-bold uppercase leading-none tracking-wider">Desde</span>
@@ -126,6 +129,14 @@ export function BusinessPage() {
   const { slug = "" } = useParams();
   const query = useBusiness(slug);
   useAccent(query.data?.accent);
+
+  // A saved business is kept as the business is now: renamed, recolored, moved.
+  const loaded = query.data;
+  useEffect(() => {
+    if (loaded) {
+      refreshFavorite({ slug: loaded.slug, name: loaded.name, accent: loaded.accent, kind: loaded.business_type, address: loaded.address });
+    }
+  }, [loaded]);
 
   if (query.isPending) return <PageSkeleton />;
 

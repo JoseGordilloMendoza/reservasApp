@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { BusinessDirectory } from "../components/BusinessDirectory";
 import { BusinessSearch } from "../components/BusinessSearch";
 import { buttonClass } from "../components/Button";
+import { Favorites } from "../components/Favorites";
 import { ForBusinesses } from "../components/ForBusinesses";
 import { HeroArt } from "../components/HeroArt";
 
@@ -79,6 +80,7 @@ export function HomePage() {
         </motion.aside>
       </div>
 
+      <Favorites />
       <BusinessDirectory />
       <HowItWorks />
       <ForBusinesses />
