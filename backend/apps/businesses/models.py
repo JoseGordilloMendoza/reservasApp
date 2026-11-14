@@ -1,5 +1,6 @@
 from django.db import models
 
+from .features import validate_features
 from .presets import preset_settings
 from .search import normalize_for_search
 from .settings_schema import validate_settings
@@ -46,6 +47,17 @@ class Business(models.Model):
     listed = models.BooleanField(default=True)
     # How a customer pays this business (a Yape number, an account). Shown on the booking, never used by the platform.
     payment_instructions = models.CharField(max_length=300, blank=True)
+    # What the place has, from the fixed list in features.py; shown as chips on the public page.
+    features = models.JSONField(default=list, blank=True, validators=[validate_features])
+    # Links the page shows, already cleaned by links.py (https only, on the right site).
+    instagram = models.CharField(max_length=200, blank=True)
+    facebook = models.CharField(max_length=200, blank=True)
+    tiktok = models.CharField(max_length=200, blank=True)
+    website = models.CharField(max_length=200, blank=True)
+    # A Google Maps link to the place. Without it the page searches the address.
+    maps_url = models.CharField(max_length=300, blank=True)
+    # What the business asks of whoever comes, one rule per line. Shown on the page and on the booking.
+    house_rules = models.CharField(max_length=600, blank=True)
     # The name as the search compares it: lowercase, no accents. Kept up to date by save().
     search_name = models.CharField(max_length=120, blank=True, editable=False, db_index=True)
     # Why and when the platform team suspended it; cleared on reactivation.
