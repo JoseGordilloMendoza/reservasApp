@@ -19,7 +19,7 @@
  Cliente / dueño / equipo ──► Cloudflare Pages (la aplicación, archivos estáticos)
                                       │  llama a
                                       ▼
-                              Render (la API, Django)  ──► Neon (PostgreSQL, São Paulo)
+                              Render (la API, Django)  ──► Neon (PostgreSQL, Virginia)
                                       │
                                       └──► Resend (correos, puerto 2587)
 ```
@@ -27,7 +27,7 @@
 ## Lo que debes saber antes (y que cambió respecto a lo que pensaba)
 
 1. **Render gratis no puede enviar correo por los puertos 25, 465 ni 587** (su documentación lo dice: *"Free web services can't send outbound network traffic on ports 25, 465, or 587"*). Por eso la configuración usa el **puerto 2587** de Resend, que no está en esa lista. **(sin confirmar que funcione desde Render)**: la primera comprobación del paso 6 lo verifica. Si falla, hay un plan B (ver "Problemas comunes").
-2. **La región de Neon no se puede cambiar después** (*"You cannot change the region for an existing project"*). Elige **São Paulo** desde el principio.
+2. **La región de Neon no se puede cambiar después** (*"You cannot change the region for an existing project"*). Elige la región **junto a la de Render** desde el principio (D118): hoy, **N. Virginia** para las dos. Una base lejos del servidor suma unos 0,35 s a cada consulta (medido).
 3. **El servidor de Render se duerme tras 15 minutos sin visitas y tarda cerca de un minuto en despertar** (*"This process takes about one minute"*). Además *"Render might restart a Free web service at any time"*.
 4. **La base de Neon también se duerme (a los 5 minutos)**, pero despierta en *"a few hundred milliseconds"*. Ya está contemplado en la configuración: se comprueba que cada conexión siga viva antes de reutilizarla.
 5. **Cloudflare ahora recomienda Workers para proyectos nuevos**, pero Pages sigue funcionando y documentado. Para esta prueba usamos Pages porque es lo más simple; abajo explico la diferencia.
@@ -70,7 +70,7 @@ Esa clave será `EMAIL_HOST_PASSWORD` en Render. (Después puedes borrar la clav
 1. Entra a la consola: **console.neon.tech**.
 2. Pulsa **New Project**.
 3. **Project name**: `separa` (hasta 64 caracteres).
-4. **Region**: **AWS South America (São Paulo) — `aws-sa-east-1`**. Es la más cercana a Perú de las disponibles. **No se puede cambiar después.**
+4. **Region**: **AWS US East (N. Virginia) — `aws-us-east-1`**, la misma región que el servidor de Render (**Virginia**). Neon recomienda *"the region closest to your application server"*. Render no tiene región en Sudamérica, y si no se indica usa Oregon, así que **elígela al crear el servicio** (en el Blueprint, `region: virginia`). **Ninguna de las dos se puede cambiar después** (D118). En una prueba de ese cambio, una consulta a la base pasó de 0,67 s a 0,28 s.
 5. **Postgres version**: expande la sección *Postgres database* y elige la **17** (la misma que usamos en desarrollo). La documentación no dice cuál es la versión por defecto.
 6. Pulsa **Create project**. Neon crea una base llamada `neondb` y un rol `neondb_owner`.
 
