@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import { ApiError, api } from "../lib/api";
 import { validateCustomer } from "../lib/customer";
+import { forgetRemembered, readRemembered, saveRemembered } from "../lib/remembered";
 import type { CustomerErrors, CustomerValues } from "../lib/customer";
 import { formatShortDate, formatTime, groupSlotsByDay, upcomingDays } from "../lib/dates";
 import { formatPrice } from "../lib/format";
@@ -91,7 +92,12 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
         ? null
         : nearest;
 
-  const [form, setForm] = useState<CustomerValues>(EMPTY_FORM);
+  // What this person typed on an earlier booking, if they asked to keep it. The terms are never kept.
+  const [remembered, setRemembered] = useState(readRemembered);
+  const [remember, setRemember] = useState(true);
+  const [form, setForm] = useState<CustomerValues>(() =>
+    remembered ? { ...EMPTY_FORM, name: remembered.name, phone: remembered.phone, email: remembered.email } : EMPTY_FORM,
+  );
   // Set when the customer signs in with Google: the server verifies the token, so the booking counts as verified.
   const [google, setGoogle] = useState<{ credential: string; profile: GoogleProfile | null } | null>(null);
   const [errors, setErrors] = useState<CustomerErrors>({});
@@ -121,6 +127,8 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
         accepted_terms: form.accepted,
       }),
     onSuccess: (booking) => {
+      if (remember) saveRemembered(form);
+      else forgetRemembered();
       saveBooking({
         slug: business.slug,
         token: booking.manage_token,
@@ -258,6 +266,22 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 200, damping: 24 }}>
             <Step number={options.length > 1 ? 3 : 2} title="¿A nombre de quién?">
               <div className="grid gap-5">
+                {remembered && (
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-box border border-dashed border-edge p-3">
+                    <p className="text-sm font-semibold">Usamos los datos que guardaste en este celular.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        forgetRemembered();
+                        setRemembered(null);
+                        setForm((current) => ({ ...current, name: "", phone: "", email: "" }));
+                      }}
+                      className="min-h-[44px] px-1 text-sm font-semibold underline underline-offset-4"
+                    >
+                      Usar otros datos
+                    </button>
+                  </div>
+                )}
                 {googleClientId() && (
                   <div className="grid gap-3 rounded-box border border-dashed border-edge p-4">
                     {google ? (
@@ -312,6 +336,11 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
                   readOnly={Boolean(google?.profile)}
                   hint={google?.profile ? "Es el de tu cuenta de Google." : undefined}
                   onChange={(event) => setForm({ ...form, email: event.target.value })}
+                />
+                <CheckField
+                  label="Recordar mis datos en este celular, para no escribirlos otra vez."
+                  checked={remember}
+                  onChange={(event) => setRemember(event.target.checked)}
                 />
                 <CheckField
                   label={`Acepto que ${business.name} use mis datos para gestionar esta reserva.`}

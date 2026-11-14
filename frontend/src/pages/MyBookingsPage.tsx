@@ -1,4 +1,4 @@
-import { TicketIcon, Trash } from "@phosphor-icons/react";
+import { TicketIcon, Trash, UserCircle } from "@phosphor-icons/react";
 import { useQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -8,6 +8,7 @@ import { buttonClass } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
 import { ApiError, api } from "../lib/api";
 import { formatShortDate, formatTime } from "../lib/dates";
+import { forgetRemembered, readRemembered } from "../lib/remembered";
 import { STATUS_LABEL, LIVE_STATUSES } from "../lib/status";
 import { DEFAULT_TIME_ZONE, forgetBooking, listSavedBookings } from "../lib/storage";
 import type { SavedBooking } from "../lib/storage";
@@ -36,6 +37,7 @@ function order(entries: Entry[], now = Date.now()): Entry[] {
 
 export function MyBookingsPage() {
   const [saved, setSaved] = useState(listSavedBookings);
+  const [me, setMe] = useState(readRemembered);
 
   const results = useQueries({
     queries: saved.map((item) => ({
@@ -127,6 +129,43 @@ export function MyBookingsPage() {
           );
         })}
       </ul>
+
+      {me && (
+        <section aria-labelledby="my-data" className="grid gap-3 rounded-box border border-edge bg-surface p-5 shadow-card-sm">
+          <h2 id="my-data" className="flex items-center gap-2 font-display text-xl font-bold">
+            <UserCircle aria-hidden="true" size={26} />
+            Mis datos
+          </h2>
+          <p className="text-muted">Los guardaste en este celular para no escribirlos en cada reserva. Solo se quedan aquí.</p>
+          <dl className="grid gap-1">
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-muted">Nombre:</dt>
+              <dd className="font-semibold">{me.name}</dd>
+            </div>
+            <div className="flex flex-wrap gap-x-2">
+              <dt className="text-muted">Celular:</dt>
+              <dd className="font-semibold">{me.phone}</dd>
+            </div>
+            {me.email && (
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="text-muted">Correo:</dt>
+                <dd className="break-all font-semibold">{me.email}</dd>
+              </div>
+            )}
+          </dl>
+          <button
+            type="button"
+            onClick={() => {
+              forgetRemembered();
+              setMe(null);
+            }}
+            className="inline-flex min-h-[44px] w-fit items-center gap-2 px-1 text-sm font-semibold underline underline-offset-4"
+          >
+            <Trash aria-hidden="true" size={16} />
+            Olvidar mis datos
+          </button>
+        </section>
+      )}
     </div>
   );
 }
