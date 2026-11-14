@@ -65,7 +65,12 @@ El panel abre con lo urgente: lo que falta confirmar y lo de hoy.
 - **Menos plantones:** el día antes, el cliente toca "Confirmo que voy" en su boleto y el dueño ve quién avisó y a quién escribirle. Cada reserva trae mensajes de WhatsApp ya escritos (recordar, cómo pagar, no pude confirmar) que se abren con un toque.
 - **Reservas por teléfono:** se anotan en el momento y el cliente recibe su enlace.
 - **Clientes, bloqueos, horarios, servicios y reglas** (anticipación, cancelación, confirmación automática o manual) se configuran desde el celular.
+- **Una página que cuenta el lugar.** Desde "Mi página" cada negocio marca lo que tiene (estacionamiento, vestidores, wifi, entrada sin escalones…), pega el link de Google Maps para que lleguen con un toque, escribe sus reglas de la casa y enlaza sus redes. Todo es opcional, y la dirección y las reglas viajan también en el boleto del cliente.
 - **Su propio color.** Cada negocio elige el acento de su página; el azul de MiReserva, el fondo claro y el texto oscuro se mantienen para que todo se lea bien.
+
+<div align="center">
+<img src="docs/capturas/lugar.png" alt="La sección Sobre este lugar: características, cómo llegar, reglas de la casa y redes" width="40%">
+</div>
 
 <div align="center">
 <img src="docs/capturas/colores.png" alt="La misma página de un negocio en los seis colores disponibles" width="100%">
@@ -95,7 +100,7 @@ Los negocios no se registran solos: el equipo los da de alta. Esa área vive en 
 
 ## Estado
 
-El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1131 pruebas del backend** y **634 del frontend**, y el código ya está preparado para producción y probándose en internet.
+El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1178 pruebas del backend** y **653 del frontend**, y el código ya está preparado para producción y probándose en internet.
 
 Lo que sigue es consultar el nombre en **INDECOPI** y poner un **dominio propio** (para enviar correos a cualquier destinatario y activar Google con comodidad), sumar las imágenes de cada negocio y pasar el servidor a un plan que no se duerma. El detalle está en el [plan de construcción](docs/08-plan-de-construccion.md).
 
