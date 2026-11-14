@@ -1,61 +1,85 @@
 # 09 - Diseño del frontend
 
-> Dirección elegida: **boleto neobrutalista**. v0.2: ya implementada para el cliente (M6) y ajustada al verla en pantalla.
+> Dirección actual: **MiReserva, limpia y de confianza** (D106). Reemplaza al "boleto neobrutalista" (D47), que se construyó y se probó en internet antes de este cambio. El logo, los colores y el estilo vienen del moodboard que entregó el socio del proyecto.
 
 ## 1. Concepto
 
-**Reservar es sacar un boleto.** Todo el diseño sale de esa idea:
+**Reservar debe sentirse claro, tranquilo y confiable**, para cualquier negocio y para cualquier persona. Tres reglas mandan sobre cualquier detalle:
 
-- La página de cada negocio es un **cartel**: un bloque grande de color con el nombre en tipografía enorme.
-- Cada horario es una **entrada** que se toca y se hunde.
-- La confirmación es un **boleto** con talón, perforación y código, que el cliente guarda.
+- **Simple.** Una cosa por pantalla, frases cortas, botones que dicen una acción. Si algo necesita explicación, se rediseña.
+- **Accesible.** Se lee bien, se toca bien y se entiende sin ayuda: contraste comprobado, botones grandes, teclado, lenguaje llano (ver [11 - Accesibilidad](11-accesibilidad.md)).
+- **De confianza.** Azul, mucho aire, bordes finos y sombras suaves: parece una herramienta seria, que un consultorio o una clínica no tendrían reparo en mostrar.
 
-Lo atrevido está en la forma (bordes gruesos, sombras duras, bloques planos, tipografía grande). El camino hacia el botón de reservar sigue siendo corto y obvio: la audacia nunca entorpece la tarea.
+El boleto con código sigue siendo la imagen de la confirmación: es lo que el cliente guarda y muestra. Ya no es el estilo de toda la aplicación.
 
-Se apoya en las referencias de [tendencias 2026](https://barnimages.com/blog/tips/web-design-trends/) (neobrutalismo con tipografía protagonista) y en la investigación de [selectores de fecha y hora](https://uxmovement.com/forms/the-best-mobile-ui-for-picking-date-and-time/) (sin selectores nativos, horario libre más cercano resaltado, botones grandes, datos personales después de elegir horario).
+Se apoya en las referencias de [selectores de fecha y hora](https://uxmovement.com/forms/the-best-mobile-ui-for-picking-date-and-time/): sin selectores nativos, horario libre más cercano resaltado, botones grandes y datos personales después de elegir horario.
 
 ## 2. Por qué esta dirección encaja
 
 | Condición del proyecto | Cómo responde el diseño |
 |---|---|
-| Sin imágenes en el MVP (D46) | Se sostiene con color, tipografía y forma; ningún negocio necesita fotos para verse bien |
-| Canchas y psicólogos en la misma plataforma | Una sola estructura, y cada negocio elige su **color de acento** entre cinco |
+| Canchas, consultorios, clínicas y más en la misma plataforma | Una estructura neutra y de confianza, y cada negocio elige su **acento** entre seis |
 | Se abre desde un link en WhatsApp o Instagram | Móvil primero, carga rápida, el negocio reconocible al instante |
 | El cliente no tiene cuenta | "Mis reservas" guarda los boletos en el propio dispositivo |
+| Las imágenes llegan después (D46) | Se sostiene con color, tipografía y formas propias; las fotos reales de cada negocio se sumarán sin cambiar el sistema |
+| Una aplicación móvil vendrá más adelante | Los colores, la tipografía y los componentes ya salen de una misma lista de valores |
 
 ## 3. Sistema visual
 
-**Reglas de forma (una sola escala, sin excepciones):**
+**Marca.** El nombre es **MiReserva**, escrito en una sola palabra con "Mi" en tinta y "Reserva" en azul. El logo es una M cuya diagonal central es una palomita de confirmar. Está dibujado en vectores (`frontend/src/components/Logo.tsx`), y el favicon y los íconos de la aplicación (incluido el recortable de Android) salen de ese mismo dibujo.
 
-- Borde de **3 px** en tinta, en todo lo interactivo y en las tarjetas.
-- Esquinas de **10 px** en todo. Ni píldoras ni cuadrados mezclados.
-- Sombra **dura**, sin desenfoque: `4px 4px 0` en tinta. Al presionar, el elemento se desplaza hacia la sombra y esta se reduce a cero (efecto de botón físico).
-- Sin degradados, sin brillos, sin transparencias decorativas.
+**Colores de la marca** (del moodboard):
 
-**Color.** Tinta azul `#1B2A78` y papel amarillo mantequilla `#FFF3B0` son fijos; solo el acento cambia por negocio (D87). La amapola `#C9242F` es el de la propia plataforma y el predeterminado; con él el fondo es mantequilla pura, y con los demás deja un 14 % de su color en el fondo.
+| Nombre | Valor | Uso |
+|---|---|---|
+| Primario | `#052FF7` | Botones principales, bloques de color, el acento por defecto. Blanco encima: 7,6:1 |
+| Secundario | `#1238C9` | Enlaces, títulos de color, fin del degradado. Sobre el fondo: 6,9:1 a 7,9:1 |
+| Acento | `#168BFF` | **Solo decoración** (3,4:1 con blanco: no sirve para texto) |
+| Celeste | `#48B8FF` | **Solo decoración** (2,2:1 con blanco) |
+| Fondo | `#EAF6FF` | Bloques suaves dentro de la página |
+| Superficie | `#F5F9FF` | Fondo de la página |
+| Texto | `#172B4D` | Todo el texto y la tinta oscura. Sobre blanco: 14,1:1 |
 
-| Acento | Bloque | Profundo (texto chico sobre fondo claro) | Texto sobre el bloque |
+**Valores de uso** (cada uno comprobado en claro y en oscuro; los contrastes son contra el fondo donde se usan):
+
+| Valor | Claro | Oscuro | Para qué |
 |---|---|---|---|
-| `poppy` (amapola) | `#C9242F` | `#A3171F` | mantequilla (4,95) |
-| `tangerine` (mandarina) | `#F2872C` | `#A14A00` | tinta (5,0) |
-| `sunflower` (girasol) | `#F5BD1F` | `#7A5A00` | tinta (7,4) |
-| `mint` (menta) | `#2FB98F` | `#0B6A50` | tinta (5,1) |
-| `sky` (cielo) | `#5FB4F0` | `#14649C` | tinta (5,6) |
-| `rose` (rosa) | `#F27BA4` | `#A8164A` | tinta |
+| Página | `#F5F9FF` | `#0B1530` | Fondo |
+| Tarjeta | `#FFFFFF` | `#12203F` | Superficie elevada |
+| Texto | `#172B4D` | `#EAF1FF` | Lectura (12,8 a 15,9) |
+| Texto secundario | `#53627E` | `#A9B8D6` | Ayudas y datos de apoyo (5,6 a 9,0) |
+| Borde de tarjeta | `#D3E1F3` | `#26385F` | Separar (decorativo) |
+| Borde de campo | `#7589AD` | `#5B739E` | Que un campo se vea (3,35:1 o más) |
+| Aviso | `#C0182F` | `#FF7A8A` | Errores y faltas (5,8 o más) |
 
-Regla 60-30-10: 60 % papel, 30 % tinta, 10 % acento. Mandarina y girasol son los complementarios de la tinta azul; menta, cielo y rosa son armonías análogas o divididas. Los contrastes entre paréntesis son contra el color indicado y todos pasan 4,5:1 (WCAG AA). Lima y cobalto se retiraron porque chocaban con la tinta.
+**Acentos por negocio.** Cada negocio elige uno; el resto de la interfaz no cambia (D87, D108). El predeterminado es el azul de la marca. Con los otros, el fondo de la página recibe un 8 % de su color.
 
-**Modo oscuro** (obligatorio): fondo azul muy oscuro `#0E1546`, bordes en mantequilla, la sombra dura toma el color del acento y el texto pequeño del acento se aclara. Sigue la preferencia del sistema.
+| Acento | Color | Texto sobre el bloque | Texto chico sobre la página |
+|---|---|---|---|
+| `brand` (azul MiReserva) | `#052FF7` | blanco (7,6) | `#1238C9` (8,2) |
+| `tangerine` (mandarina) | `#F2872C` | tinta (5,6) | `#A14A00` (5,7) |
+| `sunflower` (girasol) | `#F5BD1F` | tinta (8,2) | `#7A5A00` (6,0) |
+| `mint` (menta) | `#2FB98F` | tinta (5,7) | `#0B6A50` (6,2) |
+| `sky` (cielo) | `#5FB4F0` | tinta (6,2) | `#14649C` (6,0) |
+| `rose` (rosa) | `#F27BA4` | tinta (5,5) | `#A8164A` (6,9) |
+
+**Forma** (una sola escala):
+
+- Esquinas de **16 px** en tarjetas y bloques; **12 px** en botones, campos y etiquetas pequeñas; círculos para los números y las insignias de estado.
+- Borde de **1 px** en un azul muy claro para tarjetas; los campos de formulario llevan un borde más marcado, porque deben verse.
+- Sombra **suave**: una línea tenue y un halo largo y bajo. Al presionar, el elemento baja un pixel; al pasar el cursor, sube uno.
+- Los bloques de color grande (la cabecera del inicio, el ingreso, el bloque para negocios) llevan un degradado del secundario al primario y los **elementos gráficos de la marca**: una palomita grande, una cápsula celeste y arcos finos, siempre a baja intensidad y detrás del texto.
 
 **Tipografía** (autoalojada, sin enlaces a Google Fonts):
 
-- Títulos: **Bricolage Grotesque**, muy pesada y apretada, grande.
-- Texto: **Geist**.
-- Horas, precios y códigos: **Geist Mono**.
+- **Inter** para todo: títulos en negrita, texto en regular y medio. Es una tipografía moderna, limpia y muy legible en pantallas.
+- **Geist Mono** solo para horas, precios y códigos, porque su ancho fijo evita confundir cifras.
 
-Sin serifas, sin Inter. Los énfasis dentro de un título van en peso o inclinación de la misma familia.
+Los títulos van en minúscula y mayúscula normal, nunca todo en mayúsculas.
 
 **Iconos:** Phosphor, un solo grosor en toda la interfaz.
+
+**Modo oscuro** (obligatorio): azul muy oscuro de fondo y texto claro suave; los acentos conservan su color y el texto pequeño del acento se aclara. Sigue la preferencia del sistema.
 
 ## 4. Pantallas
 
@@ -72,7 +96,7 @@ Sin serifas, sin Inter. Los énfasis dentro de un título van en peso o inclinac
 
 Solo donde comunica algo:
 
-- Las entradas y botones **se hunden** al tocarlos (retroalimentación).
+- Los botones y los horarios **se hunden un pixel** al tocarlos y suben uno al pasar el cursor (retroalimentación).
 - El boleto **se imprime** al confirmar: entra deslizándose con un resorte (el cambio de estado, mostrado).
 - Los bloques de la página **entran escalonados** al cargar (jerarquía).
 - Todo se desactiva con `prefers-reduced-motion`.
@@ -92,6 +116,8 @@ No hay marquesinas, parallax ni animaciones infinitas.
 React, Vite y TypeScript; Tailwind v4 con variables CSS para los tokens; Motion para el movimiento; React Router; TanStack Query para los datos; Phosphor para iconos; Vitest para las pruebas. PWA instalable. Las rutas y el diseño se prueban en móvil primero.
 
 ## 8. Qué se aprendió al verlo en pantalla
+
+> Esta sección y las siguientes recogen lo aprendido con el diseño anterior. Las lecciones de comportamiento (desbordes, foco, contenido) siguen vigentes; donde mencionan bordes gruesos, sombras duras, mayúsculas o inclinaciones, rige la sección 3.
 
 Capturas en celular de 390 px y en escritorio, en claro y en oscuro, con datos reales. Esto corrigió:
 
