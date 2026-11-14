@@ -288,6 +288,15 @@ Fuentes: [obtener el ID de cliente](https://developers.google.com/identity/gsi/w
   - Neon: 1 GB por proyecto y 100 horas de cómputo por proyecto al mes. Si se agotan, el cómputo se suspende hasta el mes siguiente; *"None of these limits delete your data"*. La página de regiones menciona que los proyectos gratuitos inactivos 90 días o más pueden eliminarse, sin dejar claro si aplica a todos: **usa tu proyecto con cierta regularidad**.
   - Resend: 100 correos al día y 3000 al mes, y 3 dominios. Los recibidos también cuentan. **(sin confirmar)** qué pasa en el plan gratuito al pasarse.
 
+## Mantener despierto el servidor durante las pruebas
+
+El servidor gratuito se duerme tras 15 minutos sin visitas. Para una demostración se puede evitar con un monitor externo que lo visite cada 10 minutos (D117):
+
+- **Qué visitar:** `https://<nombre>.onrender.com/api/ping/`. **No uses `/api/health/`**: ese abre la base de datos y la mantendría despierta, y la base gratuita de Neon solo tiene 100 horas de cómputo al mes (encendida todo el tiempo serían unas 720).
+- **Quién lo visita:** un servicio de monitoreo gratuito como UptimeRobot o cron-job.org, con una visita de tipo GET cada 10 minutos. **(sin confirmar)** los límites actuales de esos servicios; revísalos al crear la cuenta. Hay que crearlo con una cuenta propia, así que no lo deja configurado el código.
+- **Lo que no arregla:** Render puede reiniciar un servicio gratuito en cualquier momento, así que de vez en cuando seguirá tardando. Y un servicio encendido todo el mes usa unas 744 de las 750 horas gratuitas de la cuenta: **si hay otro servicio gratuito en la misma cuenta de Render, las horas no alcanzan para los dos**.
+- **No es para clientes reales.** Ahí corresponde el plan de pago (ver arriba).
+
 ## Lo que se verificó antes de escribir esto
 
 En una imagen idéntica a la que construye Render, ejecutada contra una base de datos vacía con variables de producción: arranca (migra, crea al administrador y levanta gunicorn); `check --deploy` de Django no da advertencias; el HTTP se manda a HTTPS salvo la revisión de salud; detrás del proxy responde con HSTS y cookies seguras; el admin carga con estilos; el administrador puede iniciar sesión; solo el frontend configurado puede llamar a la API; y la documentación interactiva queda oculta. Además, una cadena de conexión con el formato de Neon (con `sslmode` y `channel_binding`) es entendida por las librerías, y una prueba exige que el correo no use un puerto que Render bloquea.
