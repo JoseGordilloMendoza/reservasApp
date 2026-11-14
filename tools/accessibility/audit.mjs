@@ -21,6 +21,7 @@ const SCREENS = [
   ["panel", "/panel", true],
   ["reservas", "/panel/reservas", true],
   ["reglas", "/panel/ajustes/reglas", true],
+  ["mi-pagina", "/panel/ajustes/negocio", true],
 ];
 
 const browser = await chromium.launch({ channel: CHANNEL, headless: true });
