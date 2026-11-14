@@ -48,6 +48,13 @@ class BusinessPublicSerializer(serializers.ModelSerializer):
             "phone",
             "whatsapp",
             "accent",
+            "features",
+            "instagram",
+            "facebook",
+            "tiktok",
+            "website",
+            "maps_url",
+            "house_rules",
             "business_type",
             "timezone",
             "accepting_bookings",
@@ -141,9 +148,11 @@ class ServiceRefSerializer(serializers.ModelSerializer):
 
 
 class BusinessRefSerializer(serializers.ModelSerializer):
+    """The business on a booking: what the customer needs to find the place and to behave once there."""
+
     class Meta:
         model = Business
-        fields = ["name", "slug"]
+        fields = ["name", "slug", "address", "maps_url", "house_rules"]
 
 
 class BookingPublicSerializer(serializers.ModelSerializer):

@@ -193,3 +193,81 @@ def test_editing_appears_in_the_api_docs(panel):
     paths = panel.get("/api/schema/", {"format": "json"}).json()["paths"]
 
     assert "patch" in paths["/api/v1/panel/business/"]
+
+
+# --- the page details: features, networks, map and house rules ------------------
+
+
+def test_the_features_are_kept_in_the_order_picked_and_without_repeats(panel, business):
+    response = patch(panel, features=["wifi", "parking", "wifi"])
+
+    assert response.status_code == 200
+    assert response.json()["features"] == ["wifi", "parking"]
+    business.refresh_from_db()
+    assert business.features == ["wifi", "parking"]
+
+
+def test_an_unknown_feature_is_rejected_and_nothing_changes(panel, business):
+    patch(panel, features=["parking"])
+
+    response = patch(panel, features=["parking", "helipad"])
+
+    assert response.status_code == 400
+    assert "features" in str(response.json())
+    business.refresh_from_db()
+    assert business.features == ["parking"]
+
+
+def test_the_networks_are_cleaned_into_links(panel, business):
+    response = patch(
+        panel,
+        instagram="@canchas.andes",
+        tiktok="canchas_andes",
+        facebook="CanchasLosAndes",
+        website="canchaslosandes.pe",
+        maps_url="https://maps.app.goo.gl/AbCdEf123",
+    )
+
+    data = response.json()
+    assert response.status_code == 200
+    assert data["instagram"] == "https://www.instagram.com/canchas.andes"
+    assert data["tiktok"] == "https://www.tiktok.com/@canchas_andes"
+    assert data["facebook"] == "https://www.facebook.com/CanchasLosAndes"
+    assert data["website"] == "https://canchaslosandes.pe"
+    assert data["maps_url"] == "https://maps.app.goo.gl/AbCdEf123"
+
+
+@pytest.mark.parametrize("field", ["instagram", "tiktok", "facebook", "maps_url"])
+def test_a_link_to_the_wrong_site_is_rejected_in_its_own_field(panel, business, field):
+    response = patch(panel, **{field: "https://evil.example/x"})
+
+    assert response.status_code == 400
+    assert field in str(response.json())
+    business.refresh_from_db()
+    assert getattr(business, field) == ""
+
+
+def test_a_network_can_be_removed(panel, business):
+    patch(panel, instagram="@canchas.andes")
+
+    assert patch(panel, instagram="").json()["instagram"] == ""
+
+
+def test_the_house_rules_are_tidied_one_per_line(panel, business):
+    response = patch(panel, house_rules="  Llegar 10 minutos antes \n\n No fumar\n   ")
+
+    assert response.json()["house_rules"] == "Llegar 10 minutos antes\nNo fumar"
+
+
+def test_more_than_eight_rules_are_rejected(panel, business):
+    response = patch(panel, house_rules="\n".join(f"Regla {n}" for n in range(9)))
+
+    assert response.status_code == 400
+    assert "house_rules" in str(response.json())
+
+
+def test_the_new_details_are_empty_for_a_business_that_has_not_filled_them(panel, business):
+    data = panel.get(reverse("panel-business")).json()
+
+    assert data["features"] == []
+    assert (data["instagram"], data["facebook"], data["tiktok"], data["website"], data["maps_url"], data["house_rules"]) == ("",) * 6

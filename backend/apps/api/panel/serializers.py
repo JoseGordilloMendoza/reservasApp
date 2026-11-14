@@ -15,6 +15,8 @@ from apps.availability.models import AvailabilityRule, Block
 from apps.billing.services import standing
 from apps.bookings.models import Booking, BookingEvent, BookingStatus, PaymentMethod, PaymentStatus
 from apps.bookings.phone import InvalidPhone, normalize_phone
+from apps.businesses.features import FEATURES
+from apps.businesses.links import clean_facebook, clean_instagram, clean_maps_url, clean_tiktok, clean_website
 from apps.businesses.models import Business
 from apps.businesses.presets import preset_for
 from apps.businesses.settings_schema import effective_settings, validate_settings
@@ -42,6 +44,13 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
             "accent",
             "listed",
             "payment_instructions",
+            "features",
+            "instagram",
+            "facebook",
+            "tiktok",
+            "website",
+            "maps_url",
+            "house_rules",
             "business_type",
             "timezone",
             "status",
@@ -99,6 +108,13 @@ def _optional_phone(value):
         raise serializers.ValidationError("El número de teléfono no es válido.")
 
 
+def _clean_link(cleaner, value):
+    try:
+        return cleaner(value)
+    except DjangoValidationError as error:
+        raise serializers.ValidationError(error.messages)
+
+
 class BusinessUpdateSerializer(serializers.ModelSerializer):
     """What the owner may change. The link, type, timezone and status are not editable."""
 
@@ -118,14 +134,55 @@ class BusinessUpdateSerializer(serializers.ModelSerializer):
             "accent",
             "listed",
             "payment_instructions",
+            "features",
+            "instagram",
+            "facebook",
+            "tiktok",
+            "website",
+            "maps_url",
+            "house_rules",
             "settings",
         ]
+
+    features = serializers.ListField(
+        child=serializers.ChoiceField(choices=FEATURES, error_messages={"invalid_choice": "Esa característica no existe."}),
+        required=False,
+        max_length=len(FEATURES),
+        help_text="What the place has, from a fixed list of keys.",
+    )
 
     def validate_phone(self, value):
         return _optional_phone(value)
 
     def validate_whatsapp(self, value):
         return _optional_phone(value)
+
+    def validate_features(self, value):
+        # Keep the order the owner picked, drop repeats.
+        return list(dict.fromkeys(value))
+
+    def validate_instagram(self, value):
+        return _clean_link(clean_instagram, value)
+
+    def validate_facebook(self, value):
+        return _clean_link(clean_facebook, value)
+
+    def validate_tiktok(self, value):
+        return _clean_link(clean_tiktok, value)
+
+    def validate_website(self, value):
+        return _clean_link(clean_website, value)
+
+    def validate_maps_url(self, value):
+        return _clean_link(clean_maps_url, value)
+
+    def validate_house_rules(self, value):
+        # One rule per line: tidy the lines and drop the empty ones.
+        lines = [" ".join(line.split()) for line in value.splitlines()]
+        rules = [line for line in lines if line]
+        if len(rules) > 8:
+            raise serializers.ValidationError("Escribe hasta 8 reglas, una por línea.")
+        return "\n".join(rules)
 
     def validate_settings(self, value):
         try:

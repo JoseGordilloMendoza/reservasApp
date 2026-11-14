@@ -211,7 +211,13 @@ def test_booking_is_created_without_an_account(book):
     assert data["starts_at"] == "2030-01-08T00:00:00Z"
     assert data["expires_at"] == "2030-01-01T14:00:00Z"
     assert data["manage_token"]
-    assert data["business"] == {"name": "Cancha Los Andes", "slug": "cancha-los-andes"}
+    assert data["business"] == {
+        "name": "Cancha Los Andes",
+        "slug": "cancha-los-andes",
+        "address": "",
+        "maps_url": "",
+        "house_rules": "",
+    }
     assert "id" not in data
 
 
@@ -510,3 +516,35 @@ def test_customers_keep_their_tickets_when_the_business_is_not_taking_bookings(a
 
     assert response.status_code == 200
     assert response.json()["status"] == "pending"
+
+
+# --- page details -----------------------------------------------------------
+
+
+def test_profile_shows_what_the_place_has_its_networks_and_house_rules(api, business):
+    business.features = ["parking", "lighting"]
+    business.instagram = "https://www.instagram.com/canchas.andes"
+    business.maps_url = "https://maps.app.goo.gl/AbCdEf123"
+    business.house_rules = "Llegar 10 minutos antes\nNo fumar"
+    business.save()
+
+    data = api.get(link("public-business", slug=business.slug)).json()
+
+    assert data["features"] == ["parking", "lighting"]
+    assert data["instagram"] == "https://www.instagram.com/canchas.andes"
+    assert data["maps_url"] == "https://maps.app.goo.gl/AbCdEf123"
+    assert data["house_rules"] == "Llegar 10 minutos antes\nNo fumar"
+    assert (data["facebook"], data["tiktok"], data["website"]) == ("", "", "")
+
+
+def test_the_booking_carries_the_address_the_map_and_the_house_rules(api, book, open_business):
+    open_business.address = "Av. Ejército 123"
+    open_business.maps_url = "https://maps.app.goo.gl/AbCdEf123"
+    open_business.house_rules = "Traer zapatillas"
+    open_business.save()
+
+    created = book().json()
+
+    assert created["business"]["address"] == "Av. Ejército 123"
+    assert created["business"]["maps_url"] == "https://maps.app.goo.gl/AbCdEf123"
+    assert created["business"]["house_rules"] == "Traer zapatillas"
