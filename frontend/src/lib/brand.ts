@@ -1,5 +1,5 @@
-// Working name. In Peru "separar" a court means to book it. Change it here (and in index.html).
-export const BRAND = "Separa";
+// The name of the product. In Peru "separar" a court means to book it. It is written here (and in index.html and vite.config.ts) and nowhere else.
+export const BRAND = "MiReserva";
 
 // Where someone who wants their business on the platform writes to the team. Set when the app is built
 // (VITE_CONTACT_WHATSAPP, VITE_CONTACT_EMAIL); read when asked so a test can change them.

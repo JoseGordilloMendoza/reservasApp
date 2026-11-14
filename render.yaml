@@ -47,7 +47,7 @@ services:
       - key: EMAIL_HOST_PASSWORD
         sync: false
       - key: DEFAULT_FROM_EMAIL
-        value: Separa <onboarding@resend.dev>
+        value: MiReserva <onboarding@resend.dev>
       # Optional: leave empty to hide the Google button.
       - key: GOOGLE_CLIENT_ID
         sync: false

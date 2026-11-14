@@ -63,7 +63,7 @@ def test_the_new_owner_has_no_password_and_gets_an_email_to_choose_one(team, db,
     assert not owner.has_usable_password()
     assert [message.to for message in mail.outbox] == [["rosa@example.com"]]
     text = mail.outbox[0].body
-    assert "Canchas El Sol ya está en Separa" in text
+    assert "Canchas El Sol ya está en MiReserva" in text
     assert "/panel/nueva-contrasena?uid=" in text
     assert "http://localhost:5173/canchas-el-sol" in text
 

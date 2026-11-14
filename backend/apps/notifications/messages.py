@@ -199,7 +199,7 @@ def business_cancelled_by_customer(booking):
 
 # --- account ----------------------------------------------------------------------------
 
-BRAND = "Separa"
+BRAND = "MiReserva"
 
 
 def password_reset(user, link):
