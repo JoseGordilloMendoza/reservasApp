@@ -129,6 +129,14 @@ Antes lo único que impedía una reserva falsa era que el dueño no la confirmar
 - **RN-86.** La sección "Sobre este lugar" solo aparece si el negocio llenó algo. En el celular va después de la reserva, para que reservar siga cerca del inicio; en pantalla ancha, bajo el cartel del negocio.
 - **RN-87.** El boleto lleva la dirección, "Cómo llegar" y las reglas ("Antes de venir") de una reserva que todavía sirve; una cancelada o vencida no los muestra.
 
+## Lo que el cliente guarda en su celular
+
+- **RN-88.** Los favoritos y los datos recordados viven solo en el navegador del cliente: no se envían ni se guardan en el servidor, y no existen en otro celular. Si el navegador bloquea el almacenamiento, todo sigue funcionando y solo se pierde al cerrar.
+- **RN-89.** Un cliente guarda hasta 30 favoritos, sin repetir; al llegar al límite se descarta el más antiguo. Un favorito se actualiza (nombre, color, dirección) cada vez que el cliente abre la página de ese negocio.
+- **RN-90.** Lo que se recuerda de una persona es su nombre, celular y correo. **Aceptar los términos no se recuerda nunca.**
+- **RN-91.** Si al terminar una reserva la casilla "Recordar mis datos" está desmarcada, lo que había guardado se borra. El cliente también puede borrarlo cuando quiera desde su reserva o desde Mis reservas.
+- **RN-92.** Recordar datos no cambia nada en el servidor: el negocio recibe los mismos datos de siempre, y la confianza del cliente (RN-75 y RN-76) no depende de ellos.
+
 ## Configuración del negocio
 
 - **RN-28.** El negocio edita su nombre, descripción, dirección, teléfono, WhatsApp, color, cómo le pagan, los datos de su página (RN-82 a RN-86) y opciones. Su link, tipo, zona horaria y estado los fija la plataforma.

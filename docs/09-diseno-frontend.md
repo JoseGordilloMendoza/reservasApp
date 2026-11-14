@@ -90,7 +90,7 @@ Los títulos van en minúscula y mayúscula normal, nunca todo en mayúsculas.
    Una barra fija abajo muestra el resumen y el botón **Reservar · S/ 60**.
    Después de la reserva (en pantalla ancha, bajo el cartel) va **"Sobre este lugar"**: lo que tiene el lugar como etiquetas con ícono y nombre, el botón **Cómo llegar**, las **reglas de la casa** como lista y **Síguenos** con las redes. Es una tarjeta con la misma forma que el resto y no aparece si el negocio no llenó nada. Los links salen en pestaña nueva y se anuncian así a un lector de pantalla.
 2. **Boleto** (`/:negocio/reserva/:código`). La confirmación y también la pantalla de gestión: sello de estado (pendiente, confirmada, cancelada, vencida), datos, dónde queda con "Cómo llegar", las reglas ("Antes de venir"), "Avisar por WhatsApp" con el mensaje ya escrito y cancelar con confirmación.
-3. **Mis reservas** (`/mis-reservas`). Los boletos guardados en el dispositivo, con su estado actual.
+3. **Mis reservas** (`/mis-reservas`). Los boletos guardados en el dispositivo, con su estado actual y, si el cliente pidió recordarlos, una tarjeta **Mis datos** con el botón "Olvidar mis datos".
 4. **Inicio** (`/`) y **no encontrado**: breves, con la misma voz visual.
 
 ## 5. Movimiento
@@ -192,6 +192,12 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **La tarjeta de búsqueda** queda al lado en pantallas anchas, un poco más abajo, y debajo de la cabecera en el celular.
 - **Lista de negocios** como tarjetas con un dibujo plano por rubro (una pelota para canchas, dos globos de conversación para consultorios, un calendario con palomita para el resto), sobre un fondo que alterna entre celeste, azul y blanco. Se oculta sola si no hay ninguno.
 - **"Así de fácil":** tres tarjetas con un número en un círculo azul: elige, reserva, llega.
+
+### Lo que el cliente guarda en su celular
+
+- **Favoritos.** Un botón entre los datos del cartel del negocio: "Guardar en favoritos" y, ya guardado, "En tus favoritos" con el corazón lleno. El estado se dice con palabras, no solo con el relleno del ícono, y se anuncia a un lector de pantalla al tocarlo. En el inicio, una sección "Tus favoritos" (solo si hay alguno) entre la cabecera y la lista de negocios: una tarjeta por negocio con su inicial en el color que eligió, el tipo, el nombre y la dirección, y una **X** de 44 px para quitarlo.
+- **Recordar mis datos.** En el paso "¿A nombre de quién?", si hay datos guardados, un recuadro punteado dice "Usamos los datos que guardaste en este celular" con "Usar otros datos". Una casilla "Recordar mis datos en este celular" va **antes** de la de los términos, que siempre empieza vacía.
+- Todo es del celular de la persona (D115, D116, RN-88 a RN-92); la copia de la lista vive en `separa.favorites.v1` y la de los datos en `separa.me.v1`.
 
 ### Confianza en quien reserva
 

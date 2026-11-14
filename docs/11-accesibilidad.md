@@ -15,7 +15,7 @@
 | **Respeta el tamaño de letra** | Casi todo el texto usa unidades relativas, así que sigue el tamaño que la persona eligió en su celular. Unas pocas etiquetas diminutas (como "Próximo" sobre un horario) tienen tamaño fijo y se revisarán. |
 | **Funciona en claro y en oscuro** | Sigue la preferencia del sistema, con los mismos contrastes en los dos. |
 | **Los errores ayudan** | Cada error dice **qué pasó y qué hacer**, junto al campo, y se anuncia a los lectores de pantalla. En los formularios largos (reservar, abrir un negocio) el foco se lleva al primer campo que hay que corregir. |
-| **No pide cuenta para lo básico** | Reservar y ver una reserva no necesitan registro ni contraseña. |
+| **No pide cuenta para lo básico** | Reservar, ver una reserva, guardar favoritos y recordar los propios datos no necesitan registro ni contraseña: todo se guarda en el celular. |
 
 ## 2. Lenguaje llano
 

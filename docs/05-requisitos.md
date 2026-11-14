@@ -67,6 +67,8 @@ Cada valor tiene un **valor por defecto de la plataforma**, se ajusta por negoci
 | CL-03 | Reservar indicando nombre y celular, sin cuenta | MVP |
 | CL-09 | Entrar con Google al reservar, para ser un cliente verificado (sin contraseña) | MVP (D97). Recuperar sus reservas en otro dispositivo: después |
 | CL-13 | Ver en la página del negocio qué tiene el lugar, cómo llegar, sus reglas y sus redes; y llevar la dirección y las reglas en el boleto | MVP (D111, D114) |
+| CL-14 | Guardar negocios en favoritos y verlos en el inicio, sin cuenta (en su celular) | MVP (D115) |
+| CL-15 | Recordar su nombre, celular y correo para no escribirlos en la siguiente reserva, y poder borrarlos | MVP (D116) |
 | CL-12 | Avisar con un toque, desde el boleto, que va a ir (desde 24 horas antes) | MVP (D104) |
 | CL-10 | Si aún no es de confianza, reservar con límites más estrictos (D99) | MVP |
 | CL-11 | Un chequeo anti-robots al reservar sin verificar | Propuesta (D102) |
