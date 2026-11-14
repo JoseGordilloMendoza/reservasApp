@@ -1,18 +1,18 @@
 <div align="center">
 
-# Separa
+# MiReserva
 
 **Reservas para canchas, consultorios y negocios con citas. Sin llamadas, sin mensajes sueltos, sin cuenta para el cliente.**
 
 *Hecho para negocios pequeños de Arequipa, Perú. Los precios son en soles y el pago ocurre entre el negocio y su cliente.*
 
-<img src="docs/capturas/portada.png" alt="Cuatro pantallas de Separa en el celular: el inicio, la elección de horario, el boleto de la reserva y el panel del negocio" width="100%">
+<img src="docs/capturas/portada.png" alt="Cuatro pantallas de MiReserva en el celular: el inicio, la elección de horario, el boleto de la reserva y el panel del negocio" width="100%">
 
 </div>
 
 ## Qué es
 
-Separa le da a cada negocio **su propia página de reservas**, con su enlace y su color, y un **panel** para atenderlas desde el celular. El cliente elige el horario y deja su celular; el dueño confirma con un toque. Nadie se llama para preguntar "¿está libre a las siete?", y dos personas **nunca** pueden reservar la misma hora.
+MiReserva le da a cada negocio **su propia página de reservas**, con su enlace y su color, y un **panel** para atenderlas desde el celular. El cliente elige el horario y deja su celular; el dueño confirma con un toque. Nadie se llama para preguntar "¿está libre a las siete?", y dos personas **nunca** pueden reservar la misma hora.
 
 No cobra reservas ni tiene pasarela de pagos: el negocio cobra como siempre (Yape, Plin, efectivo) y **anota** lo que recibió. La plataforma vive de una suscripción mensual que cobra el equipo a cada negocio.
 
@@ -24,7 +24,7 @@ No necesita cuenta, instalar nada ni esperar respuesta. Entra por el enlace del 
 
 <table>
   <tr>
-    <td align="center" width="33%"><img src="docs/capturas/inicio.png" alt="Inicio de Separa con el buscador de negocios" width="260"></td>
+    <td align="center" width="33%"><img src="docs/capturas/inicio.png" alt="Inicio de MiReserva con el buscador de negocios" width="260"></td>
     <td align="center" width="33%"><img src="docs/capturas/horarios.png" alt="Página de un negocio: elegir cancha, día y hora" width="260"></td>
     <td align="center" width="33%"><img src="docs/capturas/boleto.png" alt="Boleto de la reserva con su código" width="260"></td>
   </tr>
@@ -65,7 +65,7 @@ El panel abre con lo urgente: lo que falta confirmar y lo de hoy.
 - **Menos plantones:** el día antes, el cliente toca "Confirmo que voy" en su boleto y el dueño ve quién avisó y a quién escribirle. Cada reserva trae mensajes de WhatsApp ya escritos (recordar, cómo pagar, no pude confirmar) que se abren con un toque.
 - **Reservas por teléfono:** se anotan en el momento y el cliente recibe su enlace.
 - **Clientes, bloqueos, horarios, servicios y reglas** (anticipación, cancelación, confirmación automática o manual) se configuran desde el celular.
-- **Su propio color.** Cada negocio elige el acento de su página; el azul y el amarillo de Separa se mantienen para que todo se lea bien.
+- **Su propio color.** Cada negocio elige el acento de su página; el azul de MiReserva, el fondo claro y el texto oscuro se mantienen para que todo se lea bien.
 
 <div align="center">
 <img src="docs/capturas/colores.png" alt="La misma página de un negocio en los seis colores disponibles" width="100%">
@@ -90,14 +90,14 @@ Los negocios no se registran solos: el equipo los da de alta. Esa área vive en 
 | **Sin reservas duplicadas** | La base de datos misma impide dos reservas que se solapen en un espacio, aunque lleguen al mismo tiempo. Hay pruebas de concurrencia con conexiones reales. |
 | **Un negocio no ve a otro** | Cada consulta del panel se limita al negocio de quien la hace. |
 | **Acceso cuidado** | Correo y contraseña, o Google (que solo deja entrar a cuentas ya creadas). Las contraseñas temporales obligan a elegir una propia, y recuperar la contraseña cierra las demás sesiones. |
-| **Pensado para el celular** | Se instala como aplicación, tiene modo oscuro y se probó sin desbordes en pantallas de 390 px. |
+| **Pensado para todos** | Contraste de lectura comprobado, botones grandes, uso con teclado y lenguaje llano. Una auditoría automática (WCAG 2.2 AA) da cero problemas en las pantallas principales, en claro y en oscuro; falta probarlo con personas y con un lector de pantalla ([11 - Accesibilidad](docs/11-accesibilidad.md)). Se instala como aplicación y se probó sin desbordes a 390 px. |
 | **Documentado** | Cada decisión y regla de negocio tiene su registro en [`docs/`](docs/). |
 
 ## Estado
 
-El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1056 pruebas del backend** y **565 del frontend**, y el código ya está preparado para producción y probándose en internet.
+El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1131 pruebas del backend** y **634 del frontend**, y el código ya está preparado para producción y probándose en internet.
 
-Lo que sigue es poner un **dominio propio** (para enviar correos a cualquier destinatario y activar Google con comodidad), elegir el nombre definitivo del producto y pasar el servidor a un plan que no se duerma. El detalle está en el [plan de construcción](docs/08-plan-de-construccion.md).
+Lo que sigue es consultar el nombre en **INDECOPI** y poner un **dominio propio** (para enviar correos a cualquier destinatario y activar Google con comodidad), sumar las imágenes de cada negocio y pasar el servidor a un plan que no se duerma. El detalle está en el [plan de construcción](docs/08-plan-de-construccion.md).
 
 ## Tecnología
 
@@ -159,7 +159,7 @@ Copia `.env.example` a `.env` (Git lo ignora). Todo es opcional en desarrollo.
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | Servidor SMTP. Con `EMAIL_HOST` vacío, los correos se imprimen en la consola del backend |
 | `DEFAULT_FROM_EMAIL` | Remitente de los correos |
 | `FRONTEND_URL` | Dirección de la aplicación, para los enlaces dentro de los correos |
-| `CONTACT_WHATSAPP`, `CONTACT_EMAIL` | A dónde escribe quien quiere su negocio en Separa: cada uno muestra su botón en el inicio y queda visible para todos. Vacíos, no aparece ninguno |
+| `CONTACT_WHATSAPP`, `CONTACT_EMAIL` | A dónde escribe quien quiere su negocio en MiReserva: cada uno muestra su botón en el inicio y queda visible para todos. Vacíos, no aparece ninguno |
 
 Comprueba el envío de correos sin esperar a una reserva: `docker compose run --rm backend python manage.py send_test_email tu@correo.com`. Los proveedores, puertos y límites están en [10 - Despliegue de prueba](docs/10-despliegue.md).
 
@@ -197,6 +197,7 @@ La guía paso a paso, verificada contra la documentación de cada servicio, est�
 | [08 - Plan de construcción](docs/08-plan-de-construccion.md) | Hitos, dependencias y riesgos |
 | [09 - Diseño del frontend](docs/09-diseno-frontend.md) | Dirección visual, paleta, pantallas y reglas de contenido |
 | [10 - Despliegue de prueba](docs/10-despliegue.md) | Cómo montarlo gratis y qué probar |
+| [11 - Accesibilidad](docs/11-accesibilidad.md) | Qué se comprobó para que lo use cualquier persona, y qué falta |
 
 ## Principios
 

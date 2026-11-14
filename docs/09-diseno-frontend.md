@@ -175,22 +175,22 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 
 > Desde D85 el negocio aparece por defecto, y desde D86 el inicio también lista negocios.
 
-- **Titular genérico.** "Separa tu hora. Sin llamadas." y, debajo, "Canchas, consultorios y más". El primer titular hablaba solo de canchas y la plataforma sirve a más rubros.
+- **Titular genérico.** "Reserva tu hora. Sin llamadas." y, debajo, "Canchas, consultorios y más". El primer titular hablaba solo de canchas y la plataforma sirve a más rubros.
 - **Buscar es opcional para el negocio y simple para el cliente.** Una caja que espera a que se deje de escribir (no pide en cada letra), pide 2 letras, y muestra nombre, tipo y dirección de cada resultado. Si no hay coincidencias lo dice, y debajo siempre queda el recordatorio de pedirle su link al negocio.
 - **El dueño decide** si aparece, con una casilla en "Mi página" que explica qué significa.
 
 ### El camino de los negocios
 
-- **Un bloque azul al final del inicio** con la pelota recortada, el titular "¿Tienes un negocio con citas?" y sus botones: "Escríbenos por WhatsApp" (rojo), "Escríbenos por correo" (blanco) y "Ya tengo cuenta" (blanco). Cada contacto aparece solo si está configurado; sin ninguno, queda solo "Entrar a mi panel".
+- **Un bloque azul al final del inicio**, con los elementos gráficos de la marca, el titular "¿Tienes un negocio con citas?" y sus botones: "Escríbenos por WhatsApp" (blanco sólido), "Escríbenos por correo" y "Ya tengo cuenta" (con borde blanco). Cada contacto aparece solo si está configurado; sin ninguno, queda solo "Entrar a mi panel".
 - **Un enlace discreto en el pie** ("Soy un negocio"), para quien busca dónde entrar y no llegó al final de la página.
 - El contacto se configura al compilar el frontend: `VITE_CONTACT_WHATSAPP` (un celular peruano de 9 dígitos se completa con el 51) y/o `VITE_CONTACT_EMAIL`. Ambos mensajes salen con el pedido ya escrito. El correo es solo un borrador que la persona envía: no usa claves ni permisos. En el celular abre su app de correo; en una computadora, que casi nunca tiene una configurada, abre Gmail en la web, y debajo se muestra la dirección por si usa otro correo.
 
 ### La composición del inicio
 
-- **Formas de cartel, no adornos.** Una pelota roja recortada por la esquina del bloque azul y una hoja mantequilla abajo, en tres colores planos con borde. Las costuras de la pelota van en rojo oscuro para no cortar las letras que pasan por encima.
-- **Titular con tres tamaños.** "Separa" enorme, "tu hora." y "Sin llamadas." más chicos. La tarjeta de búsqueda queda más abajo para romper la rejilla.
-- **Lista de negocios** como tarjetas con un dibujo plano por rubro (pelota, hojas o boleto), que alternan color y sentido. Se oculta sola si no hay ninguno.
-- **"Así de fácil":** tres boletos con muescas, ligeramente inclinados: elige, separa, llega.
+- **Una cabecera azul con degradado** y los elementos gráficos de la marca (palomita grande, cápsula celeste y arcos finos) a baja intensidad detrás del texto. El titular va en dos líneas, la segunda en celeste claro.
+- **La tarjeta de búsqueda** queda al lado en pantallas anchas, un poco más abajo, y debajo de la cabecera en el celular.
+- **Lista de negocios** como tarjetas con un dibujo plano por rubro (una pelota para canchas, dos globos de conversación para consultorios, un calendario con palomita para el resto), sobre un fondo que alterna entre celeste, azul y blanco. Se oculta sola si no hay ninguno.
+- **"Así de fácil":** tres tarjetas con un número en un círculo azul: elige, reserva, llega.
 
 ### Confianza en quien reserva
 
@@ -212,9 +212,8 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 
 ## 12. Pendiente de decidir
 
-- **Nombre del producto.** Se usa el nombre de trabajo **Separa** (en Perú "separar" una cancha es reservarla) hasta decidir (Q4). Cambiarlo es cuestión de un archivo de textos.
-- Logotipo definitivo. Los iconos actuales parten de la marca provisional (una S en un sello).
+- **Nombre del producto.** Es **MiReserva** (D107); falta la consulta en INDECOPI (Q4).
+- **El logo en vector original.** El que usa la aplicación está redibujado a partir de una imagen; conviene reemplazarlo por el archivo vectorial del diseñador y las variantes del ícono.
 - Si el modo oscuro necesita un botón manual además de seguir al sistema.
 - Los selectores de hora del navegador siguen su idioma (algunos muestran AM/PM); si molesta, se puede reemplazar por un selector propio de 24 horas.
-- Dividir el paquete de JavaScript por pantallas (hoy unos 485 KB, 152 KB comprimido).
 - Si algún día hay fotos, el bloque de color puede llevar una imagen recortada dentro, sin cambiar el sistema.
