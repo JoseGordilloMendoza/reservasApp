@@ -101,7 +101,7 @@ Los negocios no se registran solos: el equipo los da de alta. Esa área vive en 
 
 ## Estado
 
-El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1178 pruebas del backend** y **676 del frontend**, y el código ya está preparado para producción y probándose en internet.
+El **MVP está completo**: página y reserva del cliente, panel del negocio, área del equipo, correos de aviso, buscador y lista de negocios en el inicio, y acceso con contraseña temporal. Pasan **1179 pruebas del backend** y **676 del frontend**, y el código ya está preparado para producción y probándose en internet.
 
 Lo que sigue es consultar el nombre en **INDECOPI** y poner un **dominio propio** (para enviar correos a cualquier destinatario y activar Google con comodidad), sumar las imágenes de cada negocio y pasar el servidor a un plan que no se duerma. El detalle está en el [plan de construcción](docs/08-plan-de-construccion.md).
 
