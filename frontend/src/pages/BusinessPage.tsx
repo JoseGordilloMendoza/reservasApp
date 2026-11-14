@@ -140,7 +140,7 @@ export function BusinessPage() {
   const business = query.data;
 
   return (
-    <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-12 md:items-start md:gap-x-8 md:gap-y-10">
+    <div className="grid grid-cols-1 gap-10 pt-4 md:grid-cols-12 md:grid-rows-[auto_1fr] md:items-start md:gap-x-8 md:gap-y-10">
       <div className="min-w-0 md:col-span-7">
         <Poster business={business} />
       </div>
