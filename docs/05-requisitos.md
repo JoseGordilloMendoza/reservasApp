@@ -33,6 +33,7 @@
 | NG-11 | Ver la ficha de un cliente: datos e historial de reservas en ese negocio | MVP |
 | NG-12 | Bloquear a un cliente por número de celular | MVP |
 | NG-13 | Varios usuarios por negocio con roles (dueño, staff) | Después |
+| NG-21 | Contar en su página qué tiene su lugar, cómo llegar, sus redes y sus reglas de la casa, desde "Mi página" | MVP (D111, D112) |
 | NG-19 | Ver en cada reserva si el cliente avisó que va, y en la lista quién no lo ha hecho en el día previo | MVP (D104) |
 | NG-20 | Escribirle al cliente por WhatsApp con mensajes ya escritos según la situación de la reserva | MVP (D105) |
 | NG-16 | Elegir el modo "automática para clientes de confianza" y ver en cada reserva pendiente la señal de confianza del cliente | MVP (D98, D100) |
@@ -65,6 +66,7 @@ Cada valor tiene un **valor por defecto de la plataforma**, se ajusta por negoci
 | CL-02 | Ver horarios disponibles por recurso y fecha | MVP |
 | CL-03 | Reservar indicando nombre y celular, sin cuenta | MVP |
 | CL-09 | Entrar con Google al reservar, para ser un cliente verificado (sin contraseña) | MVP (D97). Recuperar sus reservas en otro dispositivo: después |
+| CL-13 | Ver en la página del negocio qué tiene el lugar, cómo llegar, sus reglas y sus redes; y llevar la dirección y las reglas en el boleto | MVP (D111, D114) |
 | CL-12 | Avisar con un toque, desde el boleto, que va a ir (desde 24 horas antes) | MVP (D104) |
 | CL-10 | Si aún no es de confianza, reservar con límites más estrictos (D99) | MVP |
 | CL-11 | Un chequeo anti-robots al reservar sin verificar | Propuesta (D102) |

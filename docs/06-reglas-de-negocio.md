@@ -103,7 +103,7 @@ Antes lo único que impedía una reserva falsa era que el dueño no la confirmar
 
 ## Buscador
 
-- **RN-47.** Un negocio solo aparece en el buscador del inicio si su dueño lo activó en sus ajustes. Empieza apagado.
+- **RN-47.** Un negocio solo aparece en el buscador del inicio si su dueño no lo apagó en sus ajustes. Un negocio nuevo empieza visible (D85).
 - **RN-48.** El buscador no muestra negocios suspendidos ni con la suscripción vencida más allá de sus días de gracia, y no gasta un lugar en ellos.
 - **RN-49.** Se busca por nombre sin importar mayúsculas ni tildes ("lucia" encuentra "Lucía"), con al menos 2 letras. Los nombres que empiezan con lo escrito van primero. Nunca devuelve más de 8 resultados y no hay manera de listar todos los negocios.
 - **RN-50.** De cada resultado solo se muestra lo que ya es público: nombre, link, tipo, color y dirección.
@@ -120,9 +120,18 @@ Antes lo único que impedía una reserva falsa era que el dueño no la confirmar
 - **RN-58.** El correo y el boleto del cliente llevan el código y, si el negocio lo escribió, cómo pagar (hasta 300 caracteres). Una reserva cancelada, rechazada o vencida no pide pago.
 - **RN-59.** Un negocio nuevo aparece en el inicio salvo que su dueño lo desmarque (D85), y la lista del inicio muestra hasta 12, los más nuevos primero (D86).
 
+## Datos de la página del negocio
+
+- **RN-82.** El negocio marca lo que tiene su lugar entre una lista fija de 14 características (estacionamiento, luz para la noche, techado, vestidores, baños, casilleros, wifi, aire acondicionado, entrada sin escalones, cafetería o snacks, aceptan mascotas, apto para niños, ambiente privado, sala de espera). No se repiten, se muestran en el orden en que las marcó y una que no existe se rechaza.
+- **RN-83.** Las redes (Instagram, Facebook, TikTok) se escriben como usuario o como link; la página web, como dirección. Se guardan siempre como link https, sin lo que viene después de "?", y **solo se aceptan si apuntan a la red que dicen ser**: un link de Instagram que lleva a otro sitio se rechaza con un mensaje que dice qué escribir. Se pueden dejar vacías o quitar.
+- **RN-84.** "Cómo llegar" usa el link de Google Maps (o Waze) que el negocio pegó. Si no pegó ninguno pero escribió su dirección, el botón busca esa dirección en Google Maps. Sin ninguno de los dos, el botón no aparece.
+- **RN-85.** Las reglas de la casa son hasta 8, de una línea cada una, con 600 caracteres en total. Las líneas vacías se descartan y los espacios sobrantes se limpian.
+- **RN-86.** La sección "Sobre este lugar" solo aparece si el negocio llenó algo. En el celular va después de la reserva, para que reservar siga cerca del inicio; en pantalla ancha, bajo el cartel del negocio.
+- **RN-87.** El boleto lleva la dirección, "Cómo llegar" y las reglas ("Antes de venir") de una reserva que todavía sirve; una cancelada o vencida no los muestra.
+
 ## Configuración del negocio
 
-- **RN-28.** El negocio edita su nombre, descripción, dirección, teléfono, WhatsApp y opciones. Su link, tipo, zona horaria y estado los fija la plataforma.
+- **RN-28.** El negocio edita su nombre, descripción, dirección, teléfono, WhatsApp, color, cómo le pagan, los datos de su página (RN-82 a RN-86) y opciones. Su link, tipo, zona horaria y estado los fija la plataforma.
 - **RN-29.** Las opciones se cambian de una en una: solo se modifican las que se envían, y si una es inválida no se cambia ninguna.
 - **RN-30.** Un recurso o servicio que ya tiene reservas no se borra: se desactiva, y deja de ofrecerse sin afectar las reservas hechas. Sin reservas sí se puede borrar.
 - **RN-31.** Cambiar el precio o la duración de un servicio, o el horario de un recurso, no altera las reservas ya hechas.

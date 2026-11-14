@@ -31,7 +31,7 @@ El texto de la interfaz sigue estas reglas (también en [09 - Diseño](09-diseno
 
 ## 3. Lo que se comprobó
 
-**Con una herramienta automática** ([axe-core](https://github.com/dequelabs/axe-core), reglas WCAG 2.0, 2.1 y 2.2 de nivel A y AA), sobre seis pantallas en celular, en claro y en oscuro (12 combinaciones): inicio, página de un negocio, ingreso, inicio del panel, lista de reservas y reglas de reserva. **Resultado al 14 de noviembre de 2026: 0 problemas.** Incluye la comprobación de contraste.
+**Con una herramienta automática** ([axe-core](https://github.com/dequelabs/axe-core), reglas WCAG 2.0, 2.1 y 2.2 de nivel A y AA), sobre siete pantallas en celular, en claro y en oscuro (14 combinaciones): inicio, página de un negocio (con sus características, reglas y redes), ingreso, inicio del panel, lista de reservas, reglas de reserva y "Mi página". **Resultado al 14 de noviembre de 2026: 0 problemas.** Incluye la comprobación de contraste.
 
 Para repetirla, con la aplicación y los datos de ejemplo en marcha:
 
@@ -52,7 +52,7 @@ Una herramienta automática encuentra una parte de los problemas, no todos. Falt
 - **Una prueba con un lector de pantalla real** (TalkBack en Android, VoiceOver en iPhone) recorriendo una reserva completa y el panel.
 - **Una prueba con personas de verdad:** idealmente un dueño de negocio sin experiencia y un cliente mayor, reservando sin ayuda. Es lo que más nos diría sobre si de verdad es simple.
 - **El contraste sobre los degradados.** La herramienta no puede medir texto sobre un degradado, así que se calculó a mano: blanco sobre los dos extremos del azul da 7,6:1 y 8,6:1. El texto en celeste claro (\`#BFE3FF\`) sobre ese azul no se midió con la herramienta.
-- **Las pantallas que no están en la lista** (boleto, "Mis reservas", clientes, espacios, servicios, bloqueos, y toda el área del equipo).
+- **Las pantallas que no están en la lista** (boleto con dirección y reglas, "Mis reservas", clientes, espacios, servicios, bloqueos, y toda el área del equipo).
 - **Teléfonos muy pequeños y con letra muy grande**: se probó a 390 px de ancho.
 
 ## 5. Al crear o cambiar una pantalla

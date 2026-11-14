@@ -88,7 +88,8 @@ Los títulos van en minúscula y mayúscula normal, nunca todo en mayúsculas.
    2. *Cuándo*: tira de 14 días con los días libres marcados y, debajo, los horarios como entradas. El primer horario libre llega ya resaltado.
    3. *Quién*: nombre, celular, correo opcional y aceptación de términos. Solo aparece cuando ya hay horario.
    Una barra fija abajo muestra el resumen y el botón **Reservar · S/ 60**.
-2. **Boleto** (`/:negocio/reserva/:código`). La confirmación y también la pantalla de gestión: sello de estado (pendiente, confirmada, cancelada, vencida), datos, "Avisar por WhatsApp" con el mensaje ya escrito y cancelar con confirmación.
+   Después de la reserva (en pantalla ancha, bajo el cartel) va **"Sobre este lugar"**: lo que tiene el lugar como etiquetas con ícono y nombre, el botón **Cómo llegar**, las **reglas de la casa** como lista y **Síguenos** con las redes. Es una tarjeta con la misma forma que el resto y no aparece si el negocio no llenó nada. Los links salen en pestaña nueva y se anuncian así a un lector de pantalla.
+2. **Boleto** (`/:negocio/reserva/:código`). La confirmación y también la pantalla de gestión: sello de estado (pendiente, confirmada, cancelada, vencida), datos, dónde queda con "Cómo llegar", las reglas ("Antes de venir"), "Avisar por WhatsApp" con el mensaje ya escrito y cancelar con confirmación.
 3. **Mis reservas** (`/mis-reservas`). Los boletos guardados en el dispositivo, con su estado actual.
 4. **Inicio** (`/`) y **no encontrado**: breves, con la misma voz visual.
 
