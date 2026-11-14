@@ -13,7 +13,7 @@ import { useCreateResource, useDeleteResource, useResources, useUpdateResource }
 
 function Problem({ message }: { message: string }) {
   return (
-    <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+    <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
       <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
       {message}
     </p>
@@ -36,11 +36,11 @@ function SpaceRow({ space }: { space: PanelResource }) {
   }
 
   return (
-    <li className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm">
+    <li className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm">
       <div className="flex items-start justify-between gap-3">
-        <p className="min-w-0 break-words font-display text-2xl font-extrabold leading-tight">{space.name}</p>
+        <p className="min-w-0 break-words font-display text-2xl font-bold leading-tight">{space.name}</p>
         {!space.is_active && (
-          <span className="shrink-0 -rotate-3 whitespace-nowrap rounded-[8px] border-[3px] border-dashed border-current px-2 py-1 font-display text-sm font-extrabold uppercase leading-none tracking-wide text-muted">
+          <span className="shrink-0 whitespace-nowrap rounded-xl border border-dashed border-current px-2 py-1 font-display text-sm font-bold leading-none tracking-wide text-muted">
             Inactivo
           </span>
         )}
@@ -66,7 +66,7 @@ function SpaceRow({ space }: { space: PanelResource }) {
       </div>
 
       {editing && (
-        <form onSubmit={rename} noValidate className="grid gap-3 rounded-box border-[3px] border-line p-3">
+        <form onSubmit={rename} noValidate className="grid gap-3 rounded-box border border-edge p-3">
           <Field label="Nombre" autoComplete="off" value={name} onChange={(event) => setName(event.target.value)} />
           {update.error && <Problem message={reasonOf(update.error)} />}
           <div className="grid grid-cols-2 gap-3">
@@ -140,8 +140,8 @@ function NewSpace() {
   }
 
   return (
-    <form onSubmit={submit} noValidate className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard">
-      <h2 className="font-display text-2xl font-extrabold">Nuevo espacio</h2>
+    <form onSubmit={submit} noValidate className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card">
+      <h2 className="font-display text-2xl font-bold">Nuevo espacio</h2>
       <Field label="Nombre" autoComplete="off" placeholder="Cancha 2" value={name} onChange={(event) => setName(event.target.value)} />
       {create.error && <Problem message={reasonOf(create.error)} />}
       <div className="grid grid-cols-2 gap-3">
@@ -165,7 +165,7 @@ export function SpacesPage() {
         <ArrowLeft aria-hidden="true" />
         Ajustes
       </Link>
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Espacios</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Espacios</h1>
       <p className="text-muted">Lo que tus clientes reservan: una cancha, un consultorio o a una persona. Cada uno tiene su propio horario.</p>
 
       <NewSpace />
@@ -178,7 +178,7 @@ export function SpacesPage() {
       )}
 
       {resources.isError && (
-        <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+        <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
           <p className="font-semibold text-danger">No pudimos cargar los espacios. {resources.error.message}</p>
           <Button variant="plain" onClick={() => void resources.refetch()}>
             Intentar otra vez
@@ -187,7 +187,7 @@ export function SpacesPage() {
       )}
 
       {resources.isSuccess && resources.data.results.length === 0 && (
-        <p className="rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           Todavía no tienes espacios. Agrega el primero para empezar a recibir reservas.
         </p>
       )}

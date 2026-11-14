@@ -26,7 +26,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function Problem({ message }: { message: string }) {
   return (
-    <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+    <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
       <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
       {message}
     </p>
@@ -48,13 +48,13 @@ function MemberRow({ slug, member, onHanded }: { slug: string; member: Member; o
   const error = role.error ?? remove.error ?? link.error ?? password.error;
 
   return (
-    <li className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm">
+    <li className="grid gap-3 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-display text-xl font-extrabold leading-tight">{member.name || member.email}</p>
+          <p className="truncate font-display text-xl font-bold leading-tight">{member.name || member.email}</p>
           {member.name && <p className="truncate text-sm text-muted">{member.email}</p>}
         </div>
-        <span className="shrink-0 -rotate-3 whitespace-nowrap rounded-[8px] border-[3px] border-current px-2 py-1 font-display text-sm font-extrabold uppercase leading-none tracking-wide">
+        <span className="shrink-0 whitespace-nowrap rounded-xl border border-current px-2 py-1 font-display text-sm font-bold leading-none tracking-wide">
           {ROLE_LABEL[member.role]}
         </span>
       </div>
@@ -138,8 +138,8 @@ function AddMember({ slug, onDone }: { slug: string; onDone: (added?: AddedMembe
   }
 
   return (
-    <form onSubmit={submit} noValidate aria-label="Agregar a alguien" className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard">
-      <h3 className="font-display text-xl font-extrabold">Agregar a alguien</h3>
+    <form onSubmit={submit} noValidate aria-label="Agregar a alguien" className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card">
+      <h3 className="font-display text-xl font-bold">Agregar a alguien</h3>
       <Field
         label="Correo"
         type="email"
@@ -181,7 +181,7 @@ export function MembersSection({ slug }: { slug: string }) {
 
   return (
     <div className="grid grid-cols-1 gap-6">
-      <h2 className="font-display text-2xl font-extrabold">Personas del negocio</h2>
+      <h2 className="font-display text-2xl font-bold">Personas del negocio</h2>
 
       {handed && (
         <div className="grid gap-3">
@@ -211,7 +211,7 @@ export function MembersSection({ slug }: { slug: string }) {
       {members.isPending && <Skeleton className="h-[160px]" />}
       {members.isError && <Problem message={`No pudimos cargar a las personas. ${members.error.message}`} />}
       {members.isSuccess && members.data.length === 0 && (
-        <p className="rounded-box border-[3px] border-dashed border-line p-4 font-semibold">Este negocio no tiene a nadie que lo administre.</p>
+        <p className="rounded-box border border-dashed border-edge p-4 font-semibold">Este negocio no tiene a nadie que lo administre.</p>
       )}
       {members.isSuccess && members.data.length > 0 && (
         <ul className="grid grid-cols-1 gap-4">

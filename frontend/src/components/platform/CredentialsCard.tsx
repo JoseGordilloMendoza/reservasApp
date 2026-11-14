@@ -13,7 +13,7 @@ interface Props {
 /** What to send to a person so they can get in, built from the account and the temporary password. */
 export function accessMessage({ email, password, name }: Props, origin: string): string {
   return [
-    `Hola${name ? ` ${name}` : ""}, ya tienes acceso a Separa.`,
+    `Hola${name ? ` ${name}` : ""}, ya tienes acceso a MiReserva.`,
     `Entra aquí: ${origin}/panel/entrar`,
     `Correo: ${email}`,
     `Contraseña temporal: ${password}`,
@@ -39,8 +39,8 @@ export function CredentialsCard({ email, password, name }: Props) {
   }
 
   return (
-    <section aria-labelledby="credenciales" className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
-      <h2 id="credenciales" className="flex items-center gap-2 font-display text-xl font-extrabold">
+    <section aria-labelledby="credenciales" className="grid gap-4 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
+      <h2 id="credenciales" className="flex items-center gap-2 font-display text-xl font-bold">
         <Key aria-hidden="true" />
         Contraseña temporal
       </h2>
@@ -56,7 +56,7 @@ export function CredentialsCard({ email, password, name }: Props) {
         </div>
       </dl>
 
-      <p role="status" className="rounded-box border-[3px] border-dashed border-line p-3 font-semibold">
+      <p role="status" className="rounded-box border border-dashed border-edge p-3 font-semibold">
         Solo se muestra ahora. Cópiala y envíasela por un medio privado, como WhatsApp. Al entrar, la persona tendrá que elegir su
         propia contraseña.
       </p>
@@ -67,7 +67,7 @@ export function CredentialsCard({ email, password, name }: Props) {
         value={message}
         aria-label="Mensaje para enviar"
         onFocus={(event) => event.currentTarget.select()}
-        className="w-full resize-none rounded-box border-[3px] border-line bg-paper px-4 py-3 text-sm text-text"
+        className="w-full resize-none rounded-box border border-edge bg-paper px-4 py-3 text-sm text-text"
       />
 
       <div className="grid gap-3">

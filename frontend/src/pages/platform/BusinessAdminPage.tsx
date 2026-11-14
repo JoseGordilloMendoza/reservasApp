@@ -28,7 +28,7 @@ const SECTIONS: { id: Section; label: string }[] = [
 
 function Problem({ message }: { message: string }) {
   return (
-    <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+    <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
       <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
       {message}
     </p>
@@ -56,7 +56,7 @@ function PublicLink({ slug }: { slug: string }) {
         value={link}
         aria-label="Enlace público"
         onFocus={(event) => event.currentTarget.select()}
-        className="w-full resize-none break-all rounded-box border-[3px] border-line bg-paper px-4 py-3 font-mono text-sm text-text"
+        className="w-full resize-none break-all rounded-box border border-edge bg-paper px-4 py-3 font-mono text-sm text-text"
       />
       <Button variant="plain" onClick={() => void copy()}>
         {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -90,8 +90,8 @@ function Suspension({ business }: { business: PlatformBusiness }) {
 
   if (business.status === "suspended") {
     return (
-      <section aria-labelledby="suspension" className="grid gap-3 rounded-box border-[3px] border-danger p-4 text-text">
-        <h3 id="suspension" className="font-display text-xl font-extrabold text-danger">
+      <section aria-labelledby="suspension" className="grid gap-3 rounded-box border border-danger p-4 text-text">
+        <h3 id="suspension" className="font-display text-xl font-bold text-danger">
           Suspendido
         </h3>
         <p>
@@ -118,12 +118,12 @@ function Suspension({ business }: { business: PlatformBusiness }) {
 
   return (
     <section aria-labelledby="suspension" className="grid gap-3">
-      <h3 id="suspension" className="font-display text-xl font-extrabold">
+      <h3 id="suspension" className="font-display text-xl font-bold">
         Suspender
       </h3>
       <p className="text-sm text-muted">Deja de recibir reservas nuevas. No se borra nada y su dueño sigue viendo sus datos.</p>
       {asking ? (
-        <form onSubmit={confirm} noValidate aria-label="Suspender el negocio" className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-text">
+        <form onSubmit={confirm} noValidate aria-label="Suspender el negocio" className="grid gap-3 rounded-box border border-edge bg-surface p-4 text-text">
           <Field
             label="Motivo"
             autoComplete="off"
@@ -180,14 +180,14 @@ function Support({ business }: { business: PlatformBusiness }) {
 
   return (
     <section aria-labelledby="soporte" className="grid gap-3">
-      <h3 id="soporte" className="flex items-center gap-2 font-display text-xl font-extrabold">
+      <h3 id="soporte" className="flex items-center gap-2 font-display text-xl font-bold">
         <Lifebuoy aria-hidden="true" />
         Ayudar desde su panel
       </h3>
       <p className="text-sm text-muted">
         Entras a su panel con los mismos permisos que su dueño, por 2 horas. Queda registrado quién entró, por qué y qué cambió.
       </p>
-      <form onSubmit={enter} noValidate aria-label="Entrar como soporte" className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-text">
+      <form onSubmit={enter} noValidate aria-label="Entrar como soporte" className="grid gap-3 rounded-box border border-edge bg-surface p-4 text-text">
         <Field
           label="¿Por qué entras?"
           autoComplete="off"
@@ -210,7 +210,7 @@ function Summary({ business }: { business: PlatformBusiness }) {
 
   return (
     <div className="grid grid-cols-1 gap-8">
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-box border-[3px] border-line bg-surface p-4 text-sm text-text shadow-hard-sm">
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-box border border-edge bg-surface p-4 text-sm text-text shadow-card-sm">
         <div>
           <dt className="text-muted">Tipo</dt>
           <dd className="font-semibold">{KIND_LABEL[business.business_type]}</dd>
@@ -234,7 +234,7 @@ function Summary({ business }: { business: PlatformBusiness }) {
       </dl>
 
       <section aria-labelledby="enlace" className="grid gap-3">
-        <h3 id="enlace" className="font-display text-xl font-extrabold">
+        <h3 id="enlace" className="font-display text-xl font-bold">
           Su enlace para reservar
         </h3>
         <PublicLink slug={business.slug} />
@@ -290,7 +290,7 @@ export function BusinessAdminPage() {
 
       <header className="grid gap-3">
         <div className="flex items-start justify-between gap-3">
-          <h1 className="min-w-0 break-words font-display text-4xl font-extrabold leading-[0.95] sm:text-5xl">{data.name}</h1>
+          <h1 className="min-w-0 break-words font-display text-4xl font-bold leading-[1.1] sm:text-5xl">{data.name}</h1>
           <StandingStamp standing={data.standing} suspended={data.status === "suspended"} />
         </div>
         <p className="font-mono text-sm text-muted">/{data.slug}</p>
@@ -305,8 +305,8 @@ export function BusinessAdminPage() {
             aria-selected={section === id}
             onClick={() => setParams(id === "resumen" ? {} : { seccion: id }, { replace: true })}
             className={
-              "press min-h-[48px] shrink-0 rounded-box border-[3px] border-line px-4 font-display text-base font-bold " +
-              (section === id ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+              "press min-h-[48px] shrink-0 rounded-box border border-edge px-4 font-display text-base font-bold " +
+              (section === id ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
             }
           >
             {label}

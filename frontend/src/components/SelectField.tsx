@@ -22,8 +22,8 @@ export function SelectField({ label, error, hint, className = "", children, ...s
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
         className={
-          "min-h-[52px] w-full rounded-box border-[3px] bg-surface px-4 text-lg text-text focus:shadow-hard focus:outline-none " +
-          (error ? "border-danger" : "border-line") +
+          "min-h-[52px] w-full rounded-box border bg-surface px-4 text-lg text-text focus:border-accent-deep focus:ring-4 focus:ring-accent/25 focus:outline-none " +
+          (error ? "border-danger" : "border-edge-strong") +
           ` ${className}`
         }
         {...select}

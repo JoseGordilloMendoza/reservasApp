@@ -64,7 +64,7 @@ export function MyBookingsPage() {
 
   return (
     <div className="mx-auto grid max-w-[40rem] gap-6 pt-4">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">
         Mis reservas
       </h1>
 
@@ -91,16 +91,16 @@ export function MyBookingsPage() {
               {!loading && booking && (
                 <Link
                   to={`/${item.slug}/reserva/${item.token}`}
-                  className="press flex items-center justify-between gap-4 rounded-box border-[3px] border-line bg-surface p-4 shadow-hard"
+                  className="press flex items-center justify-between gap-4 rounded-box border border-edge bg-surface p-4 shadow-card"
                 >
                   <span className="grid gap-1">
-                    <span className="font-display text-xl font-extrabold leading-tight">{booking.business.name}</span>
+                    <span className="font-display text-xl font-bold leading-tight">{booking.business.name}</span>
                     <span className="text-sm text-muted">{booking.service.name}</span>
                     <span className="font-mono text-base font-bold">
                       {formatShortDate(booking.starts_at, timeZone)} {formatTime(booking.starts_at, timeZone)}
                     </span>
                   </span>
-                  <span className="shrink-0 -rotate-3 rounded-[8px] border-[3px] border-current px-2 py-1 font-display text-sm font-extrabold uppercase">
+                  <span className="shrink-0 rounded-xl border border-current px-2 py-1 font-display text-sm font-bold">
                     {STATUS_LABEL[booking.status]}
                   </span>
                 </Link>

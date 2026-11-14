@@ -29,8 +29,8 @@ function PublicLink({ slug }: { slug: string }) {
   }
 
   return (
-    <section aria-labelledby="enlace" className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard">
-      <h2 id="enlace" className="font-display text-xl font-extrabold">
+    <section aria-labelledby="enlace" className="grid gap-3 rounded-box border border-edge bg-surface p-4 text-text shadow-card">
+      <h2 id="enlace" className="font-display text-xl font-bold">
         Tu enlace para reservar
       </h2>
       <p className="text-muted">Compártelo en WhatsApp o Instagram. Tus clientes reservan desde ahí.</p>
@@ -40,7 +40,7 @@ function PublicLink({ slug }: { slug: string }) {
         value={link}
         aria-label="Enlace de tu página"
         onFocus={(event) => event.currentTarget.select()}
-        className="w-full resize-none break-all rounded-box border-[3px] border-line bg-paper px-4 py-3 font-mono text-sm text-text"
+        className="w-full resize-none break-all rounded-box border border-edge bg-paper px-4 py-3 font-mono text-sm text-text"
       />
       <Button variant="plain" onClick={() => void copy()}>
         {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -55,7 +55,7 @@ export function SettingsPage() {
 
   return (
     <div className="grid max-w-[34rem] grid-cols-1 gap-6">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Ajustes</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Ajustes</h1>
       {business.data && <PublicLink slug={business.data.slug} />}
       <MenuList entries={SECTIONS} />
     </div>

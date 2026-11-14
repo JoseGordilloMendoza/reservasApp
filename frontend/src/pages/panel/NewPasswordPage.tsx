@@ -5,7 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { Button, buttonClass } from "../../components/Button";
 import { Field } from "../../components/Field";
-import { BRAND } from "../../lib/brand";
+import { AuthHeader } from "../../components/AuthHeader";
 import { ApiError } from "../../lib/http";
 import { panelApi } from "../../lib/panelApi";
 import { validateNewPassword } from "../../lib/password";
@@ -16,10 +16,7 @@ const LINK_CODE = "invalid_reset_link";
 function Shell({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="mx-auto grid min-h-dvh max-w-[28rem] grid-cols-1 content-center gap-6 px-4 py-10">
-      <header className="rounded-box border-[3px] border-line bg-accent p-6 pb-8 text-on-accent shadow-hard">
-        <p className="font-display text-lg font-extrabold uppercase tracking-tight">{BRAND}</p>
-        <h1 className="mt-3 break-words font-display text-4xl font-extrabold sm:text-5xl uppercase leading-[0.9] tracking-[-0.03em]">{title}</h1>
-      </header>
+      <AuthHeader>{title}</AuthHeader>
       {children}
     </div>
   );
@@ -28,7 +25,7 @@ function Shell({ title, children }: { title: string; children: ReactNode }) {
 /** A link that cannot be used: it says so and offers the way out, a new one. */
 function BrokenLink({ message }: { message: string }) {
   return (
-    <section role="alert" className="grid gap-4 rounded-box border-[3px] border-danger bg-surface p-5 text-text">
+    <section role="alert" className="grid gap-4 rounded-box border border-danger bg-surface p-5 text-text">
       <p className="flex items-start gap-2 font-semibold text-danger">
         <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
         {message}
@@ -57,9 +54,9 @@ export function NewPasswordPage() {
   if (done) {
     return (
       <Shell title="Contraseña nueva">
-        <section role="status" className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
+        <section role="status" className="grid gap-4 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
           <CheckCircle aria-hidden="true" size={36} />
-          <p className="font-display text-2xl font-extrabold leading-tight">Listo, cambiaste tu contraseña.</p>
+          <p className="font-display text-2xl font-bold leading-tight">Listo, cambiaste tu contraseña.</p>
           <p className="text-muted">Por seguridad, cerramos tus otras sesiones. Entra con la nueva.</p>
           <Link to="/panel/entrar" className={buttonClass("primary")}>
             Entrar
@@ -109,7 +106,7 @@ export function NewPasswordPage() {
       <form
         onSubmit={(event) => void submit(event)}
         noValidate
-        className="grid gap-5 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard"
+        className="grid gap-5 rounded-box border border-edge bg-surface p-5 text-text shadow-card"
       >
         <Field
           label="Contraseña nueva"
@@ -130,7 +127,7 @@ export function NewPasswordPage() {
         />
 
         {formError && (
-          <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+          <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
             <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
             {formError}
           </p>

@@ -3,7 +3,7 @@ import { Check } from "@phosphor-icons/react";
 import type { Accent } from "../../lib/types";
 
 const ACCENTS: { id: Accent; label: string }[] = [
-  { id: "poppy", label: "Amapola" },
+  { id: "brand", label: "Azul MiReserva" },
   { id: "tangerine", label: "Mandarina" },
   { id: "sunflower", label: "Girasol" },
   { id: "mint", label: "Menta" },
@@ -35,8 +35,8 @@ export function AccentPicker({ value, onChange }: Props) {
             data-accent={id}
             onClick={() => onChange(id)}
             className={
-              "press grid aspect-square min-h-[52px] place-items-center rounded-box border-[3px] border-line bg-accent text-on-accent " +
-              (active ? "shadow-hard" : "shadow-hard-sm")
+              "press grid aspect-square min-h-[52px] place-items-center rounded-box border border-edge bg-accent text-on-accent " +
+              (active ? "shadow-card" : "shadow-card-sm")
             }
           >
             {active && <Check aria-hidden="true" weight="bold" size={26} />}

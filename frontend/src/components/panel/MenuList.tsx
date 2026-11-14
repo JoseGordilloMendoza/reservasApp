@@ -17,11 +17,11 @@ export function MenuList({ entries }: { entries: MenuEntry[] }) {
         <li key={to}>
           <Link
             to={to}
-            className="press flex items-center gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm"
+            className="press flex items-center gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm"
           >
             <Glyph aria-hidden="true" size={28} className="shrink-0" />
             <span className="min-w-0 flex-1">
-              <span className="block font-display text-xl font-extrabold leading-tight">{label}</span>
+              <span className="block font-display text-xl font-bold leading-tight">{label}</span>
               <span className="block text-sm text-muted">{hint}</span>
             </span>
             <CaretRight aria-hidden="true" className="shrink-0" />

@@ -10,10 +10,10 @@ import { usePanelBusiness, usePendingBookings, useTodayBookings } from "../../li
 
 function Heading({ id, children, count }: { id: string; children: string; count?: number }) {
   return (
-    <h2 id={id} className="flex items-center gap-3 font-display text-3xl font-extrabold leading-none">
+    <h2 id={id} className="flex items-center gap-3 font-display text-3xl font-bold leading-none">
       {children}
       {count !== undefined && count > 0 && (
-        <span className="grid min-w-9 place-items-center rounded-[8px] border-[3px] border-line bg-accent px-2 py-1 text-lg text-on-accent">
+        <span className="grid min-w-9 place-items-center rounded-xl border border-edge bg-accent px-2 py-1 text-lg text-on-accent">
           {count}
         </span>
       )}
@@ -47,7 +47,7 @@ export function PanelHome() {
 
   return (
     <div className="grid grid-cols-1 gap-10">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">
         {first ? `Hola, ${first}` : "Hola"}
       </h1>
 
@@ -62,7 +62,7 @@ export function PanelHome() {
         {pending.isError && <p role="alert" className="font-semibold text-danger">No pudimos cargar las reservas. {pending.error.message}</p>}
 
         {pending.isSuccess && timeZone && pending.data.results.length === 0 && (
-          <p className="flex items-center gap-3 rounded-box border-[3px] border-dashed border-line p-4 text-lg font-semibold">
+          <p className="flex items-center gap-3 rounded-box border border-dashed border-edge p-4 text-lg font-semibold">
             <CheckCircle aria-hidden="true" size={28} />
             Nada por confirmar. Todo al día.
           </p>
@@ -84,7 +84,7 @@ export function PanelHome() {
         {today.isError && <p role="alert" className="font-semibold text-danger">No pudimos cargar el día. {today.error.message}</p>}
 
         {today.isSuccess && timeZone && today.data.results.length === 0 && (
-          <div className="grid justify-items-start gap-4 rounded-box border-[3px] border-dashed border-line p-5">
+          <div className="grid justify-items-start gap-4 rounded-box border border-dashed border-edge p-5">
             <CalendarBlank aria-hidden="true" size={32} />
             <p className="font-display text-xl font-bold leading-tight">Hoy no hay reservas.</p>
             <Link to="/panel/reservas/nueva" className={buttonClass("plain")}>

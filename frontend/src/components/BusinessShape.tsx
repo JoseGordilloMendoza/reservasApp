@@ -1,24 +1,15 @@
 import type { BusinessKind } from "../lib/platformTypes";
 
-/** Three flat colors from the palette, as the poster style asks: ink, red and butter. */
+/** Three looks for the picture area of a card, all inside the brand colors, taking turns down a list. */
 export const TONES = [
-  { panel: "bg-line", first: "var(--accent)", second: "var(--paper)", ink: "var(--line)" },
-  { panel: "bg-accent", first: "var(--paper)", second: "var(--line)", ink: "var(--line)" },
-  { panel: "bg-paper", first: "var(--accent)", second: "var(--line)", ink: "var(--line)" },
+  { panel: "bg-tint", first: "var(--accent)", second: "#48b8ff", ink: "var(--line)" },
+  { panel: "bg-accent", first: "#ffffff", second: "#48b8ff", ink: "#172b4d" },
+  { panel: "bg-surface", first: "var(--accent)", second: "#48b8ff", ink: "var(--line)" },
 ] as const;
 
 export type Tone = (typeof TONES)[number];
 
-function Leaf({ d, vein, fill, ink }: { d: string; vein: string; fill: string; ink: string }) {
-  return (
-    <g stroke={ink} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round">
-      <path d={d} fill={fill} />
-      <path d={vein} fill="none" />
-    </g>
-  );
-}
-
-/** A flat drawing for each kind of business: a ball, leaves, or a ticket stub. */
+/** A flat, rounded drawing for each kind of business: a ball, two speech bubbles, or a calendar with a check. */
 export function BusinessShape({ kind, tone, className }: { kind: string; tone: Tone; className?: string }) {
   const { first, second, ink } = tone;
   const known = (["court", "psychologist"] as BusinessKind[]).includes(kind as BusinessKind) ? kind : "generic";
@@ -26,32 +17,32 @@ export function BusinessShape({ kind, tone, className }: { kind: string; tone: T
   return (
     <svg viewBox="0 0 160 120" aria-hidden="true" focusable="false" className={className}>
       {known === "court" && (
-        <>
-          <Leaf d="M16 104 C6 78 18 56 40 48 C50 70 42 94 16 104Z" vein="M16 104 C22 84 30 68 40 48" fill={second} ink={ink} />
-          <circle cx="86" cy="60" r="40" fill={first} stroke={ink} strokeWidth="3" />
-          <g fill="none" stroke={ink} strokeWidth="3" strokeLinecap="round">
-            <path d="M48 48 C70 66 100 66 124 46" />
-            <path d="M86 20 L86 54" />
-            <path d="M52 86 C68 74 76 68 86 54 C96 68 104 74 120 86" />
+        <g strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="94" cy="62" r="40" fill={first} />
+          <circle cx="40" cy="92" r="14" fill={second} />
+          <g fill="none" stroke={ink} strokeWidth="2.5" strokeOpacity="0.85">
+            <path d="M56 50 C76 68 108 68 130 48" />
+            <path d="M94 22 L94 56" />
+            <path d="M60 88 C76 76 84 70 94 56 C104 70 112 76 128 88" />
           </g>
-        </>
+        </g>
       )}
       {known === "psychologist" && (
-        <>
-          <Leaf d="M70 108 C22 98 14 52 62 14 C108 38 118 84 70 108Z" vein="M70 108 C66 76 64 48 62 14" fill={first} ink={ink} />
-          <Leaf d="M104 112 C84 92 92 62 124 52 C140 74 132 100 104 112Z" vein="M104 112 C112 90 118 72 124 52" fill={second} ink={ink} />
-          <circle cx="132" cy="22" r="10" fill={second} stroke={ink} strokeWidth="3" />
-        </>
+        <g strokeLinejoin="round">
+          <path d="M28 24 H92 A16 16 0 0 1 108 40 V68 A16 16 0 0 1 92 84 H58 L38 100 V84 H28 A16 16 0 0 1 12 68 V40 A16 16 0 0 1 28 24 Z" fill={first} />
+          <path d="M70 52 H132 A16 16 0 0 1 148 68 V92 A16 16 0 0 1 132 108 H128 V120 L112 108 H86 A16 16 0 0 1 70 92 Z" fill={second} stroke={ink} strokeWidth="2.5" strokeOpacity="0.85" />
+          <circle cx="40" cy="54" r="4" fill="#ffffff" />
+          <circle cx="60" cy="54" r="4" fill="#ffffff" />
+        </g>
       )}
       {known === "generic" && (
-        <>
-          <g stroke={ink} strokeWidth="3" strokeLinejoin="round">
-            <path d="M22 30 H138 V50 A10 10 0 0 0 138 70 V90 H22 V70 A10 10 0 0 0 22 50 Z" fill={first} />
-          </g>
-          <path d="M100 34 V86" stroke={ink} strokeWidth="3" strokeDasharray="5 6" strokeLinecap="round" />
-          <circle cx="58" cy="60" r="16" fill={second} stroke={ink} strokeWidth="3" />
-          <path d="M58 50 V60 L65 64" fill="none" stroke={ink} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        </>
+        <g strokeLinecap="round" strokeLinejoin="round">
+          <rect x="32" y="22" width="96" height="84" rx="16" fill={first} />
+          <path d="M32 44 H128" stroke={second} strokeWidth="10" />
+          <rect x="52" y="12" width="8" height="22" rx="4" fill={second} />
+          <rect x="100" y="12" width="8" height="22" rx="4" fill={second} />
+          <path d="M58 74 L74 90 L104 58" fill="none" stroke={ink} strokeOpacity="0.9" strokeWidth="9" />
+        </g>
       )}
     </svg>
   );

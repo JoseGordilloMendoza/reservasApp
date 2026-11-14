@@ -31,10 +31,10 @@ function Done({ business, delivery, ownerName, onAnother }: { business: CreatedB
 
   return (
     <div className="grid max-w-[34rem] grid-cols-1 gap-6">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Negocio abierto</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Negocio abierto</h1>
 
-      <div className="grid gap-2 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
-        <p className="font-display text-3xl font-extrabold leading-tight">{business.name}</p>
+      <div className="grid gap-2 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
+        <p className="font-display text-3xl font-bold leading-tight">{business.name}</p>
         <p className="text-muted">
           {KIND_LABEL[business.business_type]}
           {business.standing.valid_until ? ` · vigente hasta el ${formatDayKey(business.standing.valid_until)}` : ""}
@@ -42,7 +42,7 @@ function Done({ business, delivery, ownerName, onAnother }: { business: CreatedB
       </div>
 
       <section aria-labelledby="dueno" className="grid gap-3">
-        <h2 id="dueno" className="flex items-center gap-2 font-display text-xl font-extrabold">
+        <h2 id="dueno" className="flex items-center gap-2 font-display text-xl font-bold">
           <EnvelopeSimple aria-hidden="true" />
           El dueño
         </h2>
@@ -77,7 +77,7 @@ function Done({ business, delivery, ownerName, onAnother }: { business: CreatedB
       )}
 
       <section aria-labelledby="enlace" className="grid gap-3">
-        <h2 id="enlace" className="font-display text-xl font-extrabold">
+        <h2 id="enlace" className="font-display text-xl font-bold">
           Su enlace para reservar
         </h2>
         <textarea
@@ -86,7 +86,7 @@ function Done({ business, delivery, ownerName, onAnother }: { business: CreatedB
           value={link}
           aria-label="Enlace del negocio"
           onFocus={(event) => event.currentTarget.select()}
-          className="w-full resize-none break-all rounded-box border-[3px] border-line bg-paper px-4 py-3 font-mono text-sm text-text"
+          className="w-full resize-none break-all rounded-box border border-edge bg-paper px-4 py-3 font-mono text-sm text-text"
         />
         <Button variant="plain" onClick={() => void copy()}>
           {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -179,12 +179,12 @@ export function NewBusinessPage() {
         <ArrowLeft aria-hidden="true" />
         Negocios
       </Link>
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Nuevo negocio</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Nuevo negocio</h1>
       <p className="text-muted">Crea el negocio, a su dueño y su suscripción de una vez. Tú decides cómo recibe su acceso el dueño: por correo o con una contraseña temporal que le envías tú.</p>
 
       <form ref={formRef} onSubmit={submit} noValidate className="grid gap-8">
         <section aria-labelledby="negocio" className="grid gap-4">
-          <h2 id="negocio" className="font-display text-2xl font-extrabold">
+          <h2 id="negocio" className="font-display text-2xl font-bold">
             El negocio
           </h2>
           <Field label="Nombre del negocio" autoComplete="off" value={values.name} error={errors.name} onChange={(event) => set({ name: event.target.value })} />
@@ -207,7 +207,7 @@ export function NewBusinessPage() {
         </section>
 
         <section aria-labelledby="duenoform" className="grid gap-4">
-          <h2 id="duenoform" className="font-display text-2xl font-extrabold">
+          <h2 id="duenoform" className="font-display text-2xl font-bold">
             El dueño
           </h2>
           <Field
@@ -227,7 +227,7 @@ export function NewBusinessPage() {
         </section>
 
         <section aria-labelledby="suscripcion" className="grid gap-4">
-          <h2 id="suscripcion" className="font-display text-2xl font-extrabold">
+          <h2 id="suscripcion" className="font-display text-2xl font-bold">
             La suscripción
           </h2>
           <div className="grid grid-cols-2 gap-4">
@@ -256,8 +256,8 @@ export function NewBusinessPage() {
                 aria-checked={values.term === id}
                 onClick={() => set({ term: id })}
                 className={
-                  "press min-h-[52px] rounded-box border-[3px] border-line px-4 py-3 text-left font-display text-lg font-bold " +
-                  (values.term === id ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+                  "press min-h-[52px] rounded-box border border-edge px-4 py-3 text-left font-display text-lg font-bold " +
+                  (values.term === id ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
                 }
               >
                 {label}
@@ -281,7 +281,7 @@ export function NewBusinessPage() {
         </section>
 
         {formError && (
-          <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+          <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
             <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
             {formError}
           </p>

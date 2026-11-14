@@ -19,7 +19,7 @@ function BlockControl({ customer }: { customer: CustomerDetail }) {
     <div className="grid gap-3">
       {customer.is_blocked ? (
         <>
-          <p className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+          <p className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
             <Prohibit aria-hidden="true" className="mt-0.5 shrink-0" />
             Este cliente está bloqueado: no puede reservar en línea. Tú sí puedes anotarle reservas.
           </p>
@@ -42,7 +42,7 @@ function BlockControl({ customer }: { customer: CustomerDetail }) {
       )}
 
       {update.error && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
           <X aria-hidden="true" className="mt-0.5 shrink-0" />
           {update.error.message}
         </p>
@@ -56,7 +56,7 @@ function HistoryRow({ booking, timeZone }: { booking: CustomerBooking; timeZone:
     <li>
       <Link
         to={`/panel/reservas/${booking.id}`}
-        className="press flex items-center gap-4 rounded-box border-[3px] border-line bg-surface p-3 text-text shadow-hard-sm"
+        className="press flex items-center gap-4 rounded-box border border-edge bg-surface p-3 text-text shadow-card-sm"
       >
         <span className="w-[5.5rem] shrink-0 font-mono text-sm font-bold leading-tight">
           {relativeDay(booking.starts_at, timeZone)}
@@ -106,8 +106,8 @@ export function CustomerDetailPage() {
         Clientes
       </Link>
 
-      <article className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
-        <h1 className="break-words font-display text-3xl font-extrabold leading-[0.95] sm:text-4xl">{customer.name}</h1>
+      <article className="grid gap-4 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
+        <h1 className="break-words font-display text-3xl font-bold leading-[1.1] sm:text-4xl">{customer.name}</h1>
         <p className="text-muted">{count}</p>
         {customer.email && <p className="break-all font-semibold">{customer.email}</p>}
         <ContactLinks phone={customer.phone} message={`Hola ${customer.name}, te escribo de ${business.data.name}.`} />
@@ -116,11 +116,11 @@ export function CustomerDetailPage() {
       <BlockControl customer={customer} />
 
       <section aria-labelledby="historial" className="grid grid-cols-1 gap-3">
-        <h2 id="historial" className="font-display text-2xl font-extrabold">
+        <h2 id="historial" className="font-display text-2xl font-bold">
           Historial
         </h2>
         {customer.bookings.length === 0 ? (
-          <p className="rounded-box border-[3px] border-dashed border-line p-4 font-semibold">Todavía no tiene reservas.</p>
+          <p className="rounded-box border border-dashed border-edge p-4 font-semibold">Todavía no tiene reservas.</p>
         ) : (
           <ul className="grid grid-cols-1 gap-3">
             {customer.bookings.map((booking) => (

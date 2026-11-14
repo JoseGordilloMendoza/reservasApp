@@ -29,7 +29,7 @@ const ACTOR: Record<BookingEvent["actor"], string> = {
 function Event({ event, timeZone }: { event: BookingEvent; timeZone: string }) {
   const what = event.from_status === "" ? "Reservó" : `Pasó a ${STATUS_LABEL[event.to_status].toLowerCase()}`;
   return (
-    <li className="flex items-baseline justify-between gap-4 border-t-[3px] border-dashed border-line/40 py-3 first:border-t-0">
+    <li className="flex items-baseline justify-between gap-4 border-t border-dashed border-edge py-3 first:border-t-0">
       <span className="font-semibold">
         {what} <span className="font-normal text-muted">por {ACTOR[event.actor]}</span>
       </span>
@@ -93,7 +93,7 @@ function Actions({ booking }: { booking: PanelBookingDetail }) {
       )}
 
       {action.error && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
           <X aria-hidden="true" className="mt-0.5 shrink-0" />
           {action.error.message}
         </p>
@@ -137,10 +137,10 @@ export function BookingDetailPage() {
         Reservas
       </Link>
 
-      <article className="grid gap-5 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
+      <article className="grid gap-5 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
         <header className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="break-words font-display text-3xl font-extrabold leading-[0.95] sm:text-4xl">{booking.customer.name}</h1>
+            <h1 className="break-words font-display text-3xl font-bold leading-[1.1] sm:text-4xl">{booking.customer.name}</h1>
             <p className="mt-2 text-muted">
               {booking.source === "business" ? "Anotada por el negocio" : "Reservada por el cliente"}
             </p>
@@ -150,7 +150,7 @@ export function BookingDetailPage() {
 
         <TrustBadge trust={booking.customer_trust} />
 
-        <p className="w-fit rounded-box border-[3px] border-line bg-paper px-3 py-1 font-mono text-xl font-bold tracking-widest">
+        <p className="w-fit rounded-box border border-edge bg-paper px-3 py-1 font-mono text-xl font-bold tracking-widest">
           <span className="sr-only">Código de reserva </span>
           {formatCode(booking.code)}
         </p>
@@ -214,10 +214,10 @@ export function BookingDetailPage() {
       <PaymentCard key={`${booking.payment_status}-${booking.arrived_at}-${booking.internal_note}`} booking={booking} timeZone={timeZone} />
 
       <section aria-labelledby="historial" className="grid gap-2">
-        <h2 id="historial" className="font-display text-2xl font-extrabold">
+        <h2 id="historial" className="font-display text-2xl font-bold">
           Historial
         </h2>
-        <ul className="rounded-box border-[3px] border-line bg-surface px-4 text-text">
+        <ul className="rounded-box border border-edge bg-surface px-4 text-text">
           {booking.events.map((event) => (
             <Event key={`${event.created_at}-${event.to_status}`} event={event} timeZone={timeZone} />
           ))}

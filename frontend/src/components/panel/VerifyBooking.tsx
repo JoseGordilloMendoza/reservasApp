@@ -19,10 +19,10 @@ function Match({ booking, timeZone }: { booking: PanelBooking; timeZone: string 
   const canArrive = LIVE.includes(booking.status);
 
   return (
-    <li className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm">
+    <li className="grid gap-3 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <Link to={`/panel/reservas/${booking.id}`} className="block truncate font-display text-xl font-extrabold leading-tight underline decoration-[3px] underline-offset-4">
+          <Link to={`/panel/reservas/${booking.id}`} className="block truncate font-display text-xl font-bold leading-tight underline decoration-[3px] underline-offset-4">
             {booking.customer.name}
           </Link>
           <p className="mt-1 text-sm text-muted">
@@ -74,7 +74,7 @@ export function VerifyBooking({ timeZone }: { timeZone: string | undefined }) {
 
   return (
     <section aria-labelledby="verificar" className="grid gap-4">
-      <h2 id="verificar" className="font-display text-3xl font-extrabold leading-none">
+      <h2 id="verificar" className="font-display text-3xl font-bold leading-none">
         Verificar una reserva
       </h2>
       <label className="relative block">
@@ -86,7 +86,7 @@ export function VerifyBooking({ timeZone }: { timeZone: string | undefined }) {
           onChange={(event) => setTyped(event.target.value)}
           autoComplete="off"
           placeholder="Código (K7M-42X) o nombre"
-          className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-surface pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:shadow-hard focus:outline-none"
+          className="min-h-[52px] w-full rounded-box border border-edge-strong bg-surface pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:border-accent-deep focus:ring-4 focus:ring-accent/25 focus:outline-none"
         />
       </label>
 
@@ -94,7 +94,7 @@ export function VerifyBooking({ timeZone }: { timeZone: string | undefined }) {
         {waiting && results.length === 0 && <Skeleton className="h-[120px]" />}
 
         {ready && !waiting && search.isSuccess && results.length === 0 && (
-          <p className="rounded-box border-[3px] border-dashed border-line p-4 font-semibold">
+          <p className="rounded-box border border-dashed border-edge p-4 font-semibold">
             No encontramos esa reserva. Revisa el código o prueba con el nombre.
           </p>
         )}

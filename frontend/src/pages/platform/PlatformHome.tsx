@@ -14,9 +14,9 @@ const money = (amount: number | string) => formatPrice(String(amount)) ?? "S/ 0"
 
 function Tile({ label, value, hint }: { label: string; value: ReactNode; hint?: string }) {
   return (
-    <div className="grid content-between gap-2 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm">
+    <div className="grid content-between gap-2 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm">
       <p className="text-sm font-semibold text-muted">{label}</p>
-      <p className="font-display text-3xl font-extrabold leading-none">{value}</p>
+      <p className="font-display text-3xl font-bold leading-none">{value}</p>
       {hint && <p className="text-sm text-muted">{hint}</p>}
     </div>
   );
@@ -33,13 +33,13 @@ const BREAKDOWN: { key: keyof Dashboard["subscriptions"]; label: string; filter?
 function Attention({ items }: { items: Dashboard["attention"] }) {
   return (
     <section aria-labelledby="atencion" className="grid gap-3">
-      <h2 id="atencion" className="font-display text-2xl font-extrabold">
+      <h2 id="atencion" className="font-display text-2xl font-bold">
         Requieren atención
         {items.length > 0 && <span className="ml-2 font-mono text-lg">{items.length}</span>}
       </h2>
 
       {items.length === 0 ? (
-        <p className="flex items-center gap-3 rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="flex items-center gap-3 rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           <CheckCircle aria-hidden="true" size={28} className="shrink-0" />
           Todo al día: ninguna suscripción vence esta semana.
         </p>
@@ -49,7 +49,7 @@ function Attention({ items }: { items: Dashboard["attention"] }) {
             <li key={item.slug}>
               <Link
                 to={`/plataforma/negocios/${item.slug}`}
-                className="press flex items-center justify-between gap-3 rounded-box border-[3px] border-line bg-surface p-3 text-text shadow-hard-sm"
+                className="press flex items-center justify-between gap-3 rounded-box border border-edge bg-surface p-3 text-text shadow-card-sm"
               >
                 <span className="min-w-0 truncate font-display text-lg font-bold">{item.name}</span>
                 <StandingStamp
@@ -72,7 +72,7 @@ export function PlatformHome() {
 
   if (dashboard.isError) {
     return (
-      <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+      <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
         <p className="font-semibold text-danger">No pudimos cargar los indicadores. {dashboard.error.message}</p>
         <Button variant="plain" onClick={() => void dashboard.refetch()}>
           Intentar otra vez
@@ -83,7 +83,7 @@ export function PlatformHome() {
 
   return (
     <div className="grid grid-cols-1 gap-10">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">
         {first ? `Hola, ${first}` : "Hola"}
       </h1>
 
@@ -97,7 +97,7 @@ export function PlatformHome() {
           <Attention items={dashboard.data.attention} />
 
           <section aria-labelledby="numeros" className="grid gap-3">
-            <h2 id="numeros" className="font-display text-2xl font-extrabold">
+            <h2 id="numeros" className="font-display text-2xl font-bold">
               En números
             </h2>
             <div className="grid grid-cols-2 gap-3">
@@ -117,7 +117,7 @@ export function PlatformHome() {
           </section>
 
           <section aria-labelledby="suscripciones" className="grid gap-3">
-            <h2 id="suscripciones" className="font-display text-2xl font-extrabold">
+            <h2 id="suscripciones" className="font-display text-2xl font-bold">
               Suscripciones
             </h2>
             <ul className="grid gap-3">
@@ -129,11 +129,11 @@ export function PlatformHome() {
                   </>
                 );
                 const style =
-                  "flex items-center justify-between gap-3 rounded-box border-[3px] border-line bg-surface p-3 text-text";
+                  "flex items-center justify-between gap-3 rounded-box border border-edge bg-surface p-3 text-text";
                 return (
                   <li key={key}>
                     {filter ? (
-                      <Link to={`/plataforma/negocios?filtro=${filter}`} className={`press shadow-hard-sm ${style}`}>
+                      <Link to={`/plataforma/negocios?filtro=${filter}`} className={`press shadow-card-sm ${style}`}>
                         {row}
                       </Link>
                     ) : (
@@ -147,7 +147,7 @@ export function PlatformHome() {
 
           {dashboard.data.busiest.length > 0 && (
             <section aria-labelledby="activos" className="grid gap-3">
-              <h2 id="activos" className="font-display text-2xl font-extrabold">
+              <h2 id="activos" className="font-display text-2xl font-bold">
                 Más activos
               </h2>
               <ol className="grid gap-3">
@@ -155,7 +155,7 @@ export function PlatformHome() {
                   <li key={business.slug}>
                     <Link
                       to={`/plataforma/negocios/${business.slug}`}
-                      className="press flex items-center gap-4 rounded-box border-[3px] border-line bg-surface p-3 text-text shadow-hard-sm"
+                      className="press flex items-center gap-4 rounded-box border border-edge bg-surface p-3 text-text shadow-card-sm"
                     >
                       <span className="w-6 font-mono text-xl font-bold text-muted">{index + 1}</span>
                       <span className="min-w-0 flex-1 truncate font-display text-lg font-bold">{business.name}</span>

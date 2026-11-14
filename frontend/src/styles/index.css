@@ -1,118 +1,136 @@
 @import "tailwindcss";
-@import "@fontsource-variable/bricolage-grotesque";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/inter";
 @import "@fontsource-variable/geist-mono";
 
 /*
- * Ticket neobrutalist system (docs/09-diseno-frontend.md).
- * Shape rules: 3px borders, 10px corners, hard shadows with no blur.
- * The accent is chosen per business through <html data-accent="...">.
+ * MiReserva: clean, light and trustworthy (docs/09-diseno-frontend.md).
+ * Inter for everything, Geist Mono only for codes and times. Soft cards with a thin edge, rounded corners and
+ * a gentle shadow. Blue is the brand; each business can wear another accent through <html data-accent="...">.
  */
 
 @theme inline {
-  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
 
   --color-paper: var(--paper);
   --color-surface: var(--surface);
+  --color-tint: var(--tint-block);
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-edge: var(--edge);
+  --color-edge-strong: var(--edge-strong);
   --color-accent: var(--accent);
   --color-accent-deep: var(--accent-deep);
   --color-on-accent: var(--on-accent);
   --color-danger: var(--danger);
 
-  --radius-box: 10px;
-  --shadow-hard: 4px 4px 0 0 var(--shadow-color);
-  --shadow-hard-sm: 2px 2px 0 0 var(--shadow-color);
+  --radius-box: 16px;
+  --shadow-card: var(--shadow-card-value);
+  --shadow-card-sm: var(--shadow-card-sm-value);
 }
 
 /*
- * The platform's own palette: ink blue, butter yellow, and one accent. Ink and butter are the same for
- * every business, so everything stays readable and Separa stays recognizable; only the accent (about a
- * tenth of the page) is the business's choice. The page background takes a faint trace of it.
- *
- * Each accent lists the text color that reads on it (at least 4.5:1) and a deeper shade for small text
- * on the butter background (at least 4.5:1). Poppy is the platform's own and the default.
+ * Accents. Each lists the text color that reads on it (at least 4.5:1) and a deeper shade for small text on
+ * the page background (at least 4.5:1). "brand" is MiReserva's own blue and the default. The page background
+ * takes a faint trace of the accent of the business, except for the brand blue, which leaves it as it is.
  */
 :root,
-[data-accent="poppy"] {
-  /* The platform's own look is pure butter; the other accents leave a faint trace on the background. */
+[data-accent="brand"] {
   --tint-strength: 0%;
-  --accent: #c9242f;
-  --accent-deep: #a3171f;
-  --on-accent: #fff3b0;
+  --accent: #052ff7;
+  --accent-deep: #1238c9;
+  --on-accent: #ffffff;
 }
 [data-accent="tangerine"] {
-  --tint-strength: 14%;
+  --tint-strength: 8%;
   --accent: #f2872c;
   --accent-deep: #a14a00;
-  --on-accent: #1b2a78;
+  --on-accent: #172b4d;
 }
 [data-accent="sunflower"] {
-  --tint-strength: 14%;
+  --tint-strength: 8%;
   --accent: #f5bd1f;
   --accent-deep: #7a5a00;
-  --on-accent: #1b2a78;
+  --on-accent: #172b4d;
 }
 [data-accent="mint"] {
-  --tint-strength: 14%;
+  --tint-strength: 8%;
   --accent: #2fb98f;
   --accent-deep: #0b6a50;
-  --on-accent: #1b2a78;
+  --on-accent: #172b4d;
 }
 [data-accent="sky"] {
-  --tint-strength: 14%;
+  --tint-strength: 8%;
   --accent: #5fb4f0;
   --accent-deep: #14649c;
-  --on-accent: #1b2a78;
+  --on-accent: #172b4d;
 }
 [data-accent="rose"] {
-  --tint-strength: 14%;
+  --tint-strength: 8%;
   --accent: #f27ba4;
   --accent-deep: #a8164a;
-  --on-accent: #1b2a78;
+  --on-accent: #172b4d;
 }
 
-/* Light: the page takes the tint of the business accent. */
+/* Light. */
 :root {
-  --tint: color-mix(in srgb, var(--accent) var(--tint-strength), #fff3b0);
-  --paper: var(--tint);
+  --paper: color-mix(in srgb, var(--accent) var(--tint-strength), #f5f9ff);
   --surface: #ffffff;
-  --text: #1b2a78;
-  --muted: #4b5280;
-  --line: #1b2a78;
-  --shadow-color: #1b2a78;
+  /* A light blue for blocks inside the page (a highlighted section, the picture area of a card). */
+  --tint-block: color-mix(in srgb, var(--accent) calc(var(--tint-strength) + 6%), #eaf6ff);
+  --text: #172b4d;
+  --muted: #53627e;
+  /* The dark ink, for blocks and buttons that invert the page. */
+  --line: #172b4d;
+  /* The edge of a card (decorative) and of a form control (it must be seen: 3:1 against the page). */
+  --edge: #d3e1f3;
+  --edge-strong: #7589ad;
   --danger: #c0182f;
+  --logo-ink: #172b4d;
+  --logo-blue: #1238c9;
+  --shadow-card-value: 0 1px 2px rgb(23 43 77 / 0.06), 0 10px 28px -14px rgb(23 43 77 / 0.2);
+  --shadow-card-sm-value: 0 1px 2px rgb(23 43 77 / 0.08), 0 3px 10px -5px rgb(23 43 77 / 0.16);
   color-scheme: light dark;
 }
 
 /*
- * Dark: deep blue, butter lines, and the hard shadow is a darker blue (a red one next to butter lines vibrates).
- * It follows the system, and <html data-theme="light|dark"> forces either one.
+ * Dark: deep blue with soft light text. It follows the system, and <html data-theme="light|dark"> forces
+ * either one.
  */
 :root[data-theme="dark"] {
-  --paper: #0e1546;
-  --surface: #172062;
-  --text: #fff3b0;
-  --muted: #cfcba3;
-  --line: #fff3b0;
-  --shadow-color: #040824;
+  --paper: color-mix(in srgb, var(--accent) var(--tint-strength), #0b1530);
+  --surface: #12203f;
+  --tint-block: color-mix(in srgb, var(--accent) calc(var(--tint-strength) + 10%), #0f1b38);
+  --text: #eaf1ff;
+  --muted: #a9b8d6;
+  --line: #eaf1ff;
+  --edge: #26385f;
+  --edge-strong: #5b739e;
   --danger: #ff7a8a;
+  --logo-ink: #eaf1ff;
+  --logo-blue: #7b93ff;
   --accent-deep: color-mix(in srgb, var(--accent) 55%, #ffffff);
+  --shadow-card-value: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 28px -14px rgb(0 0 0 / 0.55);
+  --shadow-card-sm-value: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 12px -6px rgb(0 0 0 / 0.5);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0e1546;
-    --surface: #172062;
-    --text: #fff3b0;
-    --muted: #cfcba3;
-    --line: #fff3b0;
-    --shadow-color: #040824;
+    --paper: color-mix(in srgb, var(--accent) var(--tint-strength), #0b1530);
+    --surface: #12203f;
+    --tint-block: color-mix(in srgb, var(--accent) calc(var(--tint-strength) + 10%), #0f1b38);
+    --text: #eaf1ff;
+    --muted: #a9b8d6;
+    --line: #eaf1ff;
+    --edge: #26385f;
+    --edge-strong: #5b739e;
     --danger: #ff7a8a;
+    --logo-ink: #eaf1ff;
+    --logo-blue: #7b93ff;
     --accent-deep: color-mix(in srgb, var(--accent) 55%, #ffffff);
+    --shadow-card-value: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 28px -14px rgb(0 0 0 / 0.55);
+    --shadow-card-sm-value: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 12px -6px rgb(0 0 0 / 0.5);
   }
 }
 
@@ -130,18 +148,20 @@ body {
   font-size: 1rem;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss03";
 }
 
 h1,
 h2,
 h3 {
   font-family: var(--font-display);
+  text-wrap: balance;
 }
 
-/* Keyboard focus is always visible and uses the same hard-edged language. */
+/* Keyboard focus is always visible, in the brand blue (in dark mode, in the light ink). */
 :focus-visible {
-  outline: 3px solid var(--line);
-  outline-offset: 3px;
+  outline: 3px solid var(--focus, var(--accent-deep));
+  outline-offset: 2px;
   border-radius: var(--radius-box);
 }
 
@@ -150,11 +170,11 @@ h3 {
   background-image: repeating-linear-gradient(
     135deg,
     transparent 0 6px,
-    color-mix(in srgb, var(--line) 22%, transparent) 6px 8px
+    color-mix(in srgb, var(--text) 14%, transparent) 6px 8px
   );
 }
 
-/* Checkbox in the system's language; the tick takes the color that reads on the accent. */
+/* Checkbox in the system's look; the tick takes the color that reads on the accent. */
 .check {
   appearance: none;
   display: grid;
@@ -162,21 +182,22 @@ h3 {
   width: 1.75rem;
   height: 1.75rem;
   cursor: pointer;
-  border: 3px solid var(--line);
-  border-radius: 6px;
+  border: 1.5px solid var(--edge-strong);
+  border-radius: 8px;
   background: var(--surface);
 }
 .check::after {
   content: "";
-  width: 0.5rem;
-  height: 0.9rem;
+  width: 0.45rem;
+  height: 0.85rem;
   border: solid var(--on-accent);
-  border-width: 0 4px 4px 0;
+  border-width: 0 3px 3px 0;
   transform: translateY(-1px) rotate(45deg) scale(0);
-  transition: transform 90ms ease-out;
+  transition: transform 120ms ease-out;
 }
 .check:checked {
   background: var(--accent);
+  border-color: var(--accent);
 }
 .check:checked::after {
   transform: translateY(-1px) rotate(45deg) scale(1);
@@ -185,15 +206,18 @@ h3 {
   border-color: var(--danger);
 }
 
-/* Press: the element sinks into its own shadow. */
+/* Press: a small, quick dip, so a tap is felt. */
 .press {
   transition:
-    transform 90ms ease-out,
-    box-shadow 90ms ease-out;
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    background-color 120ms ease-out;
+}
+.press:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 .press:active:not(:disabled) {
-  transform: translate(4px, 4px);
-  box-shadow: 0 0 0 0 var(--shadow-color);
+  transform: translateY(1px) scale(0.99);
 }
 
 @media (prefers-reduced-motion: reduce) {

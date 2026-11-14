@@ -46,12 +46,12 @@ function ServiceChoice({
             aria-checked={active}
             onClick={() => onSelect(service.id)}
             className={
-              "press flex min-h-[60px] items-center justify-between gap-3 rounded-box border-[3px] border-line px-4 py-3 text-left " +
-              (active ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+              "press flex min-h-[60px] items-center justify-between gap-3 rounded-box border border-edge px-4 py-3 text-left " +
+              (active ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
             }
           >
             <span className="grid">
-              <span className="font-display text-lg font-extrabold leading-tight">
+              <span className="font-display text-lg font-bold leading-tight">
                 {several ? service.resource.name : service.name}
               </span>
               <span className="text-sm">
@@ -93,10 +93,10 @@ function Done({ booking, business, slug, timeZone, onAnother }: {
 
   return (
     <div className="grid max-w-[34rem] grid-cols-1 gap-6">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Reserva anotada</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Reserva anotada</h1>
 
-      <div className="grid gap-2 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
-        <p className="font-display text-3xl font-extrabold leading-tight">{booking.customer.name}</p>
+      <div className="grid gap-2 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
+        <p className="font-display text-3xl font-bold leading-tight">{booking.customer.name}</p>
         <p className="font-display text-lg font-bold first-letter:uppercase">{formatLongDate(booking.starts_at, timeZone)}</p>
         <p className="font-mono text-4xl font-bold leading-none">{formatTime(booking.starts_at, timeZone)}</p>
         <p className="text-muted">
@@ -105,7 +105,7 @@ function Done({ booking, business, slug, timeZone, onAnother }: {
       </div>
 
       <section aria-labelledby="enlace" className="grid gap-3">
-        <h2 id="enlace" className="font-display text-xl font-extrabold">
+        <h2 id="enlace" className="font-display text-xl font-bold">
           Enlace para el cliente
         </h2>
         <p className="text-muted">Con él puede ver su reserva y cancelarla. Solo se muestra ahora.</p>
@@ -114,7 +114,7 @@ function Done({ booking, business, slug, timeZone, onAnother }: {
           value={link}
           aria-label="Enlace de la reserva"
           onFocus={(event) => event.currentTarget.select()}
-          className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-surface px-4 font-mono text-sm text-text"
+          className="min-h-[52px] w-full rounded-box border border-edge bg-surface px-4 font-mono text-sm text-text"
         />
         <div className="grid gap-3">
           {chat && (
@@ -227,24 +227,24 @@ export function NewBookingPage() {
         <ArrowLeft aria-hidden="true" />
         Inicio
       </Link>
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Anotar reserva</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Anotar reserva</h1>
       <p className="text-muted">Para las que te piden por llamada o por WhatsApp. Queda confirmada al instante.</p>
 
       {active.length === 0 ? (
-        <p className="rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           Tu negocio todavía no tiene servicios para reservar.
         </p>
       ) : (
         <form ref={formRef} onSubmit={submit} noValidate className="grid gap-6">
           {active.length > 1 && (
             <section aria-labelledby="servicio" className="grid gap-3">
-              <h2 id="servicio" className="font-display text-2xl font-extrabold">¿Qué reserva?</h2>
+              <h2 id="servicio" className="font-display text-2xl font-bold">¿Qué reserva?</h2>
               <ServiceChoice services={active} selected={chosenService} onSelect={setServiceId} />
             </section>
           )}
 
           <section aria-labelledby="cuando" className="grid gap-4">
-            <h2 id="cuando" className="font-display text-2xl font-extrabold">¿Cuándo?</h2>
+            <h2 id="cuando" className="font-display text-2xl font-bold">¿Cuándo?</h2>
             <div className="grid grid-cols-2 gap-4">
               <Field
                 label="Día"
@@ -264,7 +264,7 @@ export function NewBookingPage() {
           </section>
 
           <section aria-labelledby="cliente" className="grid gap-4">
-            <h2 id="cliente" className="font-display text-2xl font-extrabold">¿A nombre de quién?</h2>
+            <h2 id="cliente" className="font-display text-2xl font-bold">¿A nombre de quién?</h2>
             <Field
               label="Nombre"
               autoComplete="off"
@@ -294,7 +294,7 @@ export function NewBookingPage() {
           </section>
 
           {formError && (
-            <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+            <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
               <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
               {formError}
             </p>

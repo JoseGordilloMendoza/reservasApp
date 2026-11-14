@@ -30,10 +30,10 @@ const DAYS_SHOWN = 14;
 function Step({ number, title, children }: { number: number; title: string; children: ReactNode }) {
   return (
     <section aria-labelledby={`step-${number}`} className="flex flex-col gap-4">
-      <h2 id={`step-${number}`} className="flex items-center gap-3 font-display text-2xl font-extrabold leading-none">
+      <h2 id={`step-${number}`} className="flex items-center gap-3 font-display text-2xl font-bold leading-none">
         <span
           aria-hidden="true"
-          className="grid size-9 shrink-0 place-items-center rounded-[8px] bg-line text-lg text-paper"
+          className="grid size-9 shrink-0 place-items-center rounded-xl bg-line text-lg text-paper"
         >
           {number}
         </span>
@@ -209,7 +209,7 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
           )}
 
           {availability.isError && (
-            <div role="alert" className="flex flex-col gap-3 rounded-box border-[3px] border-danger p-4">
+            <div role="alert" className="flex flex-col gap-3 rounded-box border border-danger p-4">
               <p className="flex items-center gap-2 font-semibold text-danger">
                 <WarningCircle aria-hidden="true" />
                 No pudimos cargar los horarios.
@@ -221,7 +221,7 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
           )}
 
           {noSlotsAtAll && (
-            <div className="flex flex-col items-start gap-4 rounded-box border-[3px] border-dashed border-line p-5">
+            <div className="flex flex-col items-start gap-4 rounded-box border border-dashed border-edge p-5">
               <CalendarX size={36} aria-hidden="true" />
               <p className="font-display text-xl font-bold leading-tight">
                 No hay horarios libres en los próximos {DAYS_SHOWN} días.
@@ -259,7 +259,7 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
             <Step number={options.length > 1 ? 3 : 2} title="¿A nombre de quién?">
               <div className="grid gap-5">
                 {googleClientId() && (
-                  <div className="grid gap-3 rounded-box border-[3px] border-dashed border-line p-4">
+                  <div className="grid gap-3 rounded-box border border-dashed border-edge p-4">
                     {google ? (
                       <>
                         <p role="status" className="font-semibold">
@@ -325,13 +325,13 @@ export function BookingFlow({ business }: { business: PublicBusiness }) {
         )}
 
         {formError && (
-          <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+          <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
             <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
             {formError}
           </p>
         )}
 
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t-[3px] border-line bg-paper px-4 py-3 md:static md:border-0 md:bg-transparent md:p-0">
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-edge bg-paper px-4 py-3 md:static md:border-0 md:bg-transparent md:p-0">
           <div className="mx-auto flex max-w-[1120px] items-center justify-between gap-4">
             <p className="min-w-0 text-sm leading-tight">
               {slot ? (

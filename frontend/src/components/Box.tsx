@@ -6,10 +6,10 @@ interface BoxProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function Box({ flat = false, className = "", ...props }: BoxProps) {
-  const shadow = flat ? "" : "shadow-hard";
+  const shadow = flat ? "" : "shadow-card";
   return (
     <div
-      className={`rounded-box border-[3px] border-line bg-surface text-text ${shadow} ${className}`.trim()}
+      className={`rounded-box border border-edge bg-surface text-text ${shadow} ${className}`.trim()}
       {...props}
     />
   );

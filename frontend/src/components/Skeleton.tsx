@@ -3,7 +3,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={`hatch rounded-box border-[3px] border-dashed border-line/50 ${className}`.trim()}
+      className={`hatch rounded-box border border-dashed border-edge/50 ${className}`.trim()}
     />
   );
 }

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { Button } from "../../components/Button";
 import { Field } from "../../components/Field";
-import { BRAND } from "../../lib/brand";
+import { AuthHeader } from "../../components/AuthHeader";
 import { ApiError } from "../../lib/http";
 import { panelApi } from "../../lib/panelApi";
 
@@ -37,17 +37,12 @@ export function RecoverPasswordPage() {
 
   return (
     <div className="mx-auto grid min-h-dvh max-w-[28rem] grid-cols-1 content-center gap-6 px-4 py-10">
-      <header className="rounded-box border-[3px] border-line bg-accent p-6 pb-8 text-on-accent shadow-hard">
-        <p className="font-display text-lg font-extrabold uppercase tracking-tight">{BRAND}</p>
-        <h1 className="mt-3 break-words font-display text-4xl font-extrabold sm:text-5xl uppercase leading-[0.9] tracking-[-0.03em]">
-          Recupera tu contraseña
-        </h1>
-      </header>
+      <AuthHeader>Recupera tu contraseña</AuthHeader>
 
       {asked ? (
-        <section role="status" className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
+        <section role="status" className="grid gap-4 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
           <EnvelopeSimple aria-hidden="true" size={36} />
-          <h2 className="font-display text-2xl font-extrabold leading-tight">Revisa tu correo</h2>
+          <h2 className="font-display text-2xl font-bold leading-tight">Revisa tu correo</h2>
           <p>
             Si <strong className="break-all">{asked}</strong> tiene una cuenta, te enviamos un enlace para elegir una contraseña
             nueva. Vale una hora.
@@ -61,7 +56,7 @@ export function RecoverPasswordPage() {
         <form
           onSubmit={(event) => void submit(event)}
           noValidate
-          className="grid gap-5 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard"
+          className="grid gap-5 rounded-box border border-edge bg-surface p-5 text-text shadow-card"
         >
           <p className="text-muted">Escribe el correo de tu cuenta y te enviamos un enlace para elegir una contraseña nueva.</p>
           <Field
@@ -74,7 +69,7 @@ export function RecoverPasswordPage() {
           />
 
           {error && (
-            <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+            <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
               <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
               {error}
             </p>

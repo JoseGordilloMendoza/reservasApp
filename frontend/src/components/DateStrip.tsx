@@ -46,16 +46,16 @@ export function DateStrip({ days, available, selected, onSelect }: Props) {
             onClick={() => onSelect(day)}
             className={
               "press flex min-h-[88px] min-w-[68px] shrink-0 snap-center flex-col items-center justify-center gap-0.5 " +
-              "rounded-box border-[3px] border-line " +
+              "rounded-box border border-edge " +
               (active
-                ? "bg-accent text-on-accent shadow-hard"
+                ? "bg-accent text-on-accent shadow-card"
                 : open
-                  ? "bg-surface text-text shadow-hard-sm"
+                  ? "bg-surface text-text shadow-card-sm"
                   : "hatch bg-surface text-muted opacity-70")
             }
           >
             <span className="text-xs font-bold tracking-wider">{dayLabel(index, day)}</span>
-            <span className="font-display text-3xl font-extrabold leading-none">{dayNumber(day)}</span>
+            <span className="font-display text-3xl font-bold leading-none">{dayNumber(day)}</span>
             <span className="text-[11px] font-semibold tracking-wide">{monthShort(day)}</span>
           </button>
         );

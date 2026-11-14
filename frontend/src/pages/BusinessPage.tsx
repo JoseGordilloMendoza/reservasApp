@@ -22,7 +22,7 @@ function lowestPrice(business: PublicBusiness): string | null {
 }
 
 const CHIP =
-  "inline-flex min-h-[44px] items-center gap-2 rounded-box border-[3px] border-line bg-surface px-3 py-2 " +
+  "inline-flex min-h-[44px] items-center gap-2 rounded-box border border-edge bg-surface px-3 py-2 " +
   "text-sm font-semibold text-text";
 
 /** Long words need a smaller title or they would be cut in the middle. */
@@ -43,9 +43,9 @@ function Poster({ business }: { business: PublicBusiness }) {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 140, damping: 20 }}
-      className="relative rounded-box border-[3px] border-line bg-accent p-6 pb-14 text-on-accent shadow-hard md:p-10 md:pb-14"
+      className="relative rounded-box border border-edge bg-accent p-6 pb-14 text-on-accent shadow-card md:p-10 md:pb-14"
     >
-      <h1 className={`text-balance break-words font-display font-extrabold uppercase leading-[0.9] tracking-[-0.03em] ${titleSize(business.name)}`}>
+      <h1 className={`text-balance break-words font-display font-bold leading-[1.1] tracking-[-0.02em] ${titleSize(business.name)}`}>
         {business.name}
       </h1>
 
@@ -63,7 +63,7 @@ function Poster({ business }: { business: PublicBusiness }) {
           )}
           {phone && (
             <li>
-              <a href={phone} className={`${CHIP} press shadow-hard-sm`}>
+              <a href={phone} className={`${CHIP} press shadow-card-sm`}>
                 <Phone aria-hidden="true" />
                 {displayPhone(business.phone)}
               </a>
@@ -71,7 +71,7 @@ function Poster({ business }: { business: PublicBusiness }) {
           )}
           {chat && (
             <li>
-              <a href={chat} target="_blank" rel="noreferrer" className={`${CHIP} press shadow-hard-sm`}>
+              <a href={chat} target="_blank" rel="noreferrer" className={`${CHIP} press shadow-card-sm`}>
                 <WhatsappLogo aria-hidden="true" />
                 WhatsApp
               </a>
@@ -83,7 +83,7 @@ function Poster({ business }: { business: PublicBusiness }) {
       {price && (
         <div
           aria-label={`Desde ${price}`}
-          className="absolute -bottom-5 right-5 rotate-[5deg] rounded-box border-[3px] border-line bg-surface px-3 py-2 text-center text-text shadow-hard-sm md:right-8"
+          className="absolute -bottom-5 right-5 rotate-[5deg] rounded-box border border-edge bg-surface px-3 py-2 text-center text-text shadow-card-sm md:right-8"
         >
           <span className="block text-[11px] font-bold uppercase leading-none tracking-wider">Desde</span>
           <span className="font-mono text-2xl font-bold leading-tight">{price}</span>
@@ -108,10 +108,10 @@ function NotAccepting({ business }: { business: PublicBusiness }) {
   return (
     <section
       role="status"
-      className="grid gap-4 rounded-box border-[3px] border-dashed border-line bg-surface p-6 text-text"
+      className="grid gap-4 rounded-box border border-dashed border-edge bg-surface p-6 text-text"
     >
       <Storefront aria-hidden="true" size={36} />
-      <h2 className="font-display text-3xl font-extrabold leading-tight">No está recibiendo reservas por ahora</h2>
+      <h2 className="font-display text-3xl font-bold leading-tight">No está recibiendo reservas por ahora</h2>
       <p className="text-muted">
         {business.name} no tiene horarios disponibles en este momento. Las reservas que ya hiciste se conservan: las
         encuentras en Mis reservas.

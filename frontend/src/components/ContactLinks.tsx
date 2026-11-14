@@ -3,8 +3,8 @@ import { Phone, WhatsappLogo } from "@phosphor-icons/react";
 import { displayPhone, telLink, whatsappLink } from "../lib/whatsapp";
 
 const LINK =
-  "press inline-flex min-h-[44px] items-center gap-2 rounded-box border-[3px] border-line bg-surface px-3 py-2 " +
-  "text-sm font-semibold text-text shadow-hard-sm";
+  "press inline-flex min-h-[44px] items-center gap-2 rounded-box border border-edge bg-surface px-3 py-2 " +
+  "text-sm font-semibold text-text shadow-card-sm";
 
 interface Props {
   phone: string;

@@ -31,7 +31,7 @@ const FIELD_OF_SERVER: Record<string, keyof ServiceValues> = {
 
 function Problem({ message }: { message: string }) {
   return (
-    <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+    <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
       <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
       {message}
     </p>
@@ -141,24 +141,24 @@ function ServiceRow({ service }: { service: PanelService }) {
   const price = formatPrice(service.reference_price);
 
   return (
-    <li className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm">
+    <li className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="break-words font-display text-2xl font-extrabold leading-tight">{service.name}</p>
+          <p className="break-words font-display text-2xl font-bold leading-tight">{service.name}</p>
           <p className="mt-1 text-sm text-muted">
             {service.resource.name} · {formatDuration(service.duration_minutes)}
             {price ? ` · ${price}` : ""}
           </p>
         </div>
         {!service.is_active && (
-          <span className="shrink-0 -rotate-3 whitespace-nowrap rounded-[8px] border-[3px] border-dashed border-current px-2 py-1 font-display text-sm font-extrabold uppercase leading-none tracking-wide text-muted">
+          <span className="shrink-0 whitespace-nowrap rounded-xl border border-dashed border-current px-2 py-1 font-display text-sm font-bold leading-none tracking-wide text-muted">
             Inactivo
           </span>
         )}
       </div>
 
       {editing ? (
-        <div className="rounded-box border-[3px] border-line p-3">
+        <div className="rounded-box border border-edge p-3">
           <ServiceForm
             initial={{
               resource: String(service.resource.id),
@@ -235,8 +235,8 @@ function NewService({ suggestedDuration }: { suggestedDuration: number | undefin
   }
 
   return (
-    <section aria-labelledby="nuevo" className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard">
-      <h2 id="nuevo" className="font-display text-2xl font-extrabold">
+    <section aria-labelledby="nuevo" className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card">
+      <h2 id="nuevo" className="font-display text-2xl font-bold">
         Nuevo servicio
       </h2>
       <ServiceForm
@@ -261,7 +261,7 @@ export function ServicesPage() {
         <ArrowLeft aria-hidden="true" />
         Ajustes
       </Link>
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Servicios</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Servicios</h1>
       <p className="text-muted">Lo que reserva tu cliente: cuánto dura y cuánto cuesta. El precio es una referencia; el pago lo acuerdas tú con el cliente.</p>
 
       <NewService suggestedDuration={business.data?.suggested_service_duration_minutes} />
@@ -274,7 +274,7 @@ export function ServicesPage() {
       )}
 
       {services.isError && (
-        <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+        <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
           <p className="font-semibold text-danger">No pudimos cargar los servicios. {services.error.message}</p>
           <Button variant="plain" onClick={() => void services.refetch()}>
             Intentar otra vez
@@ -283,7 +283,7 @@ export function ServicesPage() {
       )}
 
       {services.isSuccess && services.data.results.length === 0 && (
-        <p className="rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           Todavía no tienes servicios. Agrega el primero para que tus clientes puedan reservar.
         </p>
       )}

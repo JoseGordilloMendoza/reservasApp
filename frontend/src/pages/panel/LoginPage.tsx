@@ -3,11 +3,11 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 
+import { AuthHeader } from "../../components/AuthHeader";
 import { Button } from "../../components/Button";
 import { Field } from "../../components/Field";
 import { GoogleSignInButton, googleClientId } from "../../components/GoogleSignInButton";
 import { useAuth } from "../../lib/auth";
-import { BRAND } from "../../lib/brand";
 import { ApiError } from "../../lib/http";
 
 export function LoginPage() {
@@ -46,26 +46,12 @@ export function LoginPage() {
 
   return (
     <div className="mx-auto grid min-h-dvh max-w-[28rem] content-center gap-6 px-4 py-10">
-      <header className="relative overflow-hidden rounded-box border-[3px] border-line bg-line p-6 pb-8 text-paper shadow-hard">
-        <svg
-          viewBox="0 0 200 200"
-          aria-hidden="true"
-          focusable="false"
-          className="pointer-events-none absolute -right-20 -top-20 w-44"
-        >
-          <circle cx="100" cy="100" r="92" fill="var(--accent)" stroke="var(--paper)" strokeWidth="4" />
-          <path d="M22 70 C62 104 138 104 178 66" fill="none" stroke="var(--paper)" strokeWidth="4" strokeLinecap="round" />
-        </svg>
-        <p className="relative font-display text-lg font-extrabold uppercase tracking-tight">{BRAND}</p>
-        <h1 className="relative mt-3 font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
-          Entra a tu panel
-        </h1>
-      </header>
+      <AuthHeader>Entra a tu panel</AuthHeader>
 
       <form
         onSubmit={submit}
         noValidate
-        className="grid gap-5 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard"
+        className="grid gap-5 rounded-box border border-edge bg-surface p-5 text-text shadow-card"
       >
         <Field
           label="Correo"
@@ -87,7 +73,7 @@ export function LoginPage() {
         </Link>
 
         {error && (
-          <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+          <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
             <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
             {error}
           </p>

@@ -20,7 +20,7 @@ import type { SubscriptionErrors, SubscriptionValues } from "../../lib/subscript
 
 function Problem({ message }: { message: string }) {
   return (
-    <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+    <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
       <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
       {message}
     </p>
@@ -77,8 +77,8 @@ function RecordPayment({ business }: { business: PlatformBusiness }) {
   }
 
   return (
-    <form onSubmit={submit} noValidate aria-label="Registrar un pago" className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard">
-      <h3 className="font-display text-xl font-extrabold">Registrar un pago</h3>
+    <form onSubmit={submit} noValidate aria-label="Registrar un pago" className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card">
+      <h3 className="font-display text-xl font-bold">Registrar un pago</h3>
       <div className="grid grid-cols-2 gap-4">
         <Field label="Monto (S/)" inputMode="decimal" autoComplete="off" value={values.amount} error={errors.amount} onChange={(event) => set({ amount: event.target.value })} />
         <Field label="Meses que paga" inputMode="numeric" autoComplete="off" value={values.months} error={errors.months} onChange={(event) => set({ months: event.target.value })} />
@@ -96,7 +96,7 @@ function RecordPayment({ business }: { business: PlatformBusiness }) {
 
       {formError && <Problem message={formError} />}
       {done && (
-        <p role="status" className="flex items-start gap-2 rounded-box border-[3px] border-line p-3 font-semibold">
+        <p role="status" className="flex items-start gap-2 rounded-box border border-edge p-3 font-semibold">
           <Check aria-hidden="true" className="mt-0.5 shrink-0" />
           Pago registrado: cubre del {formatDayKeyWithYear(done.period_start)} al {formatDayKeyWithYear(done.period_end)}.
         </p>
@@ -164,9 +164,9 @@ function EditSubscription({ business, onDone }: { business: PlatformBusiness; on
       onSubmit={submit}
       noValidate
       aria-label={creating ? "Crear la suscripción" : "Ajustar la suscripción"}
-      className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard"
+      className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card"
     >
-      <h3 className="font-display text-xl font-extrabold">{creating ? "Crear la suscripción" : "Ajustar la suscripción"}</h3>
+      <h3 className="font-display text-xl font-bold">{creating ? "Crear la suscripción" : "Ajustar la suscripción"}</h3>
       <div className="grid grid-cols-2 gap-4">
         <Field label="Plan (opcional)" autoComplete="off" value={values.plan} error={errors.plan} onChange={(event) => set({ plan: event.target.value })} />
         <Field label="Precio al mes (S/)" inputMode="decimal" autoComplete="off" value={values.price} error={errors.price} onChange={(event) => set({ price: event.target.value })} />
@@ -210,19 +210,19 @@ function History({ slug }: { slug: string }) {
 
   return (
     <section aria-labelledby="historial" className="grid gap-3">
-      <h3 id="historial" className="font-display text-xl font-extrabold">
+      <h3 id="historial" className="font-display text-xl font-bold">
         Pagos recibidos
       </h3>
 
       {payments.isPending && <Skeleton className="h-[88px]" />}
       {payments.isError && <Problem message={`No pudimos cargar los pagos. ${payments.error.message}`} />}
       {payments.isSuccess && payments.data.length === 0 && (
-        <p className="rounded-box border-[3px] border-dashed border-line p-4 font-semibold">Todavía no hay pagos registrados.</p>
+        <p className="rounded-box border border-dashed border-edge p-4 font-semibold">Todavía no hay pagos registrados.</p>
       )}
       {payments.isSuccess && payments.data.length > 0 && (
         <ul className="grid gap-3">
           {payments.data.map((payment) => (
-            <li key={payment.id} className="grid gap-1 rounded-box border-[3px] border-line bg-surface p-3 text-text">
+            <li key={payment.id} className="grid gap-1 rounded-box border border-edge bg-surface p-3 text-text">
               <p className="flex items-baseline justify-between gap-3">
                 <span className="font-mono text-xl font-bold">{formatPrice(payment.amount)}</span>
                 <span className="text-sm text-muted">
@@ -250,9 +250,9 @@ export function SubscriptionSection({ business }: { business: PlatformBusiness }
 
   return (
     <div className="grid grid-cols-1 gap-6">
-      <section aria-labelledby="estado" className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm">
+      <section aria-labelledby="estado" className="grid gap-3 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm">
         <div className="flex items-start justify-between gap-3">
-          <h2 id="estado" className="font-display text-2xl font-extrabold">
+          <h2 id="estado" className="font-display text-2xl font-bold">
             Suscripción
           </h2>
           <StandingStamp standing={standing} suspended={business.status === "suspended"} />

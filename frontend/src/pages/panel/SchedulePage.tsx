@@ -10,7 +10,7 @@ import type { Week } from "../../lib/schedule";
 import { NotFoundPage } from "../NotFoundPage";
 
 const TIME =
-  "min-h-[48px] w-full rounded-box border-[3px] border-line bg-surface px-3 font-mono text-lg text-text focus:shadow-hard focus:outline-none";
+  "min-h-[48px] w-full rounded-box border border-edge bg-surface px-3 font-mono text-lg text-text focus:border-accent-deep focus:ring-4 focus:ring-accent/25 focus:outline-none";
 
 function Day({
   weekday,
@@ -32,12 +32,12 @@ function Day({
   return (
     <section
       aria-label={name}
-      className={"grid gap-3 rounded-box border-[3px] bg-surface p-4 text-text " + (error ? "border-danger" : "border-line")}
+      className={"grid gap-3 rounded-box border bg-surface p-4 text-text " + (error ? "border-danger" : "border-edge")}
     >
       <div className="flex items-center justify-between gap-3">
-        <h2 className="font-display text-xl font-extrabold">{name}</h2>
+        <h2 className="font-display text-xl font-bold">{name}</h2>
         {windows.length === 0 && (
-          <span className="rounded-[8px] border-[3px] border-dashed border-current px-2 py-1 font-display text-sm font-extrabold uppercase leading-none tracking-wide text-muted">
+          <span className="rounded-xl border border-dashed border-current px-2 py-1 font-display text-sm font-bold leading-none tracking-wide text-muted">
             Cerrado
           </span>
         )}
@@ -71,7 +71,7 @@ function Day({
             type="button"
             aria-label={`Quitar horario del ${name.toLowerCase()}`}
             onClick={() => onChange(windows.filter((_, at) => at !== index))}
-            className="press grid size-12 place-items-center rounded-box border-[3px] border-line bg-surface shadow-hard-sm"
+            className="press grid size-12 place-items-center rounded-box border border-edge bg-surface shadow-card-sm"
           >
             <Trash aria-hidden="true" />
           </button>
@@ -143,13 +143,13 @@ function ScheduleEditor({ resourceId, initial }: { resourceId: number; initial: 
       </p>
 
       {save.error && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
           <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
           {save.error.message}
         </p>
       )}
       {saved && (
-        <p role="status" className="flex items-center gap-2 rounded-box border-[3px] border-line bg-surface p-4 font-semibold">
+        <p role="status" className="flex items-center gap-2 rounded-box border border-edge bg-surface p-4 font-semibold">
           <Check aria-hidden="true" />
           Horario guardado
         </p>
@@ -189,12 +189,12 @@ function ScheduleScreen({ id }: { id: number }) {
         <ArrowLeft aria-hidden="true" />
         Espacios
       </Link>
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Horario</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Horario</h1>
       {resource && <p className="font-display text-xl font-bold">{resource.name}</p>}
       <p className="text-muted">Los días y horas en que este espacio recibe reservas.</p>
 
       {schedule.isError && (
-        <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+        <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
           <p className="font-semibold text-danger">No pudimos cargar el horario. {schedule.error.message}</p>
           <Button variant="plain" onClick={() => void schedule.refetch()}>
             Intentar otra vez

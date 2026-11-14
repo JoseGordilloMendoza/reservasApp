@@ -24,7 +24,7 @@ const ZONE = "America/Lima";
 
 function Entry({ entry }: { entry: ActivityEntry }) {
   return (
-    <li className="grid gap-1 rounded-box border-[3px] border-line bg-surface p-3 text-text">
+    <li className="grid gap-1 rounded-box border border-edge bg-surface p-3 text-text">
       <p className="font-semibold">{describeActivity(entry)}</p>
       <p className="flex flex-wrap items-baseline gap-x-2 text-sm text-muted">
         <time dateTime={entry.created_at} className="font-mono">
@@ -57,7 +57,7 @@ export function ActivityPage() {
 
   return (
     <div className="grid grid-cols-1 gap-6">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Actividad</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Actividad</h1>
       <p className="text-muted">Lo que el equipo hizo sobre los negocios: altas, suspensiones, pagos, personas y sesiones de soporte.</p>
 
       <div role="tablist" aria-label="Filtrar actividad" className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 pt-1 [scrollbar-width:none] md:mx-0 md:px-0">
@@ -69,8 +69,8 @@ export function ActivityPage() {
             aria-selected={kind === id}
             onClick={() => change({ tipo: id })}
             className={
-              "press min-h-[48px] shrink-0 rounded-box border-[3px] border-line px-4 font-display text-base font-bold " +
-              (kind === id ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+              "press min-h-[48px] shrink-0 rounded-box border border-edge px-4 font-display text-base font-bold " +
+              (kind === id ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
             }
           >
             {label}
@@ -79,7 +79,7 @@ export function ActivityPage() {
       </div>
 
       {business && (
-        <p className="flex items-center justify-between gap-3 rounded-box border-[3px] border-line bg-surface p-3 font-semibold text-text">
+        <p className="flex items-center justify-between gap-3 rounded-box border border-edge bg-surface p-3 font-semibold text-text">
           <span className="min-w-0 truncate">Solo de /{business}</span>
           <button type="button" onClick={() => change({ negocio: "" })} aria-label="Ver la actividad de todos los negocios" className="grid size-11 shrink-0 place-items-center">
             <X aria-hidden="true" />
@@ -96,7 +96,7 @@ export function ActivityPage() {
       )}
 
       {list.isError && (
-        <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+        <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
           <p className="font-semibold text-danger">No pudimos cargar la actividad. {list.error.message}</p>
           <Button variant="plain" onClick={() => void list.refetch()}>
             Intentar otra vez
@@ -105,7 +105,7 @@ export function ActivityPage() {
       )}
 
       {list.isSuccess && entries.length === 0 && (
-        <p className="rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           No hay actividad que mostrar.
         </p>
       )}

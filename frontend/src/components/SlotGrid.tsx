@@ -28,15 +28,15 @@ export function SlotGrid({ slots, timeZone, selected, onSelect, nearest }: Props
             aria-label={isNearest ? `${time}, el más cercano` : time}
             onClick={() => onSelect(slot.starts_at)}
             className={
-              "press relative min-h-[60px] rounded-box border-[3px] border-line font-mono text-xl font-bold " +
-              (active ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+              "press relative min-h-[60px] rounded-box border border-edge font-mono text-xl font-bold " +
+              (active ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
             }
           >
             {time}
             {isNearest && (
               <span
                 aria-hidden="true"
-                className="absolute -right-2 -top-3 rotate-6 rounded-[6px] border-[3px] border-line bg-line px-1.5 py-0.5 font-sans text-[10px] font-extrabold uppercase leading-none tracking-wide text-paper"
+                className="absolute -right-2 -top-3 rounded-lg border border-edge bg-line px-1.5 py-0.5 font-sans text-[10px] font-bold uppercase leading-none tracking-wide text-paper"
               >
                 Próximo
               </span>

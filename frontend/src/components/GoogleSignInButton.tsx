@@ -104,7 +104,7 @@ export function GoogleSignInButton({ onCredential, onError, clientId = googleCli
     <div className="relative rounded-box focus-within:outline focus-within:outline-[3px] focus-within:outline-offset-3 focus-within:outline-line">
       <span
         aria-hidden="true"
-        className="press pointer-events-none flex min-h-[52px] items-center justify-center gap-3 rounded-box border-[3px] border-line bg-surface px-5 py-3 font-display text-lg font-bold leading-none text-text shadow-hard"
+        className="press pointer-events-none flex min-h-[52px] items-center justify-center gap-3 rounded-box border border-edge bg-surface px-5 py-3 font-display text-lg font-bold leading-none text-text shadow-card"
       >
         <GoogleMark />
         Continuar con Google

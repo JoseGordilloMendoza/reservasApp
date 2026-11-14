@@ -18,7 +18,7 @@ export function QuickMessages({ booking, business, timeZone, paymentInstructions
 
   return (
     <section aria-labelledby="mensajes" className="grid gap-3">
-      <h2 id="mensajes" className="font-display text-2xl font-extrabold">
+      <h2 id="mensajes" className="font-display text-2xl font-bold">
         Escribirle por WhatsApp
       </h2>
       <p className="text-sm text-muted">Se abre el chat con el mensaje ya escrito. No se envía hasta que lo mandes tú.</p>

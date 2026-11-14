@@ -82,7 +82,7 @@ function RulesForm({ business }: { business: PanelBusiness }) {
   return (
     <form onSubmit={submit} noValidate className="grid gap-6">
       <section aria-labelledby="confirmacion" className="grid gap-3">
-        <h2 id="confirmacion" className="font-display text-xl font-extrabold">
+        <h2 id="confirmacion" className="font-display text-xl font-bold">
           ¿Cómo se confirman las reservas?
         </h2>
         <div role="radiogroup" aria-labelledby="confirmacion" className="grid gap-3">
@@ -97,11 +97,11 @@ function RulesForm({ business }: { business: PanelBusiness }) {
                 setMode(id);
               }}
               className={
-                "press grid min-h-[60px] gap-1 rounded-box border-[3px] border-line px-4 py-3 text-left " +
-                (mode === id ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+                "press grid min-h-[60px] gap-1 rounded-box border border-edge px-4 py-3 text-left " +
+                (mode === id ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
               }
             >
-              <span className="font-display text-lg font-extrabold leading-tight">{label}</span>
+              <span className="font-display text-lg font-bold leading-tight">{label}</span>
               <span className="text-sm">{hint}</span>
             </button>
           ))}
@@ -129,13 +129,13 @@ function RulesForm({ business }: { business: PanelBusiness }) {
       })}
 
       {formError && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
           <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
           {formError}
         </p>
       )}
       {saved && (
-        <p role="status" className="flex items-center gap-2 rounded-box border-[3px] border-line bg-surface p-4 font-semibold">
+        <p role="status" className="flex items-center gap-2 rounded-box border border-edge bg-surface p-4 font-semibold">
           <Check aria-hidden="true" />
           Cambios guardados
         </p>
@@ -157,7 +157,7 @@ export function RulesSettingsPage() {
         <ArrowLeft aria-hidden="true" />
         Ajustes
       </Link>
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Reglas de reserva</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Reglas de reserva</h1>
       <p className="text-muted">Valen para todo tu negocio. Los cambios no afectan a las reservas que ya existen.</p>
 
       {business.isPending && (

@@ -39,7 +39,7 @@ describe("the business page settings", () => {
 
     expect(await screen.findByLabelText("Nombre")).toHaveValue(PANEL_BUSINESS.name);
     expect(screen.getByLabelText("Descripción")).toHaveValue(PANEL_BUSINESS.description);
-    expect(screen.getByRole("radio", { name: "Amapola" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Azul MiReserva" })).toBeChecked();
   });
 
   it("saves the changes and says so", async () => {

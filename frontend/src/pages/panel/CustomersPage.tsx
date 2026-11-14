@@ -24,7 +24,7 @@ function CustomerRow({ customer, timeZone }: { customer: CustomerSummary; timeZo
     <li>
       <Link
         to={`/panel/clientes/${customer.id}`}
-        className="press flex items-center gap-4 rounded-box border-[3px] border-line bg-surface p-3 text-text shadow-hard-sm"
+        className="press flex items-center gap-4 rounded-box border border-edge bg-surface p-3 text-text shadow-card-sm"
       >
         <span className="min-w-0 flex-1">
           <span className="block truncate font-display text-lg font-bold leading-tight">{customer.name}</span>
@@ -35,7 +35,7 @@ function CustomerRow({ customer, timeZone }: { customer: CustomerSummary; timeZo
           </span>
         </span>
         {customer.is_blocked && (
-          <span className="-rotate-3 whitespace-nowrap rounded-[8px] border-[3px] border-danger px-2 py-1 font-display text-sm font-extrabold uppercase leading-none tracking-wide text-danger">
+          <span className="whitespace-nowrap rounded-xl border border-danger px-2 py-1 font-display text-sm font-bold leading-none tracking-wide text-danger">
             Bloqueado
           </span>
         )}
@@ -57,7 +57,7 @@ export function CustomersPage() {
 
   return (
     <div className="grid grid-cols-1 gap-6">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Clientes</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Clientes</h1>
 
       <div role="tablist" aria-label="Filtrar clientes" className="flex gap-3">
         {SHOWS.map(({ id, label }) => (
@@ -68,8 +68,8 @@ export function CustomersPage() {
             aria-selected={show === id}
             onClick={() => setShow(id)}
             className={
-              "press min-h-[48px] rounded-box border-[3px] border-line px-4 font-display text-base font-bold " +
-              (show === id ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+              "press min-h-[48px] rounded-box border border-edge px-4 font-display text-base font-bold " +
+              (show === id ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
             }
           >
             {label}
@@ -85,7 +85,7 @@ export function CustomersPage() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Buscar por nombre o celular"
-          className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-surface pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:shadow-hard focus:outline-none"
+          className="min-h-[52px] w-full rounded-box border border-edge-strong bg-surface pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:border-accent-deep focus:ring-4 focus:ring-accent/25 focus:outline-none"
         />
       </label>
 
@@ -98,7 +98,7 @@ export function CustomersPage() {
       )}
 
       {list.isError && (
-        <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+        <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
           <p className="font-semibold text-danger">No pudimos cargar los clientes. {list.error.message}</p>
           <Button variant="plain" onClick={() => void list.refetch()}>
             Intentar otra vez
@@ -107,7 +107,7 @@ export function CustomersPage() {
       )}
 
       {list.isSuccess && customers.length === 0 && (
-        <p className="rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           {q
             ? "Nada coincide con tu búsqueda."
             : show === "blocked"

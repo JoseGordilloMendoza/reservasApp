@@ -36,8 +36,8 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   if (!auth.membership) {
     return (
       <div className="mx-auto grid min-h-dvh max-w-[28rem] content-center gap-4 px-4 py-10">
-        <div className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-6 text-text shadow-hard">
-          <h1 className="font-display text-3xl font-extrabold leading-tight">Esta cuenta no tiene un negocio</h1>
+        <div className="grid gap-4 rounded-box border border-edge bg-surface p-6 text-text shadow-card">
+          <h1 className="font-display text-3xl font-bold leading-tight">Esta cuenta no tiene un negocio</h1>
           <p className="text-muted">
             Entraste como {auth.user?.email}, pero no está asociada a ningún negocio. Pide que te den de alta.
           </p>

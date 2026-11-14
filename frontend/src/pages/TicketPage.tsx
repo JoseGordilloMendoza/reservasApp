@@ -117,7 +117,7 @@ export function TicketPage() {
         {data.business.name}
       </Link>
 
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">
         {STATUS_HEADLINE[data.status]}
       </h1>
 
@@ -135,7 +135,7 @@ export function TicketPage() {
       </p>
 
       {data.status === "confirmed" && data.attendance_confirmed && (
-        <p role="status" className="flex items-start gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-lg font-semibold">
+        <p role="status" className="flex items-start gap-3 rounded-box border border-edge bg-surface p-4 text-lg font-semibold">
           <CheckCircle aria-hidden="true" className="mt-0.5 shrink-0" size={24} weight="bold" />
           Avisaste que vas. {data.business.name} te espera a las {formatTime(data.starts_at, timeZone)}.
         </p>
@@ -163,7 +163,7 @@ export function TicketPage() {
         )}
 
         {live && !data.can_cancel && data.status === "confirmed" && (
-          <p className="rounded-box border-[3px] border-dashed border-line p-4 text-sm">
+          <p className="rounded-box border border-dashed border-edge p-4 text-sm">
             Ya pasó el plazo para cancelar por aquí. Si no puedes ir, avísale al negocio por WhatsApp.
           </p>
         )}
@@ -191,14 +191,14 @@ export function TicketPage() {
       )}
 
       {attend.error && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
           <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
           {attend.error.message}
         </p>
       )}
 
       {cancelError && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
           <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
           {cancelError.message}
         </p>

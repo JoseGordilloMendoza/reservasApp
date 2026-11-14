@@ -37,7 +37,7 @@ export function SupportBanner() {
   if (!support) return null;
 
   return (
-    <div role="status" className="sticky top-0 z-40 border-b-[3px] border-line bg-line text-paper">
+    <div role="status" className="sticky top-0 z-40 border-b border-edge bg-line text-paper">
       <div className="mx-auto flex max-w-[1120px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 md:px-6">
         <Lifebuoy aria-hidden="true" size={22} weight="bold" className="shrink-0" />
         <p className="min-w-0 flex-1 text-sm font-semibold">

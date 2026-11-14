@@ -19,7 +19,7 @@ export function SubscriptionBanner({ business }: { business: PanelBusiness }) {
 
   if (status === "suspended") {
     return (
-      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border border-danger p-4 font-semibold text-danger">
         <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
         Tu negocio está suspendido: no recibe reservas nuevas. Puedes seguir viendo tus datos.
       </p>
@@ -30,7 +30,7 @@ export function SubscriptionBanner({ business }: { business: PanelBusiness }) {
 
   if (subscription.state === "expired") {
     return (
-      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border border-danger p-4 font-semibold text-danger">
         <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
         Tu suscripción venció el {formatDayKey(subscription.valid_until)}: tu página ya no recibe reservas nuevas. Tus datos y las
         reservas que ya tienes están a salvo. Renueva para volver a recibirlas.
@@ -40,7 +40,7 @@ export function SubscriptionBanner({ business }: { business: PanelBusiness }) {
 
   if (subscription.state === "grace") {
     return (
-      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border border-danger p-4 font-semibold text-danger">
         <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
         Tu suscripción venció el {formatDayKey(subscription.valid_until)}. Tus clientes pueden seguir reservando hasta el{" "}
         {formatDayKey(subscription.grace_ends_on)}; después tu página dejará de recibir reservas. Renueva a tiempo.
@@ -50,7 +50,7 @@ export function SubscriptionBanner({ business }: { business: PanelBusiness }) {
 
   if (subscription.days_left <= WARN_FROM_DAYS) {
     return (
-      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border-[3px] border-line bg-surface p-4 font-semibold">
+      <p role="status" className="mb-6 flex items-start gap-3 rounded-box border border-edge bg-surface p-4 font-semibold">
         <Clock aria-hidden="true" className="mt-0.5 shrink-0" />
         {subscription.days_left === 0
           ? "Tu suscripción vence hoy."

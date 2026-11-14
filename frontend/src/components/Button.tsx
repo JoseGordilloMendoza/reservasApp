@@ -3,16 +3,16 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
 type Variant = "primary" | "ink" | "plain";
 
 const BASE =
-  "press inline-flex min-h-[52px] items-center justify-center gap-2 whitespace-nowrap rounded-box " +
-  "border-[3px] border-line px-5 py-3 font-display text-lg font-bold leading-none shadow-hard " +
-  "disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none";
+  "press inline-flex min-h-[48px] items-center justify-center gap-2 whitespace-nowrap rounded-xl border " +
+  "px-5 py-3 font-display text-base font-semibold leading-none " +
+  "disabled:cursor-not-allowed disabled:opacity-50";
 
 const VARIANTS: Record<Variant, string> = {
   // The business accent: the loudest thing on the screen.
-  primary: "bg-accent text-on-accent",
+  primary: "border-transparent bg-accent text-on-accent shadow-card-sm",
   // Inverts with the theme: dark on light pages, light on dark ones.
-  ink: "bg-line text-paper",
-  plain: "bg-surface text-text",
+  ink: "border-transparent bg-line text-paper",
+  plain: "border-edge-strong bg-surface text-text",
 };
 
 export function buttonClass(variant: Variant = "primary", className = "") {

@@ -14,7 +14,7 @@ export function StandingStamp({ standing, suspended = false }: { standing: Stand
   const { text, tone } = standingLabel(standing, suspended);
   return (
     <span
-      className={`mr-1 inline-block -rotate-3 whitespace-nowrap rounded-[8px] border-[3px] border-current px-2 py-1 font-display text-sm font-extrabold uppercase leading-none tracking-wide ${TONE[tone]}`}
+      className={`mr-1 inline-block whitespace-nowrap rounded-full border border-current px-3 py-1 font-display text-xs font-semibold leading-none ${TONE[tone]}`}
     >
       {text}
     </span>

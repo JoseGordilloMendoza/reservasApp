@@ -66,7 +66,7 @@ export function ChangePasswordPage() {
       )}
 
       <div className="grid gap-2">
-        <h1 className="font-display text-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">
+        <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em]">
           {forced ? "Elige tu contraseña" : "Cambiar contraseña"}
         </h1>
         <p className="text-muted">
@@ -104,7 +104,7 @@ export function ChangePasswordPage() {
         />
 
         {failure && (
-          <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+          <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
             <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
             {failure}
           </p>

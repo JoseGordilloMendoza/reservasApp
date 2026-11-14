@@ -13,7 +13,7 @@ const SECTIONS: MenuEntry[] = [
 export function MorePage() {
   return (
     <div className="grid grid-cols-1 gap-6">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Más</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Más</h1>
       <MenuList entries={SECTIONS} />
     </div>
   );

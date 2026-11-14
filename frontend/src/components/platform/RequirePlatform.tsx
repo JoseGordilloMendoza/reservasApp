@@ -30,8 +30,8 @@ export function RequirePlatform({ children }: { children: ReactNode }) {
   if (!auth.user?.is_platform_admin) {
     return (
       <div className="mx-auto grid min-h-dvh max-w-[28rem] content-center gap-4 px-4 py-10">
-        <div className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-6 text-text shadow-hard">
-          <h1 className="font-display text-3xl font-extrabold leading-tight">Esta sección es solo para el equipo</h1>
+        <div className="grid gap-4 rounded-box border border-edge bg-surface p-6 text-text shadow-card">
+          <h1 className="font-display text-3xl font-bold leading-tight">Esta sección es solo para el equipo</h1>
           <p className="text-muted">Tu cuenta no tiene acceso a la administración de la plataforma.</p>
           <Link to="/panel" className={buttonClass("primary")}>
             Ir a mi panel

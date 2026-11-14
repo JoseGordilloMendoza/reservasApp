@@ -23,8 +23,8 @@ export function DeliveryChoice({ value, onChange }: Props) {
           aria-checked={value === id}
           onClick={() => onChange(id)}
           className={
-            "press grid min-h-[52px] gap-1 rounded-box border-[3px] border-line px-4 py-3 text-left " +
-            (value === id ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+            "press grid min-h-[52px] gap-1 rounded-box border border-edge px-4 py-3 text-left " +
+            (value === id ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
           }
         >
           <span className="font-display text-lg font-bold">{label}</span>

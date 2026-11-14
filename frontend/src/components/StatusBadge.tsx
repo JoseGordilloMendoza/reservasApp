@@ -14,7 +14,7 @@ const TONE: Record<BookingStatus, string> = {
 export function StatusBadge({ status }: { status: BookingStatus }) {
   return (
     <span
-      className={`inline-block -rotate-3 whitespace-nowrap rounded-[8px] border-[3px] border-current px-2 py-1 font-display text-sm font-extrabold uppercase leading-none tracking-wide ${TONE[status]}`}
+      className={`inline-block whitespace-nowrap rounded-full border border-current px-3 py-1 font-display text-xs font-semibold leading-none ${TONE[status]}`}
     >
       {STATUS_LABEL[status]}
     </span>

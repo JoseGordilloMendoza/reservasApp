@@ -25,12 +25,12 @@ export function BusinessDirectory() {
 
   return (
     <section aria-labelledby="directory-title" className="mt-14">
-      <h2 id="directory-title" className="font-display text-4xl font-extrabold leading-none tracking-[-0.03em] md:text-5xl">
+      <h2 id="directory-title" className="font-display text-4xl font-bold leading-none tracking-[-0.02em] md:text-5xl">
         Reserva en
         <br />
         un toque
       </h2>
-      <p className="mt-3 max-w-[40ch] text-lg text-muted">Estos negocios ya reciben reservas por Separa. Elige uno.</p>
+      <p className="mt-3 max-w-[40ch] text-lg text-muted">Estos negocios ya reciben reservas por MiReserva. Elige uno.</p>
 
       <ul className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {businesses.map((business, index) => {
@@ -39,16 +39,16 @@ export function BusinessDirectory() {
             <li key={business.slug}>
               <Link
                 to={`/${business.slug}`}
-                className="press grid h-full grid-cols-1 overflow-hidden rounded-box border-[3px] border-line bg-surface text-text shadow-hard"
+                className="press grid h-full grid-cols-1 overflow-hidden rounded-box border border-edge bg-surface text-text shadow-card"
               >
-                <span className={`grid place-items-center border-b-[3px] border-line px-6 py-4 ${tone.panel}`}>
+                <span className={`grid place-items-center border-b border-edge px-6 py-4 ${tone.panel}`}>
                   <BusinessShape kind={business.business_type} tone={tone} className={`h-32 w-full max-w-[220px] ${index % 2 ? "-scale-x-100" : ""}`} />
                 </span>
                 <span className="grid content-start gap-1 p-4">
                   <span className="text-sm font-bold uppercase tracking-wide text-accent-deep">
                     {KIND_LABEL[business.business_type as BusinessKind] ?? "Negocio"}
                   </span>
-                  <span className="font-display text-2xl font-extrabold leading-tight">{business.name}</span>
+                  <span className="font-display text-2xl font-bold leading-tight">{business.name}</span>
                   {business.description && <span className="line-clamp-2 text-muted">{business.description}</span>}
                   {business.address && <span className="truncate text-sm font-medium">{business.address}</span>}
                 </span>

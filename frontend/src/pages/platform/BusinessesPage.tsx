@@ -29,11 +29,11 @@ function Row({ business }: { business: PlatformBusinessRow }) {
     <li>
       <Link
         to={`/plataforma/negocios/${business.slug}`}
-        className="press grid gap-2 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm"
+        className="press grid gap-2 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm"
       >
         <span className="flex items-start justify-between gap-3">
           <span className="min-w-0">
-            <span className="block truncate font-display text-xl font-extrabold leading-tight">{business.name}</span>
+            <span className="block truncate font-display text-xl font-bold leading-tight">{business.name}</span>
             <span className="block truncate font-mono text-sm text-muted">/{business.slug}</span>
           </span>
           <StandingStamp standing={business.standing} suspended={business.status === "suspended"} />
@@ -70,7 +70,7 @@ export function BusinessesPage() {
   return (
     <div className="grid grid-cols-1 gap-6">
       <div className="flex items-end justify-between gap-4">
-        <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Negocios</h1>
+        <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Negocios</h1>
         <Link to="/plataforma/negocios/nuevo" className={`${buttonClass("primary")} max-md:hidden`}>
           <Plus aria-hidden="true" />
           Nuevo negocio
@@ -86,8 +86,8 @@ export function BusinessesPage() {
             aria-selected={selected === id}
             onClick={() => choose(id)}
             className={
-              "press min-h-[48px] shrink-0 rounded-box border-[3px] border-line px-4 font-display text-base font-bold " +
-              (selected === id ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+              "press min-h-[48px] shrink-0 rounded-box border border-edge px-4 font-display text-base font-bold " +
+              (selected === id ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
             }
           >
             {label}
@@ -103,7 +103,7 @@ export function BusinessesPage() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Buscar por nombre o link"
-          className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-surface pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:shadow-hard focus:outline-none"
+          className="min-h-[52px] w-full rounded-box border border-edge bg-surface pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:border-accent-deep focus:ring-4 focus:ring-accent/25 focus:outline-none"
         />
       </label>
 
@@ -116,7 +116,7 @@ export function BusinessesPage() {
       )}
 
       {list.isError && (
-        <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+        <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
           <p className="font-semibold text-danger">No pudimos cargar los negocios. {list.error.message}</p>
           <Button variant="plain" onClick={() => void list.refetch()}>
             Intentar otra vez
@@ -125,7 +125,7 @@ export function BusinessesPage() {
       )}
 
       {list.isSuccess && businesses.length === 0 && (
-        <p className="rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           {q || selected !== "all" ? "Ningún negocio coincide." : "Todavía no hay negocios. Abre el primero con Nuevo."}
         </p>
       )}

@@ -39,12 +39,12 @@ export function ServicePicker({ options, selected, onSelect }: Props) {
             aria-checked={active}
             onClick={() => onSelect(id)}
             className={
-              "press flex min-h-[64px] items-center justify-between gap-3 rounded-box border-[3px] border-line px-4 py-3 text-left " +
-              (active ? "bg-accent text-on-accent shadow-hard" : "bg-surface text-text shadow-hard-sm")
+              "press flex min-h-[64px] items-center justify-between gap-3 rounded-box border border-edge px-4 py-3 text-left " +
+              (active ? "bg-accent text-on-accent shadow-card" : "bg-surface text-text shadow-card-sm")
             }
           >
             <span className="flex flex-col">
-              <span className="font-display text-xl font-extrabold leading-tight">
+              <span className="font-display text-xl font-bold leading-tight">
                 {severalResources ? option.resource.name : option.service.name}
               </span>
               <span className={`text-sm ${active ? "" : "text-muted"}`}>

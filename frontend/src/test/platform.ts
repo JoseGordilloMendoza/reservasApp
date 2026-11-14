@@ -30,7 +30,7 @@ export const businessPage = (overrides: Partial<PlatformBusiness> = {}): Platfor
   },
   suspended_reason: "",
   timezone: "America/Lima",
-  accent: "poppy",
+  accent: "brand",
   description: "",
   address: "",
   phone: "",

@@ -28,7 +28,7 @@ export function ConfirmAction({ label, question, confirmLabel, onConfirm, busy =
   }
 
   return (
-    <div role="group" aria-label={question} className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4">
+    <div role="group" aria-label={question} className="grid gap-3 rounded-box border border-edge bg-surface p-4">
       <p className="font-display text-lg font-bold leading-tight">{question}</p>
       <div className="grid grid-cols-2 gap-3">
         <Button

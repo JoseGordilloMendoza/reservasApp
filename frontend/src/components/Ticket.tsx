@@ -27,9 +27,9 @@ function Barcode({ code }: { code: string }) {
 /** The two half circles that make the perforation read as a tear-off line. */
 function Perforation() {
   const notch =
-    "absolute top-1/2 size-7 -translate-y-1/2 rounded-full border-[3px] border-line bg-paper";
+    "absolute top-1/2 size-7 -translate-y-1/2 rounded-full border border-edge bg-paper";
   return (
-    <div className="relative my-0 h-0 border-t-[3px] border-dashed border-line" aria-hidden="true">
+    <div className="relative my-0 h-0 border-t border-dashed border-edge" aria-hidden="true">
       <span className={`${notch} -left-[17px]`} />
       <span className={`${notch} -right-[17px]`} />
     </div>
@@ -55,7 +55,7 @@ const PAYMENT_NOTE: Record<BookingDetails["payment_status"], string> = {
 function Stamp({ status }: { status: BookingStatus }) {
   return (
     <span
-      className={`inline-block -rotate-6 rounded-[8px] border-[3px] border-current px-3 py-1 font-display text-lg font-extrabold uppercase leading-none tracking-wide ${STAMP[status]}`}
+      className={`inline-block rounded-full border border-current px-4 py-1.5 font-display text-sm font-semibold leading-none ${STAMP[status]}`}
     >
       {STATUS_LABEL[status]}
     </span>
@@ -74,11 +74,11 @@ export function Ticket({ booking, timeZone }: Props) {
   return (
     <article
       aria-label={`Boleto de ${booking.business.name}`}
-      className={`relative overflow-hidden rounded-box border-[3px] border-line bg-surface text-text shadow-hard ${dead ? "opacity-80" : ""}`}
+      className={`relative overflow-hidden rounded-box border border-edge bg-surface text-text shadow-card ${dead ? "opacity-80" : ""}`}
     >
       <div className="bg-accent p-5 pb-9 text-on-accent">
         <p className="font-display text-base font-bold uppercase tracking-wide">{booking.business.name}</p>
-        <h2 className="mt-1 text-balance font-display text-4xl font-extrabold leading-[0.95]">
+        <h2 className="mt-1 text-balance font-display text-4xl font-bold leading-[1.1]">
           {booking.service.name}
         </h2>
         <div className="mt-5">
@@ -132,7 +132,7 @@ export function Ticket({ booking, timeZone }: Props) {
         <p className="text-sm text-muted">Al llegar, muestra este código o di tu nombre. No reemplaza un comprobante de pago.</p>
         {PAYMENT_NOTE[booking.payment_status] && <p className="font-semibold">{PAYMENT_NOTE[booking.payment_status]}</p>}
         {booking.payment_instructions && booking.payment_status !== "paid" && !dead && (
-          <div className="rounded-box border-[3px] border-dashed border-line p-3">
+          <div className="rounded-box border border-dashed border-edge p-3">
             <p className="font-display font-bold">Cómo pagar</p>
             <p className="mt-1 whitespace-pre-line">{booking.payment_instructions}</p>
           </div>

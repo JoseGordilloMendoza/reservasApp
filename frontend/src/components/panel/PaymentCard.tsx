@@ -35,8 +35,8 @@ export function PaymentCard({ booking, timeZone }: Props) {
   const amountError = record.error instanceof ApiError ? record.error.fields.amount_paid : undefined;
 
   return (
-    <section aria-labelledby="pago" className="grid gap-5 rounded-box border-[3px] border-line bg-surface p-5 text-text shadow-hard">
-      <h2 id="pago" className="font-display text-2xl font-extrabold">
+    <section aria-labelledby="pago" className="grid gap-5 rounded-box border border-edge bg-surface p-5 text-text shadow-card">
+      <h2 id="pago" className="font-display text-2xl font-bold">
         Pago y llegada
       </h2>
 
@@ -56,7 +56,7 @@ export function PaymentCard({ booking, timeZone }: Props) {
         )}
       </div>
 
-      <div className="grid gap-3 border-t-[3px] border-dashed border-line/40 pt-5">
+      <div className="grid gap-3 border-t border-dashed border-edge pt-5">
         <p className="flex items-center gap-2 font-semibold">
           <HandCoins aria-hidden="true" />
           {paymentLine(booking)}
@@ -75,7 +75,7 @@ export function PaymentCard({ booking, timeZone }: Props) {
                   onChange={() => setMethod(id)}
                   className="peer sr-only"
                 />
-                <span className="inline-block rounded-box border-[3px] border-line bg-surface px-3 py-2 font-display font-bold peer-checked:bg-line peer-checked:text-paper peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2">
+                <span className="inline-block rounded-box border border-edge bg-surface px-3 py-2 font-display font-bold peer-checked:bg-line peer-checked:text-paper peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-offset-2">
                   {METHOD_LABEL[id]}
                 </span>
               </label>
@@ -132,7 +132,7 @@ export function PaymentCard({ booking, timeZone }: Props) {
       </div>
 
       <form
-        className="grid gap-3 border-t-[3px] border-dashed border-line/40 pt-5"
+        className="grid gap-3 border-t border-dashed border-edge pt-5"
         onSubmit={(event) => {
           event.preventDefault();
           record.mutate({ internal_note: note.trim() });
@@ -151,7 +151,7 @@ export function PaymentCard({ booking, timeZone }: Props) {
       </form>
 
       {record.error && !amountError && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
           <X aria-hidden="true" className="mt-0.5 shrink-0" />
           {record.error.message}
         </p>

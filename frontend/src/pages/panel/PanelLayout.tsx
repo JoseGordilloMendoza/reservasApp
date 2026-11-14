@@ -1,11 +1,11 @@
 import { CalendarX, DotsThree, Gear, House, IconContext, ListChecks, Plus, SignOut, Users } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Logo } from "../../components/Logo";
 
 import { SubscriptionBanner } from "../../components/panel/SubscriptionBanner";
 import { SupportBanner } from "../../components/panel/SupportBanner";
 import { useAuth } from "../../lib/auth";
-import { BRAND } from "../../lib/brand";
 import { usePanelBusiness } from "../../lib/panelQueries";
 import { useAccent } from "../../lib/queries";
 
@@ -38,10 +38,10 @@ const VISIBLE = { phone: "md:hidden", desktop: "max-md:hidden" } as const;
 
 function tabClass({ isActive }: { isActive: boolean }, highlight?: boolean) {
   const base =
-    "press flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-box border-[3px] border-line " +
+    "press flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-box border border-edge " +
     "px-2 py-1 font-display text-sm font-bold leading-none md:flex-row md:justify-start md:gap-3 md:px-4 md:text-lg ";
-  if (highlight) return base + "bg-accent text-on-accent shadow-hard-sm";
-  return base + (isActive ? "bg-line text-paper" : "bg-surface text-text shadow-hard-sm");
+  if (highlight) return base + "bg-accent text-on-accent shadow-card-sm";
+  return base + (isActive ? "bg-line text-paper" : "bg-surface text-text shadow-card-sm");
 }
 
 export function PanelLayout() {
@@ -64,14 +64,8 @@ export function PanelLayout() {
             (auth.support ? "md:top-14 md:h-[calc(100dvh-3.5rem)]" : "md:top-0 md:h-dvh")
           }
         >
-          <p className="flex items-center gap-2 font-display text-xl font-extrabold uppercase tracking-tight">
-            <span
-              aria-hidden="true"
-              className="grid size-8 -rotate-6 place-items-center rounded-[8px] border-[3px] border-line bg-accent text-on-accent shadow-hard-sm"
-            >
-              S
-            </span>
-            {BRAND}
+          <p>
+            <Logo />
           </p>
 
           <div className="mt-4 min-w-0">
@@ -81,7 +75,7 @@ export function PanelLayout() {
                 <select
                   value={current?.business.slug}
                   onChange={(event) => auth.selectBusiness(event.target.value)}
-                  className="min-h-[44px] rounded-box border-[3px] border-line bg-surface px-3 font-display text-base font-bold text-text"
+                  className="min-h-[44px] rounded-box border border-edge bg-surface px-3 font-display text-base font-bold text-text"
                 >
                   {memberships.map((membership) => (
                     <option key={membership.business.slug} value={membership.business.slug}>
@@ -95,7 +89,7 @@ export function PanelLayout() {
             )}
           </div>
 
-          <nav aria-label="Panel" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-3 border-t-[3px] border-line bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:static md:mt-8 md:grid-cols-1 md:border-0 md:bg-transparent md:p-0">
+          <nav aria-label="Panel" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-3 border-t border-edge bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:static md:mt-8 md:grid-cols-1 md:border-0 md:bg-transparent md:p-0">
             {ITEMS.map(({ to, label, icon: Glyph, end, highlight, only, covers }) => (
               <NavLink
                 key={to}

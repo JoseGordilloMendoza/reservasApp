@@ -61,8 +61,8 @@ function NewBlockForm({
   const active = (resources.data?.results ?? []).filter((resource) => resource.is_active);
 
   return (
-    <form onSubmit={submit} noValidate className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard">
-      <h2 className="font-display text-2xl font-extrabold">Nuevo bloqueo</h2>
+    <form onSubmit={submit} noValidate className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card">
+      <h2 className="font-display text-2xl font-bold">Nuevo bloqueo</h2>
 
       <SelectField label="¿Qué cierras?" value={form.resource} onChange={(event) => set({ resource: event.target.value })}>
         <option value="">Todo el negocio</option>
@@ -95,7 +95,7 @@ function NewBlockForm({
       />
 
       {error && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 font-semibold text-danger">
           <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
           {error}
         </p>
@@ -122,7 +122,7 @@ function Conflicts({ block, timeZone, onClose }: { block: CreatedBlock; timeZone
     <section
       role="status"
       aria-label="Reservas en conflicto"
-      className="grid gap-3 rounded-box border-[3px] border-danger bg-surface p-4 text-text"
+      className="grid gap-3 rounded-box border border-danger bg-surface p-4 text-text"
     >
       <div className="flex items-start justify-between gap-3">
         <p className="flex items-start gap-2 font-display text-lg font-bold leading-tight text-danger">
@@ -139,7 +139,7 @@ function Conflicts({ block, timeZone, onClose }: { block: CreatedBlock; timeZone
           <li key={booking.id}>
             <Link
               to={`/panel/reservas/${booking.id}`}
-              className="press flex items-center justify-between gap-3 rounded-box border-[3px] border-line p-3 shadow-hard-sm"
+              className="press flex items-center justify-between gap-3 rounded-box border border-edge p-3 shadow-card-sm"
             >
               <span className="min-w-0 truncate font-display font-bold">{booking.customer_name}</span>
               <span className="shrink-0 font-mono text-sm">
@@ -157,9 +157,9 @@ function BlockRow({ block, timeZone }: { block: PanelBlock; timeZone: string }) 
   const remove = useDeleteBlock();
 
   return (
-    <li className="grid gap-3 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard-sm">
+    <li className="grid gap-3 rounded-box border border-edge bg-surface p-4 text-text shadow-card-sm">
       <div className="min-w-0">
-        <p className="font-display text-xl font-extrabold leading-tight">{block.reason || "Cerrado"}</p>
+        <p className="font-display text-xl font-bold leading-tight">{block.reason || "Cerrado"}</p>
         <p className="mt-1 font-semibold first-letter:uppercase">{describePeriod(block, timeZone)}</p>
         <p className="text-sm text-muted">{block.resource ? block.resource.name : "Todo el negocio"}</p>
       </div>
@@ -189,7 +189,7 @@ export function BlocksPage() {
 
   return (
     <div className="grid max-w-[34rem] grid-cols-1 gap-6">
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Bloqueos</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Bloqueos</h1>
       <p className="text-muted">Cierra un horario cuando no atiendes: mantenimiento, feriados o vacaciones. Nadie podrá reservar ahí.</p>
 
       {last && timeZone && <Conflicts block={last} timeZone={timeZone} onClose={() => setLast(null)} />}
@@ -211,7 +211,7 @@ export function BlocksPage() {
       )}
 
       {blocks.isError && (
-        <div role="alert" className="grid gap-3 rounded-box border-[3px] border-danger p-4">
+        <div role="alert" className="grid gap-3 rounded-box border border-danger p-4">
           <p className="font-semibold text-danger">No pudimos cargar los bloqueos. {blocks.error.message}</p>
           <Button variant="plain" onClick={() => void blocks.refetch()}>
             Intentar otra vez
@@ -220,7 +220,7 @@ export function BlocksPage() {
       )}
 
       {blocks.isSuccess && timeZone && blocks.data.results.length === 0 && (
-        <p className="flex items-center gap-3 rounded-box border-[3px] border-dashed border-line p-5 font-display text-xl font-bold leading-tight">
+        <p className="flex items-center gap-3 rounded-box border border-dashed border-edge p-5 font-display text-xl font-bold leading-tight">
           <CalendarX aria-hidden="true" size={28} className="shrink-0" />
           No tienes bloqueos próximos.
         </p>
@@ -228,7 +228,7 @@ export function BlocksPage() {
 
       {blocks.isSuccess && timeZone && blocks.data.results.length > 0 && (
         <section aria-labelledby="proximos" className="grid gap-3">
-          <h2 id="proximos" className="font-display text-2xl font-extrabold">
+          <h2 id="proximos" className="font-display text-2xl font-bold">
             Próximos
           </h2>
           <ul className="grid gap-3">

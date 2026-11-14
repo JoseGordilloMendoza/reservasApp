@@ -17,7 +17,7 @@ export function TrustBadge({ trust }: { trust: CustomerTrust }) {
 
   return (
     <div className="grid gap-1">
-      <span className={`inline-flex w-fit items-center gap-2 rounded-[8px] border-[3px] border-line px-2 py-1 font-display text-sm font-extrabold leading-none ${style}`}>
+      <span className={`inline-flex w-fit items-center gap-2 rounded-xl border border-edge px-2 py-1 font-display text-sm font-bold leading-none ${style}`}>
         <Icon aria-hidden="true" weight="bold" />
         {TRUST_LABEL[trust.level]}
       </span>

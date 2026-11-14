@@ -142,13 +142,13 @@ function BusinessForm({ business }: { business: PanelBusiness }) {
       </section>
 
       {formError && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-4 font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-4 font-semibold text-danger">
           <WarningCircle aria-hidden="true" className="mt-0.5 shrink-0" />
           {formError}
         </p>
       )}
       {saved && (
-        <p role="status" className="flex items-center gap-2 rounded-box border-[3px] border-line bg-surface p-4 font-semibold">
+        <p role="status" className="flex items-center gap-2 rounded-box border border-edge bg-surface p-4 font-semibold">
           <Check aria-hidden="true" />
           Cambios guardados
         </p>
@@ -170,7 +170,7 @@ export function BusinessSettingsPage() {
         <ArrowLeft aria-hidden="true" />
         Ajustes
       </Link>
-      <h1 className="font-display text-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.03em]">Mi página</h1>
+      <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-[-0.02em] sm:text-4xl">Mi página</h1>
 
       {business.isPending && (
         <div className="grid gap-4" aria-busy="true" aria-label="Cargando">

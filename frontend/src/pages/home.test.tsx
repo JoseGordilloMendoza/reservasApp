@@ -26,7 +26,7 @@ describe("the home page", () => {
     renderApp("/");
 
     const title = await screen.findByRole("heading", { level: 1 });
-    expect(title).toHaveTextContent("Separa tu hora.");
+    expect(title).toHaveTextContent("Reserva tu hora.");
     // The platform serves courts, therapists and more: the headline must not name just one.
     expect(title).not.toHaveTextContent(/cancha|consultorio|psic/i);
     expect(screen.getByText(/Canchas, consultorios y más/)).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe("the businesses shown on the home page", () => {
     name: "Canchas Los Andes",
     slug: "canchas-los-andes",
     business_type: "court",
-    accent: "poppy" as const,
+    accent: "brand" as const,
     address: "Av. Ejército 123, Cayma",
     description: "Grass sintético y luces LED.",
   };
@@ -219,7 +219,7 @@ describe("for businesses", () => {
     const ask = within(band).getByRole("link", { name: /Escríbenos por WhatsApp/ });
 
     expect(ask.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/51987654321\?text=/);
-    expect(decodeURIComponent(ask.getAttribute("href") ?? "")).toContain("quiero tener mi negocio en Separa");
+    expect(decodeURIComponent(ask.getAttribute("href") ?? "")).toContain("quiero tener mi negocio en MiReserva");
     expect(within(band).queryByRole("link", { name: /por correo/ })).not.toBeInTheDocument();
     expect(within(band).getByRole("link", { name: /Ya tengo cuenta/ })).toHaveAttribute("href", "/panel/entrar");
   });
@@ -245,8 +245,8 @@ describe("for businesses", () => {
 
     expect(link.origin + link.pathname).toBe("https://mail.google.com/mail/");
     expect(link.searchParams.get("to")).toBe("hola@separa.pe");
-    expect(link.searchParams.get("su")).toBe("Quiero mi negocio en Separa");
-    expect(link.searchParams.get("body")).toContain("quiero tener mi negocio en Separa");
+    expect(link.searchParams.get("su")).toBe("Quiero mi negocio en MiReserva");
+    expect(link.searchParams.get("body")).toContain("quiero tener mi negocio en MiReserva");
     expect(ask).toHaveAttribute("target", "_blank");
     expect(within(band).queryByRole("link", { name: /WhatsApp/ })).not.toBeInTheDocument();
   });

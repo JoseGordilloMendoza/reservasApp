@@ -33,10 +33,10 @@ export function PendingCard({ booking, business, timeZone }: Props) {
   const price = formatPrice(booking.price);
 
   return (
-    <li className="grid gap-4 rounded-box border-[3px] border-line bg-surface p-4 text-text shadow-hard">
+    <li className="grid gap-4 rounded-box border border-edge bg-surface p-4 text-text shadow-card">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <Link to={`/panel/reservas/${booking.id}`} className="block truncate font-display text-2xl font-extrabold leading-tight underline decoration-[3px] underline-offset-4">
+          <Link to={`/panel/reservas/${booking.id}`} className="block truncate font-display text-2xl font-bold leading-tight underline decoration-[3px] underline-offset-4">
             {booking.customer.name}
           </Link>
           <p className="mt-1 text-sm text-muted">
@@ -83,7 +83,7 @@ export function PendingCard({ booking, business, timeZone }: Props) {
       </div>
 
       {action.error && (
-        <p role="alert" className="flex items-start gap-2 rounded-box border-[3px] border-danger p-3 text-sm font-semibold text-danger">
+        <p role="alert" className="flex items-start gap-2 rounded-box border border-danger p-3 text-sm font-semibold text-danger">
           <X aria-hidden="true" className="mt-0.5 shrink-0" />
           {action.error.message}
         </p>
@@ -98,7 +98,7 @@ export function BookingRow({ booking, timeZone, showDay = false }: { booking: Pa
     <li>
       <Link
         to={`/panel/reservas/${booking.id}`}
-        className="press flex items-center gap-4 rounded-box border-[3px] border-line bg-surface p-3 text-text shadow-hard-sm"
+        className="press flex items-center gap-4 rounded-box border border-edge bg-surface p-3 text-text shadow-card-sm"
       >
         <span className="w-[4.5rem] shrink-0 font-mono text-xl font-bold leading-tight">
           {formatTime(booking.starts_at, timeZone)}

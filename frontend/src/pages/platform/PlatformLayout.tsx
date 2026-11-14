@@ -1,9 +1,9 @@
 import { ClockCounterClockwise, House, IconContext, Plus, SignOut, Storefront } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Logo } from "../../components/Logo";
 
 import { useAuth } from "../../lib/auth";
-import { BRAND } from "../../lib/brand";
 
 interface Item {
   to: string;
@@ -25,10 +25,10 @@ const ITEMS: Item[] = [
 
 function tabClass(active: boolean, highlight?: boolean) {
   const base =
-    "press flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-box border-[3px] border-line " +
+    "press flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-box border border-edge " +
     "px-2 py-1 font-display text-sm font-bold leading-none md:flex-row md:justify-start md:gap-3 md:px-4 md:text-lg ";
-  if (highlight) return base + "bg-accent text-on-accent shadow-hard-sm";
-  return base + (active ? "bg-line text-paper" : "bg-surface text-text shadow-hard-sm");
+  if (highlight) return base + "bg-accent text-on-accent shadow-card-sm";
+  return base + (active ? "bg-line text-paper" : "bg-surface text-text shadow-card-sm");
 }
 
 /** The team's area: same identity as the business panel, other tabs. */
@@ -40,20 +40,14 @@ export function PlatformLayout() {
     <IconContext.Provider value={{ weight: "bold", size: 22 }}>
       <div className="mx-auto min-h-dvh max-w-[1120px] md:grid md:grid-cols-[15rem_1fr] md:gap-8 md:px-6">
         <aside className="relative px-4 pt-4 md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:px-0 md:py-6">
-          <p className="flex items-center gap-2 font-display text-xl font-extrabold uppercase tracking-tight">
-            <span
-              aria-hidden="true"
-              className="grid size-8 -rotate-6 place-items-center rounded-[8px] border-[3px] border-line bg-accent text-on-accent shadow-hard-sm"
-            >
-              S
-            </span>
-            {BRAND}
+          <p>
+            <Logo />
           </p>
           <p className="mt-4 font-display text-lg font-bold leading-tight">Equipo de la plataforma</p>
 
           <nav
             aria-label="Plataforma"
-            className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-3 border-t-[3px] border-line bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:static md:mt-8 md:grid-cols-1 md:border-0 md:bg-transparent md:p-0"
+            className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 gap-3 border-t border-edge bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:static md:mt-8 md:grid-cols-1 md:border-0 md:bg-transparent md:p-0"
           >
             {ITEMS.map(({ to, label, icon: Glyph, end, highlight, covers }) => (
               <NavLink

@@ -30,7 +30,7 @@ export function BusinessSearch() {
           onChange={(event) => setTyped(event.target.value)}
           autoComplete="off"
           placeholder="Canchas, consultorio..."
-          className="min-h-[52px] w-full rounded-box border-[3px] border-line bg-paper pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:shadow-hard focus:outline-none"
+          className="min-h-[52px] w-full rounded-box border border-edge-strong bg-paper pl-12 pr-4 text-lg text-text placeholder:text-muted/70 focus:border-accent-deep focus:ring-4 focus:ring-accent/25 focus:outline-none"
         />
       </label>
 
@@ -50,7 +50,7 @@ export function BusinessSearch() {
         )}
 
         {ready && !waiting && search.isSuccess && results.length === 0 && (
-          <p className="rounded-box border-[3px] border-dashed border-line p-4 font-semibold">
+          <p className="rounded-box border border-dashed border-edge p-4 font-semibold">
             No encontramos ese negocio.
           </p>
         )}
@@ -61,9 +61,9 @@ export function BusinessSearch() {
               <li key={business.slug}>
                 <Link
                   to={`/${business.slug}`}
-                  className="press grid gap-0.5 rounded-box border-[3px] border-line bg-surface p-3 text-text shadow-hard-sm"
+                  className="press grid gap-0.5 rounded-box border border-edge bg-surface p-3 text-text shadow-card-sm"
                 >
-                  <span className="truncate font-display text-lg font-extrabold leading-tight">{business.name}</span>
+                  <span className="truncate font-display text-lg font-bold leading-tight">{business.name}</span>
                   <span className="truncate text-sm text-muted">
                     {KIND_LABEL[business.business_type as BusinessKind] ?? "Negocio"}
                     {business.address ? ` · ${business.address}` : ""}

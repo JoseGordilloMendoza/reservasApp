@@ -2,18 +2,13 @@ import { IconContext, Ticket } from "@phosphor-icons/react";
 import { Link, Outlet } from "react-router-dom";
 
 import { BRAND } from "../lib/brand";
+import { Logo } from "./Logo";
 
-/** The small mark of the platform: a stamped S next to the name. */
+/** The mark and the name of the platform, which also lead home. */
 function Logotype() {
   return (
-    <Link to="/" className="inline-flex items-center gap-2 font-display text-xl font-extrabold uppercase tracking-tight">
-      <span
-        aria-hidden="true"
-        className="grid size-8 -rotate-6 place-items-center rounded-[8px] border-[3px] border-line bg-accent text-on-accent shadow-hard-sm"
-      >
-        S
-      </span>
-      {BRAND}
+    <Link to="/" aria-label={BRAND} className="inline-flex">
+      <Logo />
     </Link>
   );
 }
