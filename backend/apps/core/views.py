@@ -27,3 +27,18 @@ def health(request):
             status=status.HTTP_503_SERVICE_UNAVAILABLE,
         )
     return Response({"status": "ok", "database": "ok"})
+
+
+@extend_schema(
+    summary="Ping",
+    description=(
+        "Answers right away and never touches the database. For a monitor that only needs the server awake: "
+        "the health check opens a database connection, which keeps a free database from going to sleep."
+    ),
+    responses={200: OpenApiResponse(description="The server is awake.")},
+    auth=[],
+)
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def ping(request):
+    return Response({"status": "ok"})

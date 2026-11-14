@@ -43,3 +43,15 @@ def test_endpoints_require_authentication_by_default(client):
     from rest_framework.settings import api_settings
 
     assert api_settings.DEFAULT_PERMISSION_CLASSES == [IsAuthenticated]
+
+
+def test_ping_answers_without_touching_the_database(client, monkeypatch):
+    def forbidden_cursor(*args, **kwargs):
+        raise AssertionError("ping must not open a database connection")
+
+    monkeypatch.setattr("apps.core.views.connection.cursor", forbidden_cursor)
+
+    response = client.get("/api/ping/")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}

@@ -3,11 +3,12 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
-from apps.core.views import health
+from apps.core.views import health, ping
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health/", health, name="health"),
+    path("api/ping/", ping, name="ping"),
     path("api/v1/auth/", include("apps.api.auth.urls")),
     path("api/v1/panel/", include("apps.api.panel.urls")),
     path("api/v1/platform/", include("apps.api.platformadmin.urls")),
