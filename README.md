@@ -146,6 +146,8 @@ Crea una cancha y un consultorio de ejemplo con su dueño (`canchas@demo.pe` y `
 
 Si cambian las dependencias del frontend (`package.json`), recrea su contenedor con `docker compose up -d --build -V frontend`.
 
+> **Cuidado al agregar o quitar un paquete del frontend.** Si lo haces con `npm install` *dentro* del contenedor, npm reescribe `package-lock.json` solo con las piezas de Linux, y la publicación en Cloudflare falla (`npm ci` exige todas las plataformas). Hazlo en tu máquina con `npm install --package-lock-only` y vuelve a crear el contenedor. Una prueba (`lockfile.test.ts`) avisa si el archivo queda incompleto.
+
 </details>
 
 <details>
