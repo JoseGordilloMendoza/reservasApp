@@ -1,0 +1,10 @@
+{
+  // Visits the free Render API every 10 minutes during the day in Lima (D119).
+  // The hours are decided in worker.js; Cloudflare only runs it on this schedule.
+  "name": "mireserva-keepawake",
+  "main": "worker.js",
+  "compatibility_date": "2025-09-01",
+  "triggers": { "crons": ["*/10 * * * *"] },
+  // Not a secret: it is the public address of the API. It must end in /api/ping/ (never /api/health/).
+  "vars": { "PING_URL": "https://mireserva-api.onrender.com/api/ping/" }
+}
