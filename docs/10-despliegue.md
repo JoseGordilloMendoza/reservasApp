@@ -290,12 +290,14 @@ Fuentes: [obtener el ID de cliente](https://developers.google.com/identity/gsi/w
 
 ## Mantener despierto el servidor durante las pruebas
 
-El servidor gratuito se duerme tras 15 minutos sin visitas. Para una demostración se puede evitar con un monitor externo que lo visite cada 10 minutos (D117):
+El servidor gratuito se duerme tras 15 minutos sin visitas y tarda cerca de un minuto en despertar. Mientras no haya clientes que paguen, un Worker de Cloudflare lo visita cada 10 minutos (D119). El código está en `tools/keepawake/`.
 
-- **Qué visitar:** `https://<nombre>.onrender.com/api/ping/`. **No uses `/api/health/`**: ese abre la base de datos y la mantendría despierta, y la base gratuita de Neon solo tiene 100 horas de cómputo al mes (encendida todo el tiempo serían unas 720).
-- **Quién lo visita:** un servicio de monitoreo gratuito como UptimeRobot o cron-job.org, con una visita de tipo GET cada 10 minutos. **(sin confirmar)** los límites actuales de esos servicios; revísalos al crear la cuenta. Hay que crearlo con una cuenta propia, así que no lo deja configurado el código.
-- **Lo que no arregla:** Render puede reiniciar un servicio gratuito en cualquier momento, así que de vez en cuando seguirá tardando. Y un servicio encendido todo el mes usa unas 744 de las 750 horas gratuitas de la cuenta: **si hay otro servicio gratuito en la misma cuenta de Render, las horas no alcanzan para los dos**.
-- **No es para clientes reales.** Ahí corresponde el plan de pago (ver arriba).
+- **Cuándo:** el Worker corre cada 10 minutos, pero solo visita **de 7:00 a 22:59 hora de Lima** (Perú no cambia de hora). De noche no hace nada y el servidor se duerme. Así se gastan unas 500 de las 750 horas gratuitas de Render y no las 744 de estar siempre despierto, porque **al agotarse, Render suspende todos los servicios gratuitos hasta el mes siguiente**.
+- **Qué visita:** solo `/api/ping/`. **Nunca `/api/health/`**: ese abre la base de datos y la mantendría despierta, y la base gratuita de Neon tiene 100 horas de cómputo al mes. El Worker rechaza cualquier otra dirección y falla en vez de visitarla.
+- **Cómo se publica (una sola vez):** en el panel de Cloudflare, *Workers & Pages* > *Create* > *Import a repository*, con el mismo repositorio, **Root directory** `tools/keepawake` y el comando de despliegue por defecto (`npx wrangler deploy`). El horario y la dirección de la API están en `tools/keepawake/wrangler.jsonc`; no hay ninguna clave. Si la API cambia de nombre, se cambia `PING_URL` ahí.
+- **Cómo comprobarlo:** en el Worker, pestaña *Observability* o *Logs*: cada visita escribe `keep-awake {"result":"ok"...}`. Un fallo aparece como error. Las pruebas se corren con `npm test` dentro de `tools/keepawake`.
+- **Lo que no arregla:** Render puede reiniciar un servicio gratuito en cualquier momento, así que de vez en cuando seguirá tardando. **(sin confirmar)** que los términos de uso de Render permitan estas visitas; no dicen nada al respecto. **(sin confirmar)** cuántos disparadores programados (*cron triggers*) permite el plan gratuito de Workers; las fuentes dicen 3 por Worker o 5 por cuenta, y aquí se usa 1.
+- **Cuando haya clientes que pagan:** se pasa el servicio de Render al plan de **$7 al mes** (siempre encendido) y se borra este Worker.
 
 ## Lo que se verificó antes de escribir esto
 
