@@ -137,6 +137,15 @@ Antes lo único que impedía una reserva falsa era que el dueño no la confirmar
 - **RN-91.** Si al terminar una reserva la casilla "Recordar mis datos" está desmarcada, lo que había guardado se borra. El cliente también puede borrarlo cuando quiera desde su reserva o desde Mis reservas.
 - **RN-92.** Recordar datos no cambia nada en el servidor: el negocio recibe los mismos datos de siempre, y la confianza del cliente (RN-75 y RN-76) no depende de ellos.
 
+## Imágenes del negocio
+
+- **RN-93.** Un negocio tiene como máximo **un logo y una portada**. Son opcionales: sin ellos la página se ve como siempre, y una imagen que no carga desaparece sin dejar un ícono roto.
+- **RN-94.** Se aceptan **JPG, PNG y WebP de hasta 8 MB** (y hasta 40 millones de pixeles). Lo que no sea una imagen de verdad se rechaza aunque lleve extensión de imagen, y un GIF también.
+- **RN-95.** Se guardan siempre como **WebP**, reducidas (logo hasta 512 px, portada hasta 1600 px, sin ampliar), derechas y **sin los datos de la cámara**, como el lugar donde se tomó la foto.
+- **RN-96.** Cambiar o quitar una imagen **borra la anterior**. Si ese borrado falla, el cambio sigue valiendo: sobra un archivo, no se pierde nada. Quitar lo que no existe no cambia nada.
+- **RN-97.** Solo quien está dentro del panel del negocio sube o quita imágenes, con un máximo de **30 subidas por hora** por persona. Si no hay dónde guardarlas, la respuesta es "no disponible" y nada cambia.
+- **RN-98.** **La portada nunca lleva texto encima.** El nombre y los textos van siempre sobre el color del negocio.
+
 ## Configuración del negocio
 
 - **RN-28.** El negocio edita su nombre, descripción, dirección, teléfono, WhatsApp, color, cómo le pagan, los datos de su página (RN-82 a RN-86) y opciones. Su link, tipo, zona horaria y estado los fija la plataforma.

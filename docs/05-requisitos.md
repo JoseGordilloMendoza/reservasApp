@@ -21,7 +21,7 @@
 | ID | Requisito | Prioridad |
 |---|---|---|
 | NG-01 | Iniciar sesión con email y contraseña, y recuperar la contraseña | MVP |
-| NG-02 | Editar el perfil público: nombre, descripción, dirección, teléfono, WhatsApp, imágenes | MVP |
+| NG-02 | Editar el perfil público: nombre, descripción, dirección, teléfono, WhatsApp, logo y portada | MVP (D120) |
 | NG-03 | Gestionar recursos (crear, editar, desactivar) | MVP |
 | NG-04 | Gestionar servicios o tipos de reserva por recurso: nombre, duración, precio referencial | MVP |
 | NG-05 | Definir horarios semanales de atención por recurso | MVP |
