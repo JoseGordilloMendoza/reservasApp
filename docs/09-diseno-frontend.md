@@ -21,7 +21,7 @@ Se apoya en las referencias de [selectores de fecha y hora](https://uxmovement.c
 | Canchas, consultorios, clínicas y más en la misma plataforma | Una estructura neutra y de confianza, y cada negocio elige su **acento** entre seis |
 | Se abre desde un link en WhatsApp o Instagram | Móvil primero, carga rápida, el negocio reconocible al instante |
 | El cliente no tiene cuenta | "Mis reservas" guarda los boletos en el propio dispositivo |
-| Las imágenes llegan después (D46) | Se sostiene con color, tipografía y formas propias; las fotos reales de cada negocio se sumarán sin cambiar el sistema |
+| Las imágenes son opcionales (D120) | Se sostiene con color, tipografía y formas propias; el logo y la portada de cada negocio se suman sin cambiar el sistema, y sin ellos todo se ve igual |
 | Una aplicación móvil vendrá más adelante | Los colores, la tipografía y los componentes ya salen de una misma lista de valores |
 
 ## 3. Sistema visual
@@ -127,6 +127,7 @@ Capturas en celular de 390 px y en escritorio, en claro y en oscuro, con datos r
 - **Sello de estado sobre el nombre del servicio.** Ahora va debajo del título, dentro del bloque de color.
 - **Fechas con mayúsculas incorrectas** ("28 De Octubre"). Solo se capitaliza la primera letra.
 - **Ancho de página mayor que la pantalla** por una columna de grilla sin límite. Las grillas de página fijan una sola columna en móvil.
+- **La página saltaba hacia abajo al abrirse** cuando algo alto quedaba sobre el selector de días (se vio al poner una portada). El selector usaba `scrollIntoView`, que mueve toda la página; ahora solo mueve su propia franja, de lado.
 
 Estas reglas quedan para los próximos diseños: ninguna etiqueta flotante puede tapar texto, y todo título debe probarse con el nombre más largo posible.
 
@@ -199,6 +200,13 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **Recordar mis datos.** En el paso "¿A nombre de quién?", si hay datos guardados, un recuadro punteado dice "Usamos los datos que guardaste en este celular" con "Usar otros datos". Una casilla "Recordar mis datos en este celular" va **antes** de la de los términos, que siempre empieza vacía.
 - Todo es del celular de la persona (D115, D116, RN-88 a RN-92); la copia de la lista vive en `separa.favorites.v1` y la de los datos en `separa.me.v1`.
 
+### Imágenes del negocio
+
+- **Portada.** Una **franja de proporción 5:2** que sube al borde superior del cartel, con las esquinas de arriba redondeadas y una línea fina que la separa del color. **Nada se escribe encima**: el nombre y los textos siguen sobre el color sólido, así su contraste no depende de la foto (RN-98). Si la foto no carga, la franja desaparece.
+- **Logo.** Un cuadrado blanco de 64 px (80 en escritorio) sobre el color, justo encima del nombre, con la imagen entera (sin recortar) y un pequeño margen para que un logo con fondo transparente se lea. En la tarjeta del inicio **reemplaza el dibujo**, y en los favoritos, la inicial de color. Sin logo, o si no carga, vuelve lo de antes.
+- **Texto alternativo vacío** en las dos, porque el nombre está al lado y un lector de pantalla no tiene que repetirlo.
+- **En el panel**, "Mi página" tiene una sección **Imágenes** con una vista previa de cada una, **Subir**/**Cambiar** y **Quitar**. Cada una se guarda sola, sin el botón de abajo. Antes de enviar se avisa si el archivo pesa más de 8 MB o no es JPG, PNG o WebP; el resultado se anuncia ("Logo guardado") y los errores salen como alerta.
+
 ### Confianza en quien reserva
 
 - **Para el cliente, opcional y sin presión:** en el paso "¿A nombre de quién?" hay un recuadro punteado con "Continuar con Google" y una línea que explica para qué ("el negocio sabe que eres tú y puede confirmarte más rápido"). Si lo usa, se llenan su nombre y su correo, y el correo queda fijo.
@@ -223,4 +231,4 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 - **El logo en vector original.** El que usa la aplicación está redibujado a partir de una imagen; conviene reemplazarlo por el archivo vectorial del diseñador y las variantes del ícono.
 - Si el modo oscuro necesita un botón manual además de seguir al sistema.
 - Los selectores de hora del navegador siguen su idioma (algunos muestran AM/PM); si molesta, se puede reemplazar por un selector propio de 24 horas.
-- Si algún día hay fotos, el bloque de color puede llevar una imagen recortada dentro, sin cambiar el sistema.
+- Las fotos por espacio y una galería (D120 las deja fuera por ahora): habría que decidir dónde se ven al elegir el espacio.
