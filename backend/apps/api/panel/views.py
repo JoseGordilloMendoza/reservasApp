@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import datetime, time, timedelta
 from datetime import timezone as dt_timezone
@@ -11,7 +12,9 @@ from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import generics, serializers, status
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from apps.api.errors import error_response
@@ -21,9 +24,14 @@ from apps.bookings import codes
 from apps.bookings.models import ACTIVE_STATUSES, Booking, BookingStatus, PaymentStatus
 from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
+from apps.images import storage as image_storage
+from apps.images.processing import CONTENT_TYPE, InvalidImage, process_image
 
 from . import serializers as s
 from .permissions import HasBusiness
+
+
+logger = logging.getLogger("images")
 
 
 class PanelAPIView(APIView):
@@ -62,6 +70,78 @@ class BusinessView(PanelAPIView):
             request.business, context={"membership": request.membership}
         )
         return Response(serializer.data)
+
+
+class BusinessImageView(PanelAPIView):
+    """Upload, replace or remove one picture of the business page (D119). Subclasses say which."""
+
+    kind = None  # "logo" or "cover"
+    parser_classes = [MultiPartParser]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "panel_images"
+
+    @extend_schema(
+        summary="Upload or replace the picture",
+        description=(
+            "Send it as multipart with the field `file`. JPG, PNG or WebP up to 8 MB; it is reduced and "
+            "saved as WebP, and what the camera wrote into it is dropped. The previous one is removed."
+        ),
+        request={"multipart/form-data": {"type": "object", "properties": {"file": {"type": "string", "format": "binary"}}, "required": ["file"]}},
+        responses={
+            200: s.PanelBusinessSerializer,
+            400: OpenApiResponse(response=s.ErrorSerializer, description="Not a usable picture."),
+            503: OpenApiResponse(response=s.ErrorSerializer, description="Pictures cannot be kept right now."),
+        },
+    )
+    def put(self, request):
+        upload = request.FILES.get("file")
+        if upload is None:
+            return Response({"code": "invalid_image", "detail": "Elige una imagen."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            data = process_image(upload.read(), self.kind)
+        except InvalidImage as error:
+            return Response({"code": "invalid_image", "detail": str(error)}, status=status.HTTP_400_BAD_REQUEST)
+
+        business = request.business
+        key = image_storage.new_key(business.pk, self.kind)
+        try:
+            image_storage.get_storage().put(key, data, CONTENT_TYPE)
+        except Exception:
+            # Not configured, or R2 did not answer: either way nothing changed.
+            logger.exception("could not keep a %s", self.kind)
+            return Response(
+                {"code": "images_unavailable", "detail": "No pudimos guardar la imagen ahora. Intenta de nuevo en un rato."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        previous = getattr(business, self.kind)
+        setattr(business, self.kind, key)
+        business.save(update_fields=[self.kind])
+        image_storage.delete_quietly(previous)
+        return BusinessView.respond(request)
+
+    @extend_schema(
+        summary="Remove the picture",
+        description="The page goes back to showing none. Removing one that is not there changes nothing.",
+        responses={200: s.PanelBusinessSerializer},
+    )
+    def delete(self, request):
+        business = request.business
+        previous = getattr(business, self.kind)
+        if previous:
+            setattr(business, self.kind, "")
+            business.save(update_fields=[self.kind])
+            image_storage.delete_quietly(previous)
+        return BusinessView.respond(request)
+
+
+class BusinessLogoView(BusinessImageView):
+    kind = "logo"
+
+
+class BusinessCoverView(BusinessImageView):
+    kind = "cover"
 
 
 def bookings_of(business):
