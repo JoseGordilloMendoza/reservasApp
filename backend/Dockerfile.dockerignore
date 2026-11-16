@@ -1,0 +1,10 @@
+# Used only by backend/Dockerfile (development). BuildKit picks "<Dockerfile name>.dockerignore" over
+# ".dockerignore", which stays as the production image's list (Dockerfile.prod) and leaves out the
+# development requirements and the tests. Development needs both.
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+staticfiles/
+media/
+.env*
