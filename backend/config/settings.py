@@ -132,6 +132,7 @@ REST_FRAMEWORK = {
         "public_booking": "30/hour",
         "public_manage": "60/min",
         "public_search": "60/min",
+        "panel_images": "30/hour",
         "auth_login": "20/min",
         "auth_login_email": "5/min",
         "auth_refresh": "60/min",
