@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError, api, flattenFieldErrors } from "./api";
+import { request } from "./http";
 
 function respond(status: number, body: unknown) {
   vi.stubGlobal(
@@ -31,6 +32,26 @@ describe("api requests", () => {
     respond(200, { name: "Cancha Los Andes" });
 
     await expect(api.business("cancha-los-andes")).resolves.toEqual({ name: "Cancha Los Andes" });
+  });
+
+  it("leaves the content type to the browser when it sends a file", async () => {
+    respond(200, {});
+    const body = new FormData();
+    body.append("file", new File(["x"], "logo.png", { type: "image/png" }));
+
+    await request("/panel/business/logo/", { method: "PUT", body });
+
+    const sent = vi.mocked(fetch).mock.calls[0]![1]!;
+    expect(sent.body).toBe(body);
+    expect(sent.headers).not.toHaveProperty("Content-Type");
+  });
+
+  it("still says it is JSON when it sends anything else", async () => {
+    respond(200, {});
+
+    await request("/panel/business/", { method: "PATCH", body: "{}" });
+
+    expect(vi.mocked(fetch).mock.calls[0]![1]!.headers).toMatchObject({ "Content-Type": "application/json" });
   });
 
   it("asks for the right addresses", async () => {

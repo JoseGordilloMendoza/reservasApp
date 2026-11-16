@@ -35,10 +35,12 @@ export function flattenFieldErrors(body: unknown, prefix = ""): Record<string, s
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
+  // A file goes as multipart: the browser writes that Content-Type itself, with the boundary it chose.
+  const isUpload = typeof FormData !== "undefined" && init?.body instanceof FormData;
   try {
     response = await fetch(`${BASE}${path}`, {
       ...init,
-      headers: { "Content-Type": "application/json", ...init?.headers },
+      headers: { ...(isUpload ? {} : { "Content-Type": "application/json" }), ...init?.headers },
     });
   } catch {
     throw new ApiError(0, "network", "No hay conexión. Revisa tu internet e inténtalo otra vez.");
