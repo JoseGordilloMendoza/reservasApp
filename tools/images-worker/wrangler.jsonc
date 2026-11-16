@@ -1,0 +1,9 @@
+{
+  // Serves the business pictures from the private R2 bucket (D119). Nothing is written from here.
+  "name": "mireserva-images",
+  "main": "worker.js",
+  "compatibility_date": "2025-09-01",
+  // The bucket the API writes to. No keys: the binding is the permission.
+  "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "mireserva-images" }],
+  "observability": { "logs": { "enabled": true, "invocation_logs": true } }
+}

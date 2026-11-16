@@ -1,0 +1,8 @@
+{
+  "name": "mireserva-images",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
