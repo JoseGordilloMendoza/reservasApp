@@ -16,6 +16,8 @@ export const TZ = "America/Lima";
 export const BUSINESS: PublicBusiness = {
   name: "Canchas Los Andes",
   slug: "canchas-los-andes",
+  logo_url: null,
+  cover_url: null,
   description: "Grass sintético y luces LED.",
   address: "Av. Ejército 123, Cayma",
   phone: "+51987654321",
@@ -90,7 +92,9 @@ export function mockApi(routes: Record<string, Responder>) {
     const url = String(input).replace(/^\/api\/v1/, "");
     const path = url.split("?")[0]!;
     const method = init?.method ?? "GET";
-    calls.push({ method, path, body: init?.body ? JSON.parse(String(init.body)) : undefined });
+    // A file goes as FormData; everything else is JSON text.
+    const body = init?.body instanceof FormData ? init.body : init?.body ? JSON.parse(String(init.body)) : undefined;
+    calls.push({ method, path, body });
 
     const route = routes[`${method} ${path}`];
     if (!route) return { ok: false, status: 404, text: async () => JSON.stringify({ code: "not_found", detail: "No existe" }) };
@@ -134,6 +138,8 @@ export const OWNER: SessionUser = {
 export const PANEL_BUSINESS: PanelBusiness = {
   name: BUSINESS.name,
   slug: BUSINESS.slug,
+  logo_url: null,
+  cover_url: null,
   description: BUSINESS.description,
   address: BUSINESS.address,
   phone: BUSINESS.phone,

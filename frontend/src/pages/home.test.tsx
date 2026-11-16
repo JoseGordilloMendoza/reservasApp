@@ -12,6 +12,7 @@ afterEach(() => {
 const LUCIA: SearchResult = {
   name: "Consultorio Lucía Quispe",
   slug: "consultorio-lucia",
+  logo_url: null,
   business_type: "psychologist",
   accent: "sky",
   address: "Calle Mercaderes 100, Cercado",
