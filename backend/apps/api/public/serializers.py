@@ -7,6 +7,7 @@ from apps.bookings.phone import InvalidPhone, normalize_phone
 from apps.bookings.services import attendance_is_open, cancellation_deadline
 from apps.businesses.models import Business
 from apps.catalog.models import Resource, Service
+from apps.images.storage import public_url
 
 
 class ErrorSerializer(serializers.Serializer):
@@ -31,8 +32,18 @@ class ResourcePublicSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "services"]
 
 
-class BusinessPublicSerializer(serializers.ModelSerializer):
+class LogoUrlMixin(serializers.Serializer):
+    """The address of the business's logo, or null when it has none."""
+
+    logo_url = serializers.SerializerMethodField()
+
+    def get_logo_url(self, business) -> str | None:
+        return public_url(business.logo)
+
+
+class BusinessPublicSerializer(LogoUrlMixin, serializers.ModelSerializer):
     resources = ResourcePublicSerializer(source="active_resources", many=True)
+    cover_url = serializers.SerializerMethodField()
     accepting_bookings = serializers.BooleanField(
         read_only=True,
         help_text="False when the business is suspended or past due: no resources are offered.",
@@ -43,6 +54,8 @@ class BusinessPublicSerializer(serializers.ModelSerializer):
         fields = [
             "name",
             "slug",
+            "logo_url",
+            "cover_url",
             "description",
             "address",
             "phone",
@@ -61,17 +74,20 @@ class BusinessPublicSerializer(serializers.ModelSerializer):
             "resources",
         ]
 
+    def get_cover_url(self, business) -> str | None:
+        return public_url(business.cover)
 
-class BusinessSearchResultSerializer(serializers.ModelSerializer):
+
+class BusinessSearchResultSerializer(LogoUrlMixin, serializers.ModelSerializer):
     class Meta:
         model = Business
-        fields = ["name", "slug", "business_type", "accent", "address"]
+        fields = ["name", "slug", "logo_url", "business_type", "accent", "address"]
 
 
-class BusinessCardSerializer(serializers.ModelSerializer):
+class BusinessCardSerializer(LogoUrlMixin, serializers.ModelSerializer):
     class Meta:
         model = Business
-        fields = ["name", "slug", "business_type", "accent", "address", "description"]
+        fields = ["name", "slug", "logo_url", "business_type", "accent", "address", "description"]
 
 
 # --- availability -------------------------------------------------------------

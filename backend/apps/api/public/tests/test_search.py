@@ -131,7 +131,7 @@ class TestWhatIsNotOffered:
 
         item = api.get(reverse("public-search"), {"q": "andes"}).json()["results"][0]
 
-        assert set(item) == {"name", "slug", "business_type", "accent", "address"}
+        assert set(item) == {"name", "slug", "logo_url", "business_type", "accent", "address"}
         assert item["address"] == "Av. Ejército 123"
 
     def test_needs_no_login(self, db):
