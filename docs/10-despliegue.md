@@ -288,6 +288,22 @@ Fuentes: [obtener el ID de cliente](https://developers.google.com/identity/gsi/w
   - Neon: 1 GB por proyecto y 100 horas de cómputo por proyecto al mes. Si se agotan, el cómputo se suspende hasta el mes siguiente; *"None of these limits delete your data"*. La página de regiones menciona que los proyectos gratuitos inactivos 90 días o más pueden eliminarse, sin dejar claro si aplica a todos: **usa tu proyecto con cierta regularidad**.
   - Resend: 100 correos al día y 3000 al mes, y 3 dominios. Los recibidos también cuentan. **(sin confirmar)** qué pasa en el plan gratuito al pasarse.
 
+## Las imágenes del negocio: R2 y su Worker (D120)
+
+Es opcional: sin esto la API responde "no disponible" al subir una imagen y las páginas se ven sin ellas. Se hace una sola vez, con la cuenta de Cloudflare.
+
+1. **Activar R2.** En *Storage & databases* > *R2 Object Storage*. **Pide un método de pago aunque el plan sea gratuito**; hoy se cobra $0. Incluye 10 GB, 1 millón de operaciones de escritura y 10 millones de lectura al mes, sin costo por descargar; pasado eso, $0,015 por GB al mes. En el recuadro *Billing Dashboard*, **Add Budget Alert** con un monto bajo (por ejemplo $1).
+2. **Crear el bucket** `mireserva-images`, clase *Standard*, **sin acceso público** (ni la dirección `r2.dev`). El nombre no se puede cambiar después.
+3. **Crear la llave.** *Manage API Tokens* > *Create Account API Token*: permiso **Object Read & Write**, solo el bucket `mireserva-images`, sin filtro de IP (Render gratis no tiene una dirección fija). Se muestran una sola vez el *Access Key ID* y el *Secret Access Key*: se copian **directo a Render y a ningún otro lado**. El *Token value* no se usa.
+4. **Variables en el servicio de Render** (pestaña *Environment*): `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT` (la dirección "S3 API" de R2, `https://<id>.r2.cloudflarestorage.com`, **sin** el nombre del bucket al final) y `R2_BUCKET=mireserva-images`.
+5. **Publicar el Worker de imágenes.** *Workers & Pages* > *Create* > *Import a repository*, el mismo repositorio, **Root directory** `tools/images-worker`. Su `wrangler.jsonc` ya conecta el bucket; no lleva claves. Al terminar, Cloudflare muestra su dirección (`https://mireserva-images.<tu-cuenta>.workers.dev`).
+6. **Decirle a la API esa dirección:** en Render, `IMAGES_BASE_URL` = esa dirección, **sin barra al final**.
+7. **Comprobar:** en el panel, *Mi página* > *Imágenes* > subir un logo; debe aparecer la vista previa. Abre la dirección de la imagen en el navegador: debe verse. Una dirección inventada, o que no sea de una imagen, responde 404.
+
+- **Límites a vigilar.** El plan gratuito de Workers permite **100.000 peticiones al día**, y cada imagen que el navegador no tenga guardada cuenta una. Como cada imagen nueva tiene un nombre nuevo, el navegador la guarda por un año. **(sin confirmar)** si la caché del Worker funciona en `workers.dev`; Cloudflare dice cosas distintas según la página.
+- **Con dominio propio:** se asigna al Worker y se cambia solo `IMAGES_BASE_URL`. Lo guardado en la base no cambia, porque solo guarda el nombre del archivo.
+- **Si se filtra la llave:** se borra el token en Cloudflare, se crea otro y se actualizan las dos variables de Render.
+
 ## Mantener despierto el servidor durante las pruebas
 
 El servidor gratuito se duerme tras 15 minutos sin visitas y tarda cerca de un minuto en despertar. Mientras no haya clientes que paguen, un Worker de Cloudflare lo visita cada 10 minutos (D119). El código está en `tools/keepawake/`.

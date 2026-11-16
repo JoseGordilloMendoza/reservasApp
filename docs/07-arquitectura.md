@@ -192,6 +192,7 @@ Cada petición actúa sobre **un** negocio del usuario: automático si tiene uno
 | Ruta | Qué hace | Quién |
 |---|---|---|
 | `GET` y `PATCH /panel/business/` | Ver y editar el negocio: nombre, descripción, dirección, teléfono, WhatsApp y opciones (se fusionan: solo cambian las enviadas) | Miembros |
+| `PUT` y `DELETE /panel/business/logo/` y `/cover/` | Subir o reemplazar (multipart, campo `file`) y quitar el logo o la portada. Responde con el negocio. Errores: 400 `invalid_image`, 503 `images_unavailable`, 429 al pasar de 30 por hora | Miembros |
 | `GET` y `POST /panel/resources/`, `GET`, `PATCH` y `DELETE /panel/resources/{id}/` | Canchas o profesionales. Se desactivan con `is_active`; solo se borran sin reservas | Miembros |
 | `GET` y `PUT /panel/resources/{id}/schedule/` | Horario semanal completo del recurso, reemplazado de una vez | Miembros |
 | `GET` y `POST /panel/services/`, `GET`, `PATCH` y `DELETE /panel/services/{id}/` | Qué reserva el cliente, su duración, precio de referencia y opciones propias | Miembros |
@@ -214,7 +215,14 @@ Detalles de la configuración:
 - **Duración por defecto** de un servicio nuevo: la que sugiere el tipo de negocio (60 min canchas, 50 min psicólogos), también visible en `GET /panel/business/`.
 - Un recurso o servicio de otro negocio se rechaza igual que uno que no existe.
 
-Aún no hay: imágenes del negocio (necesitan almacenamiento de archivos) ni cambio de contraseña estando dentro del panel (solo recuperarla por correo).
+Aún no hay: foto por espacio ni galería (D120) ni cambio de contraseña estando dentro del panel (solo recuperarla por correo).
+
+### Imágenes del negocio (D120)
+
+- **Camino de una imagen.** El dueño la sube a la API (`apps/api/panel`); `apps/images/processing.py` la comprueba, la endereza, le quita los datos de la cámara, la reduce y la pasa a WebP; `apps/images/storage.py` la guarda. El negocio solo guarda la **clave** (`b12/logo-3fa9c1d2e4b56789.webp`, con 16 dígitos al azar para que cada imagen nueva tenga otra dirección y el navegador pueda guardarla por un año).
+- **Dónde se guarda** va detrás de una interfaz propia (`put`, `delete`): R2 en producción, disco en desarrollo (Django la sirve en `/media/`) y memoria en las pruebas. Sin R2 configurado en producción, subir responde 503 y las páginas no muestran imágenes.
+- **Cómo se ve.** Las respuestas públicas traen `logo_url` (negocio, inicio) y `cover_url` (negocio), armadas con `IMAGES_BASE_URL` y la clave. Un **Worker** (`tools/images-worker/`) lee el bucket privado y entrega solo nombres con el formato que escribe la API; lo demás es 404.
+- **Variables de la API:** `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` e `IMAGES_BASE_URL`. Pasos en [el despliegue](10-despliegue.md).
 
 ### Correos y recuperación de contraseña (M8)
 
