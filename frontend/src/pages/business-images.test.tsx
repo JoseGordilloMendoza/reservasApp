@@ -172,33 +172,37 @@ describe("the pictures on the business page", () => {
 });
 
 describe("the logo on the home page", () => {
-  const ANDES = { name: "Canchas Los Andes", slug: "canchas-los-andes", business_type: "court", accent: "brand", address: "Av. Ejército 123", description: "Grass", logo_url: null };
+  const ANDES = { name: "Canchas Los Andes", slug: "canchas-los-andes", business_type: "court", accent: "brand", address: "Av. Ejército 123", description: "Grass", logo_url: null, cover_url: null };
+  /** The drawing a card shows when the business has no cover. */
+  const drawing = (card: HTMLElement) => card.querySelector('svg[viewBox="0 0 160 120"]');
 
-  it("takes the place of the drawing on the business card, and the drawing stays for those without one", async () => {
+  it("uses the cover as the picture of the card and puts the logo on its edge", async () => {
     mockApi({
       "GET /public/directory/": {
         status: 200,
-        body: { results: [{ ...ANDES, logo_url: LOGO }, { ...ANDES, name: "Consultorio Lucía", slug: "consultorio-lucia", business_type: "psychologist" }] },
+        body: { results: [{ ...ANDES, logo_url: LOGO, cover_url: COVER }, { ...ANDES, name: "Consultorio Lucía", slug: "consultorio-lucia", business_type: "psychologist" }] },
       },
     });
     renderApp("/");
 
     const cards = await screen.findAllByRole("link", { name: /Canchas Los Andes|Consultorio Lucía/ });
-    expect(cards[0]!.querySelector("img")).toHaveAttribute("src", LOGO);
-    expect(cards[0]!.querySelector("svg")).toBeNull();
+    expect(Array.from(cards[0]!.querySelectorAll("img")).map((image) => image.getAttribute("src"))).toEqual([COVER, LOGO]);
+    expect(drawing(cards[0]!)).toBeNull();
+    // Without pictures: the drawing in place of the cover, and the initial in place of the logo.
     expect(cards[1]!.querySelector("img")).toBeNull();
-    expect(cards[1]!.querySelector("svg")).not.toBeNull();
+    expect(drawing(cards[1]!)).not.toBeNull();
+    expect(cards[1]!).toHaveTextContent("C");
   });
 
-  it("goes back to the drawing when the logo cannot be loaded", async () => {
-    mockApi({ "GET /public/directory/": { status: 200, body: { results: [{ ...ANDES, logo_url: LOGO }] } } });
+  it("goes back to the drawing and the initial when the pictures cannot be loaded", async () => {
+    mockApi({ "GET /public/directory/": { status: 200, body: { results: [{ ...ANDES, logo_url: LOGO, cover_url: COVER }] } } });
     renderApp("/");
     const card = await screen.findByRole("link", { name: /Canchas Los Andes/ });
 
-    fireEvent.error(card.querySelector("img")!);
+    for (const image of Array.from(card.querySelectorAll("img"))) fireEvent.error(image);
 
     await waitFor(() => expect(card.querySelector("img")).toBeNull());
-    expect(card.querySelector("svg")).not.toBeNull();
+    expect(drawing(card)).not.toBeNull();
   });
 
   it("shows the saved logo on a favorite, and the initial when it has none", async () => {
