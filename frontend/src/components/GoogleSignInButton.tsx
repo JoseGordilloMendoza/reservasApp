@@ -112,6 +112,7 @@ export function GoogleSignInButton({ onCredential, onError, clientId = googleCli
       {/* Google's button is 40px tall; stretched to the height of ours so the whole of it can be pressed. */}
       <div
         ref={slot}
+        role="group"
         aria-label="Entrar con Google"
         className="absolute inset-0 flex origin-center scale-y-[1.3] items-center justify-center overflow-hidden opacity-0"
       />
