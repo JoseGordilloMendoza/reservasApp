@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -14,6 +15,10 @@ urlpatterns = [
     path("api/v1/platform/", include("apps.api.platformadmin.urls")),
     path("api/v1/public/", include("apps.api.public.urls")),
 ]
+
+if settings.DEBUG:
+    # Development keeps business images on disk; production serves them from a Worker of ours (D119).
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.API_DOCS_ENABLED:
     urlpatterns += [

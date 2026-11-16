@@ -106,6 +106,20 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# --- Business images (D119) ----------------------------------------------------------
+# Production keeps them in a private Cloudflare R2 bucket and a Worker of ours serves them; with none of
+# these set, uploads answer "not available" and every page simply shows no image. Development keeps them
+# on disk and serves them from MEDIA_URL.
+R2_ENDPOINT = os.environ.get("R2_ENDPOINT", "")
+R2_ACCESS_KEY_ID = os.environ.get("R2_ACCESS_KEY_ID", "")
+R2_SECRET_ACCESS_KEY = os.environ.get("R2_SECRET_ACCESS_KEY", "")
+R2_BUCKET = os.environ.get("R2_BUCKET", "")
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "media/"
+# Where a browser finds the images: the address of our images Worker. Only this changes when the
+# domain arrives. Nothing is stored with it, only each image's key.
+IMAGES_BASE_URL = os.environ.get("IMAGES_BASE_URL", "http://localhost:8000/media/" if DEBUG else "")
+
 # Endpoints are private unless a view opts out with AllowAny.
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
