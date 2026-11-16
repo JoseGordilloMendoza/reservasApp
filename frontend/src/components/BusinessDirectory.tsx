@@ -4,6 +4,7 @@ import { KIND_LABEL } from "../lib/kinds";
 import type { BusinessKind } from "../lib/platformTypes";
 import { useDirectory } from "../lib/queries";
 import { BusinessShape, TONES } from "./BusinessShape";
+import { Picture } from "./Picture";
 import { Skeleton } from "./Skeleton";
 
 /** The businesses that chose to appear, as cards. It stays out of the way when there are none. */
@@ -42,7 +43,13 @@ export function BusinessDirectory() {
                 className="press grid h-full grid-cols-1 overflow-hidden rounded-box border border-edge bg-surface text-text shadow-card"
               >
                 <span className={`grid place-items-center border-b border-edge px-6 py-4 ${tone.panel}`}>
-                  <BusinessShape kind={business.business_type} tone={tone} className={`h-32 w-full max-w-[220px] ${index % 2 ? "-scale-x-100" : ""}`} />
+                  <Picture
+                    src={business.logo_url}
+                    className="size-32 rounded-xl border border-edge bg-surface object-contain p-2"
+                    fallback={
+                      <BusinessShape kind={business.business_type} tone={tone} className={`h-32 w-full max-w-[220px] ${index % 2 ? "-scale-x-100" : ""}`} />
+                    }
+                  />
                 </span>
                 <span className="grid content-start gap-1 p-4">
                   <span className="text-sm font-bold uppercase tracking-wide text-accent-deep">

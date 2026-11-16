@@ -16,6 +16,8 @@ export interface Favorite {
   /** The business type, to say what kind of place it is. */
   kind: string;
   address: string;
+  /** Where its logo is, if it has one. Saved before logos existed, a favorite has none until its page is opened. */
+  logo?: string | null;
   savedAt: string;
 }
 
@@ -89,7 +91,11 @@ export function refreshFavorite(input: FavoriteInput) {
   const current = items.find((item) => item.slug === input.slug);
   if (!current) return;
   const same =
-    current.name === input.name && current.accent === input.accent && current.kind === input.kind && current.address === input.address;
+    current.name === input.name &&
+    current.accent === input.accent &&
+    current.kind === input.kind &&
+    current.address === input.address &&
+    (current.logo ?? null) === (input.logo ?? null);
   if (same) return;
   write(items.map((item) => (item.slug === input.slug ? { ...item, ...input } : item)));
 }

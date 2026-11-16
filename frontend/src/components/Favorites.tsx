@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { removeFavorite, useFavorites } from "../lib/favorites";
 import { KIND_LABEL } from "../lib/kinds";
 import type { BusinessKind } from "../lib/platformTypes";
+import { Picture } from "./Picture";
 
 /** The businesses this person saved, kept on their device. It is not on the page until they save one. */
 export function Favorites() {
@@ -24,13 +25,19 @@ export function Favorites() {
               to={`/${favorite.slug}`}
               className="press flex min-h-[88px] items-center gap-4 rounded-box border border-edge bg-surface p-4 pr-16 text-text shadow-card-sm"
             >
-              <span
-                aria-hidden="true"
-                data-accent={favorite.accent}
-                className="grid size-12 shrink-0 place-items-center rounded-xl bg-accent font-display text-xl font-bold text-on-accent"
-              >
-                {favorite.name.trim().charAt(0).toUpperCase()}
-              </span>
+              <Picture
+                src={favorite.logo}
+                className="size-12 shrink-0 rounded-xl border border-edge bg-surface object-contain p-1"
+                fallback={
+                  <span
+                    aria-hidden="true"
+                    data-accent={favorite.accent}
+                    className="grid size-12 shrink-0 place-items-center rounded-xl bg-accent font-display text-xl font-bold text-on-accent"
+                  >
+                    {favorite.name.trim().charAt(0).toUpperCase()}
+                  </span>
+                }
+              />
               <span className="grid min-w-0 gap-0.5">
                 <span className="text-xs font-bold uppercase tracking-wide text-accent-deep">
                   {KIND_LABEL[favorite.kind as BusinessKind] ?? "Negocio"}

@@ -27,6 +27,7 @@ export function FavoriteButton({ business, className }: Props) {
         accent: business.accent,
         kind: business.business_type,
         address: business.address,
+        logo: business.logo_url,
       });
       setSaid("Guardado en tus favoritos.");
     }

@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { BookingFlow } from "../components/BookingFlow";
 import { ContactLinks } from "../components/ContactLinks";
 import { FavoriteButton } from "../components/FavoriteButton";
+import { Picture } from "../components/Picture";
 import { PlaceDetails } from "../components/PlaceDetails";
 import { Skeleton } from "../components/Skeleton";
 import { refreshFavorite } from "../lib/favorites";
@@ -49,6 +50,19 @@ function Poster({ business }: { business: PublicBusiness }) {
       transition={{ type: "spring", stiffness: 140, damping: 20 }}
       className="relative rounded-box border border-edge bg-accent p-6 pb-14 text-on-accent shadow-card md:p-10 md:pb-14"
     >
+      {/* The cover is a strip of its own above the color block: nothing is written over a photo, so the
+          contrast of the name and the text never depends on the picture. */}
+      <Picture
+        src={business.cover_url}
+        className="-mx-6 -mt-6 mb-6 aspect-[5/2] w-[calc(100%+3rem)] max-w-none rounded-t-[15px] border-b border-edge object-cover md:-mx-10 md:-mt-10 md:mb-8 md:w-[calc(100%+5rem)]"
+      />
+
+      {business.logo_url && (
+        <Picture
+          src={business.logo_url}
+          className="mb-4 size-16 rounded-xl border border-edge bg-surface object-contain p-1.5 md:size-20"
+        />
+      )}
       <h1 className={`text-balance break-words font-display font-bold leading-[1.1] tracking-[-0.02em] ${titleSize(business.name)}`}>
         {business.name}
       </h1>
@@ -134,7 +148,14 @@ export function BusinessPage() {
   const loaded = query.data;
   useEffect(() => {
     if (loaded) {
-      refreshFavorite({ slug: loaded.slug, name: loaded.name, accent: loaded.accent, kind: loaded.business_type, address: loaded.address });
+      refreshFavorite({
+        slug: loaded.slug,
+        name: loaded.name,
+        accent: loaded.accent,
+        kind: loaded.business_type,
+        address: loaded.address,
+        logo: loaded.logo_url,
+      });
     }
   }, [loaded]);
 
