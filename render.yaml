@@ -51,3 +51,15 @@ services:
       # Optional: leave empty to hide the Google button.
       - key: GOOGLE_CLIENT_ID
         sync: false
+      # Business images (D119): a private Cloudflare R2 bucket, and the address of the Worker that serves
+      # it. Without them, uploading an image answers "not available" and pages show no image.
+      - key: R2_ENDPOINT
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: IMAGES_BASE_URL
+        sync: false

@@ -53,7 +53,7 @@ def test_the_secret_key_is_generated_by_render_and_never_written_here(variables)
 
 @pytest.mark.parametrize(
     "name",
-    ["DATABASE_URL", "PLATFORM_ADMIN_EMAIL", "PLATFORM_ADMIN_PASSWORD", "EMAIL_HOST_PASSWORD", "CORS_ALLOWED_ORIGINS", "FRONTEND_URL", "GOOGLE_CLIENT_ID"],
+    ["DATABASE_URL", "PLATFORM_ADMIN_EMAIL", "PLATFORM_ADMIN_PASSWORD", "EMAIL_HOST_PASSWORD", "CORS_ALLOWED_ORIGINS", "FRONTEND_URL", "GOOGLE_CLIENT_ID", "R2_ENDPOINT", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "IMAGES_BASE_URL"],
 )
 def test_what_depends_on_the_owner_or_is_secret_is_asked_for_not_written(variables, name):
     assert variables[name] == {"key": name, "sync": False}
@@ -122,7 +122,7 @@ def test_every_variable_the_settings_read_is_set_in_the_blueprint_or_is_optional
     import re
 
     source = (BACKEND / "config" / "settings.py").read_text(encoding="utf-8")
-    read = set(re.findall(r'os\.environ(?:\.get)?[\(\[]\s*"([A-Z_]+)"', source))
+    read = set(re.findall(r'os\.environ(?:\.get)?[\(\[]\s*"([A-Z0-9_]+)"', source))
 
     forgotten = sorted(read - set(variables) - set(OPTIONAL))
 
@@ -133,6 +133,6 @@ def test_nothing_is_listed_as_optional_that_the_settings_no_longer_read():
     import re
 
     source = (BACKEND / "config" / "settings.py").read_text(encoding="utf-8")
-    read = set(re.findall(r'os\.environ(?:\.get)?[\(\[]\s*"([A-Z_]+)"', source))
+    read = set(re.findall(r'os\.environ(?:\.get)?[\(\[]\s*"([A-Z0-9_]+)"', source))
 
     assert sorted(set(OPTIONAL) - read) == []
