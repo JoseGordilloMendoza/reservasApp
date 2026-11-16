@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { CheckField, Field } from "../../components/Field";
 import { AccentPicker } from "../../components/panel/AccentPicker";
+import { BusinessImages } from "../../components/panel/BusinessImages";
 import { Skeleton } from "../../components/Skeleton";
 import { TextAreaField } from "../../components/TextAreaField";
 import { FEATURES } from "../../lib/features";
@@ -288,6 +289,7 @@ export function BusinessSettingsPage() {
           No pudimos cargar tu negocio. {business.error.message}
         </p>
       )}
+      {business.isSuccess && <BusinessImages business={business.data} />}
       {business.isSuccess && <BusinessForm business={business.data} />}
     </div>
   );
