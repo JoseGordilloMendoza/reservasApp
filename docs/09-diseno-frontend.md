@@ -189,10 +189,15 @@ La misma identidad que el panel del negocio, pero con la prioridad de quien admi
 
 ### La composición del inicio
 
-- **Una cabecera azul con degradado** y los elementos gráficos de la marca (palomita grande, cápsula celeste y arcos finos) a baja intensidad detrás del texto. El titular va en dos líneas, la segunda en celeste claro.
-- **La tarjeta de búsqueda** queda al lado en pantallas anchas, un poco más abajo, y debajo de la cabecera en el celular.
-- **Lista de negocios** como tarjetas con un dibujo plano por rubro (una pelota para canchas, dos globos de conversación para consultorios, un calendario con palomita para el resto), sobre un fondo que alterna entre celeste, azul y blanco. Se oculta sola si no hay ninguno.
-- **"Así de fácil":** tres tarjetas con un número en un círculo azul: elige, reserva, llega.
+(D121, a partir de la referencia del diseñador.)
+
+- **Una cabecera azul con degradado** que contiene el titular, **la tarjeta de búsqueda** y el botón "Mis reservas". Al lado (debajo en el celular) va una **ilustración isométrica**: una plataforma con una cancha, un calendario y un celular con una reserva en pantalla, y dos tarjetas de ejemplo que flotan suavemente ("Reserva confirmada", "Cancha 1 · 60 min"). Todo eso es decoración: un lector de pantalla lo salta, y sin "reducir movimiento" las tarjetas suben y bajan unos pixeles.
+- **Cuatro promesas** en tarjetas con un ícono sobre un acento distinto: sin cuenta, sin llamadas, boleto al instante, sin cobros extra. **Nunca cifras, estrellas ni distancias** mientras no sean reales.
+- **Lista de negocios** como tarjetas: arriba **la portada** (o, si no hay, el dibujo plano del rubro sobre un fondo que alterna), **el logo montado en su borde** (o la inicial en el color del negocio), una etiqueta con el tipo, el nombre, la descripción, la dirección y un botón **"Reservar aquí"** en el color del negocio. Cada tarjeta lleva el acento de su negocio. Encima, botones para **ver por tipo** (canchas, psicólogos, otros), cada uno con su color, que solo aparecen si hay más de un tipo y solo con los tipos que tienen negocios. Se oculta sola si no hay ninguno.
+- **"Así de fácil":** tres tarjetas, cada una con su ícono sobre un acento (buscar, calendario, boleto) y un círculo suave del mismo color en la esquina: elige, reserva, llega.
+- **La franja para negocios** suma una tiendita isométrica.
+- **Las ilustraciones son provisionales** (`components/IsoArt.tsx`, dibujadas con una pequeña proyección isométrica). Se reemplazan por las del diseñador cuando lleguen.
+- **Colores por elemento.** Un elemento con `data-accent` toma ese acento para `bg-accent`, `text-on-accent` y `bg-accent-soft` (un lavado del 18%). **No usar `text-accent-deep` dentro de él**: ese tono se calcula para la página y en modo oscuro no se leería.
 
 ### Lo que el cliente guarda en su celular
 
