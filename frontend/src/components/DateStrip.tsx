@@ -18,17 +18,24 @@ function dayLabel(index: number, day: string) {
 
 /** Two weeks as chunky tiles. Closed days are hatched and cannot be pressed. */
 export function DateStrip({ days, available, selected, onSelect }: Props) {
+  const stripRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<HTMLButtonElement>(null);
 
+  // Only the strip moves, sideways, to center the chosen day. scrollIntoView would also move the whole page
+  // to reveal the strip, and with a tall poster above it (a cover picture) the page would jump on load.
   useEffect(() => {
-    selectedRef.current?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+    const strip = stripRef.current;
+    const day = selectedRef.current;
+    if (!strip || !day || typeof strip.scrollTo !== "function") return;
+    strip.scrollTo({ left: day.offsetLeft - (strip.clientWidth - day.offsetWidth) / 2, behavior: "smooth" });
   }, [selected]);
 
   return (
     <div
+      ref={stripRef}
       role="radiogroup"
       aria-label="Día"
-      className="-mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="relative -mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {days.map((day, index) => {
         const open = available.has(day);
