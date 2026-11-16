@@ -58,6 +58,10 @@ class Business(models.Model):
     maps_url = models.CharField(max_length=300, blank=True)
     # What the business asks of whoever comes, one rule per line. Shown on the page and on the booking.
     house_rules = models.CharField(max_length=600, blank=True)
+    # Where its logo and cover are kept (D119): only the key, e.g. "b12/logo-3fa9c1d2e4b56789.webp". The address
+    # a browser uses is made from it by images.storage.public_url, so a new domain changes nothing stored.
+    logo = models.CharField(max_length=120, blank=True, editable=False)
+    cover = models.CharField(max_length=120, blank=True, editable=False)
     # The name as the search compares it: lowercase, no accents. Kept up to date by save().
     search_name = models.CharField(max_length=120, blank=True, editable=False, db_index=True)
     # Why and when the platform team suspended it; cleared on reactivation.
