@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { BRAND, contactEmail, contactWhatsapp } from "../lib/brand";
 import { whatsappLink } from "../lib/whatsapp";
 import { HeroArt } from "./HeroArt";
+import { ShopScene } from "./IsoArt";
 
 const ASK = `Hola, quiero tener mi negocio en ${BRAND}. ¿Me ayudan a crear mi cuenta?`;
 
@@ -47,6 +48,7 @@ export function ForBusinesses() {
   return (
     <section aria-labelledby="para-negocios" className="relative mt-20 overflow-hidden rounded-box bg-[linear-gradient(135deg,#1238c9_0%,#052ff7_100%)] p-6 text-white shadow-card md:p-10">
       <HeroArt />
+      <ShopScene className="pointer-events-none relative mx-auto mb-2 w-44 md:absolute md:bottom-6 md:right-8 md:mb-0 md:w-64" />
       <div className="relative grid max-w-[40rem] gap-4">
         <h2 id="para-negocios" className="font-display text-4xl font-bold leading-[1.1] tracking-[-0.02em] md:text-5xl">
           ¿Tienes un negocio con citas?
