@@ -9,6 +9,7 @@ from apps.businesses.models import Business
 from apps.businesses.presets import preset_settings
 from apps.catalog.models import Resource, Service
 from apps.customers.models import Customer
+from apps.images.storage import MemoryStorage, use_storage
 
 BASE_START = datetime(2030, 1, 1, 18, 0, tzinfo=timezone.utc)
 
@@ -19,6 +20,15 @@ def emails_in_the_foreground():
     # override_settings, not the settings fixture: some tests use "settings" as a parameter name.
     with override_settings(EMAIL_IN_BACKGROUND=False):
         yield
+
+
+@pytest.fixture(autouse=True)
+def images_in_memory():
+    # No test may write to disk or reach R2. A test that looks at the images asks for this fixture by name.
+    storage = MemoryStorage()
+    use_storage(storage)
+    yield storage
+    use_storage(None)
 
 
 @pytest.fixture(autouse=True)
