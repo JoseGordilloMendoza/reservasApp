@@ -165,6 +165,25 @@ h3 {
   border-radius: var(--radius-box);
 }
 
+/*
+ * A soft wash of the accent, worked out on the element itself so that a card with its own data-accent gets its
+ * own color (the page tint is worked out once, on the root). Only text in the normal ink goes on top of it.
+ */
+@utility bg-accent-soft {
+  background-color: color-mix(in srgb, var(--accent) 18%, var(--surface));
+}
+
+/* A gentle up and down for the example cards over the home illustration; only without "reduce motion". */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
 /* Hatching for days without availability: it reads as "closed" without color alone. */
 .hatch {
   background-image: repeating-linear-gradient(
