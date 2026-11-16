@@ -23,6 +23,7 @@ from apps.businesses.settings_schema import effective_settings, validate_setting
 from apps.catalog.models import Resource, Service
 from apps.customers import trust
 from apps.customers.models import Customer
+from apps.images.storage import public_url
 
 
 class PanelBusinessSerializer(serializers.ModelSerializer):
@@ -31,12 +32,16 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
     suggested_service_duration_minutes = serializers.SerializerMethodField()
     subscription = serializers.SerializerMethodField()
     support = serializers.SerializerMethodField()
+    logo_url = serializers.SerializerMethodField()
+    cover_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Business
         fields = [
             "name",
             "slug",
+            "logo_url",
+            "cover_url",
             "description",
             "address",
             "phone",
@@ -60,6 +65,12 @@ class PanelBusinessSerializer(serializers.ModelSerializer):
             "suggested_service_duration_minutes",
             "role",
         ]
+
+    def get_logo_url(self, business) -> str | None:
+        return public_url(business.logo)
+
+    def get_cover_url(self, business) -> str | None:
+        return public_url(business.cover)
 
     def get_settings(self, business) -> dict:
         """Every option with its effective value (defaults filled in)."""
