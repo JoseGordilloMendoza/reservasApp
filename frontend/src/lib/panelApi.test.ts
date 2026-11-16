@@ -206,3 +206,37 @@ describe("panelApi", () => {
     expect(calls[0]?.body).toEqual({ email: "ana@example.com", password: "secret" });
   });
 });
+
+describe("business pictures", () => {
+  function serveOnce() {
+    const fetchMock = vi.fn(async () => ({ ok: true, status: 200, text: async () => JSON.stringify({ logo_url: null }) }));
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  it("uploads the file as multipart to the right place, with the owner's token", async () => {
+    setTokens("access-1", "refresh-1");
+    const fetchMock = serveOnce();
+    const file = new File(["x"], "logo.png", { type: "image/png" });
+
+    await panelApi.uploadImage("logo", file);
+
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("/api/v1/panel/business/logo/");
+    expect(init.method).toBe("PUT");
+    expect((init.body as FormData).get("file")).toBe(file);
+    expect(init.headers).toMatchObject({ Authorization: "Bearer access-1" });
+    expect(init.headers).not.toHaveProperty("Content-Type");
+  });
+
+  it("removes the cover", async () => {
+    setTokens("access-1", "refresh-1");
+    const fetchMock = serveOnce();
+
+    await panelApi.removeImage("cover");
+
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe("/api/v1/panel/business/cover/");
+    expect(init.method).toBe("DELETE");
+  });
+});

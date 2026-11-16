@@ -34,9 +34,15 @@ export interface SubscriptionNotice {
   days_left: number;
 }
 
+/** The two pictures of a business page. */
+export type ImageKind = "logo" | "cover";
+
 export interface PanelBusiness {
   name: string;
   slug: string;
+  /** The address of each picture, or null when there is none. */
+  logo_url: string | null;
+  cover_url: string | null;
   description: string;
   address: string;
   phone: string;

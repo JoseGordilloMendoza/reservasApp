@@ -26,6 +26,9 @@ export interface PublicResource {
 export interface PublicBusiness {
   name: string;
   slug: string;
+  /** The address of each picture, or null when the business has none. */
+  logo_url: string | null;
+  cover_url: string | null;
   description: string;
   address: string;
   phone: string;
@@ -53,6 +56,7 @@ export interface PublicBusiness {
 export interface SearchResult {
   name: string;
   slug: string;
+  logo_url: string | null;
   business_type: string;
   accent: Accent;
   address: string;

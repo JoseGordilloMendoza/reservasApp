@@ -17,6 +17,7 @@ import type {
   Page,
   PanelBooking,
   PanelBookingDetail,
+  ImageKind,
   PanelBusiness,
   PanelCreatedBooking,
   PanelService,
@@ -134,6 +135,15 @@ export const panelApi = {
 
   updateBusiness: (changes: BusinessChanges) =>
     authed<PanelBusiness>("/panel/business/", { method: "PATCH", body: JSON.stringify(changes) }),
+
+  /** Upload or replace the logo or the cover. The server reduces it and drops what the camera wrote. */
+  uploadImage: (kind: ImageKind, file: File) => {
+    const body = new FormData();
+    body.append("file", file);
+    return authed<PanelBusiness>(`/panel/business/${kind}/`, { method: "PUT", body });
+  },
+
+  removeImage: (kind: ImageKind) => authed<PanelBusiness>(`/panel/business/${kind}/`, { method: "DELETE" }),
 
   createResource: (name: string) =>
     authed<PanelResource>("/panel/resources/", { method: "POST", body: JSON.stringify({ name }) }),

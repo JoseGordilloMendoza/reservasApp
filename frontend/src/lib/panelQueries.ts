@@ -10,6 +10,7 @@ import type {
   BusinessChanges,
   CustomerDetail,
   CustomerFilters,
+  ImageKind,
   NewBlock,
   NewPanelBooking,
   PanelBookingDetail,
@@ -213,6 +214,25 @@ export function useUpdateBusiness() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (changes: BusinessChanges) => panelApi.updateBusiness(changes),
+    onSuccess: (updated) => queryClient.setQueryData(["panel", scope, "business"], updated),
+  });
+}
+
+/** Upload or replace the logo or the cover. */
+export function useUploadImage() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ kind, file }: { kind: ImageKind; file: File }) => panelApi.uploadImage(kind, file),
+    onSuccess: (updated) => queryClient.setQueryData(["panel", scope, "business"], updated),
+  });
+}
+
+export function useRemoveImage() {
+  const scope = useScope();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (kind: ImageKind) => panelApi.removeImage(kind),
     onSuccess: (updated) => queryClient.setQueryData(["panel", scope, "business"], updated),
   });
 }
