@@ -85,9 +85,16 @@ class BusinessSearchResultSerializer(LogoUrlMixin, serializers.ModelSerializer):
 
 
 class BusinessCardSerializer(LogoUrlMixin, serializers.ModelSerializer):
+    """A card of the home page showcase: the cover is its picture."""
+
+    cover_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Business
-        fields = ["name", "slug", "logo_url", "business_type", "accent", "address", "description"]
+        fields = ["name", "slug", "logo_url", "cover_url", "business_type", "accent", "address", "description"]
+
+    def get_cover_url(self, business) -> str | None:
+        return public_url(business.cover)
 
 
 # --- availability -------------------------------------------------------------

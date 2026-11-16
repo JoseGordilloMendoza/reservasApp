@@ -33,7 +33,7 @@ def test_the_business_page_gives_the_address_of_its_logo_and_cover(api, business
     assert data["cover_url"] == f"{BASE}/b1/cover-bbbb.webp"
 
 
-def test_the_directory_shows_the_logo_but_not_the_cover(api, business):
+def test_the_directory_card_shows_the_logo_and_uses_the_cover_as_its_picture(api, business):
     business.logo = "b1/logo-aaaa.webp"
     business.cover = "b1/cover-bbbb.webp"
     business.save()
@@ -41,7 +41,16 @@ def test_the_directory_shows_the_logo_but_not_the_cover(api, business):
     (card,) = api.get(reverse("public-directory")).json()["results"]
 
     assert card["logo_url"] == f"{BASE}/b1/logo-aaaa.webp"
-    assert "cover_url" not in card
+    assert card["cover_url"] == f"{BASE}/b1/cover-bbbb.webp"
+
+
+def test_search_results_stay_small_and_carry_no_cover(api, business):
+    business.cover = "b1/cover-bbbb.webp"
+    business.save()
+
+    (found,) = api.get(reverse("public-search"), {"q": "cancha"}).json()["results"]
+
+    assert "cover_url" not in found
 
 
 def test_search_results_show_the_logo(api, business):

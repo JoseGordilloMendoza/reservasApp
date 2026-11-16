@@ -75,7 +75,7 @@ def test_only_what_is_public_is_shown(api):
 
     item = api.get(reverse("public-directory")).json()["results"][0]
 
-    assert set(item) == {"name", "slug", "logo_url", "business_type", "accent", "address", "description"}
+    assert set(item) == {"name", "slug", "logo_url", "cover_url", "business_type", "accent", "address", "description"}
     assert item["description"] == "Grass"
 
 
