@@ -65,6 +65,8 @@ export interface SearchResult {
 /** One business in the home page showcase: the search result plus a line about it. */
 export interface DirectoryEntry extends SearchResult {
   description: string;
+  /** The cover of the business, used as the picture of its card; null when it has none. */
+  cover_url: string | null;
 }
 
 export interface Slot {
