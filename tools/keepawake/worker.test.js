@@ -55,7 +55,8 @@ test("a server error or a network error is reported, not thrown", async () => {
     { PING_URL: URL_OK },
     { now: lima(12), fetchFn: async () => new Response("", { status: 503 }) },
   );
-  assert.deepEqual(down, { result: "failed", status: 503 });
+  assert.equal(down.result, "failed");
+  assert.equal(down.status, 503);
 
   const offline = await keepAwake(
     { PING_URL: URL_OK },
@@ -75,4 +76,22 @@ test("a wrong address fails loudly instead of visiting something else", async ()
     keepAwake({ PING_URL: "https://mireserva-api.onrender.com/api/health/" }, { now: lima(12), fetchFn: async () => assert.fail() }),
     /api\/ping/,
   );
+});
+
+test("it says who it is, and a failure carries who answered and what it said", async () => {
+  let sent;
+  const fetchFn = async (_url, init) => {
+    sent = init;
+    return new Response("<html><title>502 Bad Gateway</title></html>", {
+      status: 502,
+      headers: { server: "cloudflare", "cf-ray": "abc-LIM", "content-type": "text/html", "set-cookie": "x=1" },
+    });
+  };
+
+  const outcome = await keepAwake({ PING_URL: URL_OK }, { now: lima(12), fetchFn });
+
+  assert.match(sent.headers["user-agent"], /MiReserva keep-awake/);
+  assert.equal(outcome.status, 502);
+  assert.deepEqual(outcome.headers, { server: "cloudflare", "cf-ray": "abc-LIM", "content-type": "text/html" });
+  assert.match(outcome.body, /502 Bad Gateway/);
 });

@@ -42,6 +42,25 @@ export function pingUrl(value) {
   return url.toString();
 }
 
+/** Headers that tell who answered: Cloudflare's edge, Render's router or our own server. */
+const CLUE_HEADERS = ["server", "cf-ray", "rndr-id", "x-render-origin-server", "x-render-routing", "content-type"];
+
+/** What a failed answer says about where it came from, to read in the logs. Never throws. */
+export async function clues(response) {
+  const headers = {};
+  for (const name of CLUE_HEADERS) {
+    const value = response.headers.get(name);
+    if (value) headers[name] = value;
+  }
+  let body = "";
+  try {
+    body = (await response.text()).replace(/\s+/g, " ").slice(0, 200);
+  } catch {
+    // The body could not be read; the headers are still worth having.
+  }
+  return { headers, body };
+}
+
 /**
  * One visit. Returns what happened, so it can be logged and tested:
  * `skipped` outside the daytime window, `ok` when the API answered, `failed` otherwise.
@@ -51,8 +70,12 @@ export async function keepAwake(env, { now = new Date(), fetchFn = fetch } = {})
 
   const url = pingUrl(env.PING_URL);
   try {
-    const response = await fetchFn(url, { signal: AbortSignal.timeout(WAIT_MS) });
-    return response.ok ? { result: "ok", status: response.status } : { result: "failed", status: response.status };
+    const response = await fetchFn(url, {
+      signal: AbortSignal.timeout(WAIT_MS),
+      headers: { "user-agent": "MiReserva keep-awake (Cloudflare Worker)" },
+    });
+    if (response.ok) return { result: "ok", status: response.status };
+    return { result: "failed", status: response.status, ...(await clues(response)) };
   } catch (error) {
     return { result: "failed", error: String(error) };
   }
